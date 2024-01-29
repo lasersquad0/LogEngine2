@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
 #ifdef WIN32
 #include <io.h>
@@ -18,36 +19,11 @@
 #endif
 
 #include "FileStream.h"
+#include <cassert>
 
 LOGENGINE_NS_BEGIN
 
 using namespace std;
-
-//////////////////////////////////////////////////////////////////////
-//  IOException Class
-//////////////////////////////////////////////////////////////////////
-
-//const char* IOException::what() const throw()
-//{
-//	string s = "LogException : " + Text;
-//
-//	char * err = (char*)malloc(s.size() + 1); //on extra byte for terminator
-//	if(err) // don't want to include <string.h>
-//	{
-//		for(unsigned int i = 0; i < s.size(); i++)
-//			err[i] = s[i];
-//		err[s.size()] = '\0';
-//	}
-//	return err;
-//}
-
-IOException& IOException::operator=(const IOException& ex)
-{
-	Text = ex.Text;
-	whatText = ex.whatText;
-	return *this;
-}
-
 
 //////////////////////////////////////////////////////////////////////
 //  TStream Class
@@ -56,13 +32,13 @@ IOException& IOException::operator=(const IOException& ex)
 void TStream::operator >>(bool& Value)
 {
 	if (Read(&Value, sizeof(Value)) != sizeof(Value))
-		throw IOException("End of stream !");
+		throw IOException("End of stream reached!");
 }
 
 void TStream::operator >>(int& Value)
 {
 	if (Read(&Value, sizeof(Value)) != sizeof(Value))
-		throw IOException("End of stream !");
+		throw IOException("End of stream reached!");
 }
 void TStream::operator <<(int Value)
 {
@@ -76,25 +52,26 @@ void TStream::operator <<(double Value)
 void TStream::operator <<(const char* Value)
 {
 	Write(Value, strlen(Value));
-	Write((void*)"\r\n", 2u);
+	//Write((void*)"\r\n", 2u);
 }
 void TStream::operator <<(string& Value)
 {
 	Write((void*)Value.data(), Value.length());
-	Write((void*)"\r\n", 2u);
+	//Write((void*)"\r\n", 2u);
 }
 char TStream::ReadChar()
 {
 	char c;
-	Read(&c, sizeof(c));
+	if(Read(&c, sizeof(c)) != sizeof(char))
+		throw IOException("End of stream reached!");
 	return c;
 }
 void TStream::operator >>(string& Value)
 {
 	char c;
 	Value.clear(); // 16.08.23 change
-	while ((c = ReadChar()) != '\n') Value += c;
-	ReadChar();
+	while ((c = ReadChar()) != EndLineChar) Value += c;
+	//ReadChar();
 }
 string TStream::LoadPString()
 {
@@ -110,26 +87,24 @@ string TStream::LoadPString()
 //  TMemoryStream Class
 //////////////////////////////////////////////////////////////////////
 
-TMemoryStream::TMemoryStream()
+void TMemoryStream::ResetPos()
 {
-	FMemory = nullptr;
-	FCount = 0;
+	FSize = 0;
 	FRPos = 0;
 	FWPos = 0;
 }
 
-TMemoryStream::~TMemoryStream()
-{
-	delete[] FMemory;
-}
-
 int TMemoryStream::Read(void* Buffer, size_t Size)
 {
-	if (Size == 0) return 0;
+	assert(FRPos <= FSize);
 
-	if (FRPos + Size > FCount) Size = FCount - FRPos;
-	memmove(Buffer, FMemory, Size);
-	memmove(FMemory, (char*)FMemory + Size, FCount - Size);
+	if (Size == 0) return 0; // TODO may be return -1 because of incorrect parameter?
+
+	if (FRPos + Size > FSize) Size = FSize - FRPos;
+	if (Size == 0) return 0; // we've have read everything (EOF reached)
+
+	memcpy(Buffer, FMemory + FRPos, Size);
+	//memmove(FMemory, (char*)FMemory + Size, FSize - Size);
 	FRPos += Size;
 	return (int)Size;
 }
@@ -138,17 +113,72 @@ int TMemoryStream::Write(const void* Buffer, const size_t Size)
 {
 	if (Size == 0) return 0;
 
-	if (FWPos + Size > FCount)
-		FMemory = (uint8_t*)realloc(FMemory, FCount + Size - FWPos);
-	memmove((char*)FMemory + FWPos, Buffer, Size);
+	if (FWPos + Size > FSize)
+		FMemory = (uint8_t*)realloc(FMemory, FWPos + Size), FSize = FWPos + Size;
+	memcpy(FMemory + FWPos, Buffer, Size);
 	FWPos += Size;
 	return (int)Size;
+}
+
+template<typename T>
+T check_range(const T& start, const T& end, const T& offset)
+{
+	return (start + offset < 0) ? 0 : (start + offset > end) ? end : (start + offset);
+}
+
+#define CHECK_RANGE(start, end, offset) check_range((start), (end), (offset)) 
+#define CHECK_RANGE_OFF_T(start, end, offset) check_range(static_cast<off_t>(start), static_cast<off_t>(end), (offset)) 
+
+
+off_t TMemoryStream::SeekR(const off_t Offset, const TSeekMode sMode)
+{
+	switch (sMode)
+	{
+	case smFromBegin:  FRPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return static_cast<off_t>(FRPos);  //(Offset < 0) ? 0 : (Offset > FSize) ? FSize : Offset; return static_cast<off_t>(FRPos);
+	case smFromEnd:    FRPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return static_cast<off_t>(FRPos); //(Offset > FSize) ? 0 : FSize - Offset; return static_cast<off_t>(FRPos);
+	case smFromCurrent:FRPos = CHECK_RANGE_OFF_T(FRPos, FSize,  Offset); return static_cast<off_t>(FRPos);   //(static_cast<off_t>(FRPos) + Offset < 0) ? 0 : (FRPos + Offset > FSize) ? FSize : FRPos + Offset; return static_cast<off_t>(FRPos);
+	default:
+		return -1l;
+	}
+}
+
+off_t TMemoryStream::SeekW(const off_t Offset, const TSeekMode sMode)
+{
+	switch (sMode)
+	{
+	case smFromBegin:  FWPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return static_cast<off_t>(FWPos);
+	case smFromEnd:    FWPos = CHECK_RANGE_OFF_T(0,     FSize, -Offset); return static_cast<off_t>(FWPos);
+	case smFromCurrent:FWPos = CHECK_RANGE_OFF_T(FWPos, FSize,  Offset); return static_cast<off_t>(FWPos);
+	default:
+		return -1l;
+	}
+}
+
+void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
+{
+	ResetPos();
+	//if (FMemory) free(FMemory);
+	FMemory = Buffer;
+	FSize = Size;
 }
 
 
 //////////////////////////////////////////////////////////////////////
 //  TFileStream Class
 //////////////////////////////////////////////////////////////////////
+
+#ifdef WIN32
+#define mylseek _lseek
+#define myread _read
+#define mywrite _write
+#define myclose _close
+#else
+#define mylseek lseek
+#define myread read
+#define mywrite write
+#define myclose close
+#endif
+
 
 TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 {
@@ -191,7 +221,7 @@ TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 
 TFileStream::~TFileStream()
 {
-	_close(hf);
+	myclose(hf);
 	hf = 0;
 }
 
@@ -200,7 +230,7 @@ int TFileStream::Read(void* Buffer, size_t Size)
 	if (FFileMode == fmWrite)
 		throw IOException("File opened in write-only mode. Can't read!");
 
-	int c = _read(hf, Buffer, (uint)Size);
+	int c = myread(hf, Buffer, (uint)Size);
 
 	if (c == -1)
 	{
@@ -213,7 +243,7 @@ int TFileStream::Read(void* Buffer, size_t Size)
 
 int TFileStream::WriteCRLF(void)
 {
-	const char* temp = "\n";
+	const char* temp = EndLine;
 	return Write(temp, strlen(temp));
 }
 
@@ -227,7 +257,7 @@ int TFileStream::Write(const void* Buffer, const size_t Size)
 	if (FFileMode == fmRead)
 		throw IOException("File opened in read-only mode. Can't write!");
 
-	int c = _write(hf, Buffer, (uint)Size);
+	int c = mywrite(hf, Buffer, (uint)Size);
 
 	if (c == -1)
 	{
@@ -250,12 +280,6 @@ int TFileStream::WriteLn(const void* Buffer, const size_t Size)
 	return WriteCRLF() + c;
 }
 
-#ifdef WIN32
-#define mylseek _lseek
-#else
-#define mylseek lseek
-#endif
-
 off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 {
 	switch (sMode)
@@ -271,17 +295,9 @@ off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 size_t TFileStream::Length()
 {
 	struct stat st;
-	/*int g=Seek(0,smFromCurrent);
-
-	Seek(0,smFromEnd);
-	int r=Seek(0,smFromCurrent);*/
 
 	fstat(hf, &st);
 	return st.st_size;
-
-	//Seek(g,smFromBegin);
-
-	//return r;
 };
 
 void TFileStream::Flush()

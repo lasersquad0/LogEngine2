@@ -6,12 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _FILESTREAM_H_
-#define _FILESTREAM_H_
-
-#ifndef WIN32 // required for Linux
-#include <string.h>
-#endif
+#ifndef FILESTREAM_H
+#define FILESTREAM_H
 
 #include <string>
 #include <exception>
@@ -30,9 +26,9 @@ public:
 	IOException(const char* Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + std::string(Message); }
 	IOException(const std::string& Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + Message; }
 	IOException(const IOException& ex) { Text = ex.Text; whatText = ex.whatText; }
-	virtual ~IOException() noexcept {};
-	IOException& operator=(const IOException& rhs);
-	virtual const char* what() const throw() { return whatText.c_str(); }
+	~IOException() noexcept override {};
+	IOException& operator=(const IOException& ex) { Text = ex.Text; whatText = ex.whatText;	return *this; }
+	const char* what() const noexcept override { return whatText.c_str(); }
 	//std::string GetError(void);
 private:
 	std::string Text;
@@ -43,6 +39,7 @@ private:
 class TStream
 {
 public:
+	virtual ~TStream() {}
 	virtual int Read(void* Buffer, size_t Size) = 0;
 	virtual int Write(const void* Buffer, const size_t Size) = 0;
 	virtual size_t Length() = 0;
@@ -62,16 +59,23 @@ public:
 class TMemoryStream : public TStream
 {
 private:
-	uint8_t* FMemory;
-	size_t FCount;
-	size_t FRPos;
-	size_t FWPos;
+	uint8_t* FMemory = nullptr;
+	size_t FSize = 0;
+	size_t FRPos = 0;
+	size_t FWPos = 0;
+
+	void ResetPos();
+	off_t Seek(const off_t, const TSeekMode) { return -1; } // hide Seek, use SeekR and SeekW instead
 public:
-	TMemoryStream();
-	virtual ~TMemoryStream();
+	TMemoryStream() {}
+	~TMemoryStream() override {}
 	int Read(void* Buffer, size_t Size) override;
 	int Write(const void* Buffer, const size_t Size) override;
-	inline size_t Length() override { return FCount; }
+	size_t Length() override { return FSize; }
+	off_t SeekR(const off_t Offset, const TSeekMode sMode);
+	off_t SeekW(const off_t Offset, const TSeekMode sMode);
+
+	void SetBuffer(uint8_t* Buffer, size_t Size);
 };
 
 
@@ -83,10 +87,10 @@ private:
 	int hf = 0;  // file handle
 public:
 	TFileStream(const std::string& FileName, const TFileMode fMode = fmWrite);
-	virtual ~TFileStream();
+	~TFileStream() override;
 	int Read(void* Buffer, size_t Size) override;
-	int Write(const std::string& str);
 	int Write(const void* Buffer, const size_t Size) override;
+	int Write(const std::string& str);
 	int WriteLn(const std::string& str);
 	int WriteLn(const void* Buffer, const size_t Size);
 	int WriteCRLF(void);
@@ -106,4 +110,4 @@ public:
 
 LOGENGINE_NS_END
 
-#endif //_FILESTREAM_H_
+#endif //FILESTREAM_H
