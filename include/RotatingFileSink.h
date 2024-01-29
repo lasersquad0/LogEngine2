@@ -18,7 +18,7 @@
 
 LOGENGINE_NS_BEGIN
 
-enum TLogRotatingStrategy { rsNone, rsSingle, rsTimeStamp, rsNumbers };
+enum LogRotatingStrategy { rsNone, rsSingle, rsTimeStamp, rsNumbers };
 #define DefaultMaxLogSize  1024*1024 // 1 kbyte 
 #define DefaultMaxBackupIndex  10  // max number of backup files for strategy rsNumbers
 #define DefaultRotatingStrategy rsNone
@@ -28,13 +28,13 @@ enum TLogRotatingStrategy { rsNone, rsSingle, rsTimeStamp, rsNumbers };
 class RotatingFileSink : public FileSink
 {
 protected:
-	ulong FInitialFileSize; // log file size on the moment of creating this class. need for proper work of file rotating by size
-	ulong FMaxLogSize;
-	TLogRotatingStrategy FStrategy;
+	ullong FInitialFileSize; // log file size on the moment of creating this class. need for proper work of file rotating by size
+	ullong FMaxLogSize;
+	LogRotatingStrategy FStrategy;
 	uint FMaxBackupIndex;
 public:
-	RotatingFileSink(const std::string& name, const std::string& fileName, ulong MaxLogSize = DefaultMaxLogSize,
-		TLogRotatingStrategy strategy = DefaultRotatingStrategy, uint MaxBackupIndex = DefaultMaxBackupIndex) : FileSink(name, fileName)
+	RotatingFileSink(const std::string& name, const std::string& fileName, ullong MaxLogSize = DefaultMaxLogSize,
+		LogRotatingStrategy strategy = DefaultRotatingStrategy, uint MaxBackupIndex = DefaultMaxBackupIndex) : FileSink(name, fileName)
 	{
 		FMaxLogSize = MaxLogSize;
 		FStrategy = strategy;
@@ -137,8 +137,8 @@ public:
 		FBytesWritten = 0;
 	}
 
-	ulong GetMaxLogSize() { return FMaxLogSize; }
-	TLogRotatingStrategy GetStrategy() { return FStrategy; }
+	ullong GetMaxLogSize() { return FMaxLogSize; }
+	LogRotatingStrategy GetStrategy() { return FStrategy; }
 
 };
 

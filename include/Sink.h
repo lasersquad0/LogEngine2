@@ -20,8 +20,8 @@ protected:
 	Levels::LogLevel FLogLevel;
 	std::string FName;
 	Layout* FLayout;
-	ulong FMessageCounts[(int)Levels::n_LogLevels]{0,0,0,0,0,0};
-	ulong FBytesWritten = 0;
+	ullong FMessageCounts[(int)Levels::n_LogLevels]{0,0,0,0,0,0};
+	ullong FBytesWritten = 0;
 
 	bool shouldLog(Levels::LogLevel ll) { return FLogLevel >= ll; }
 
@@ -55,8 +55,7 @@ public:
 	{
 		std::string str = FLayout->Format(e);
 		FMessageCounts[e.msgLevel]++;
-		//FBytesWritten += str.length();
-
+	
 		return str;
 	}
 
@@ -64,7 +63,7 @@ public:
 	* Returns bytes written since creating the sink.
 	* @returns bytes written as value of size_t type.
 	**/
-	ulong GetBytesWritten()
+	ullong GetBytesWritten()
 	{
 		return FBytesWritten;
 	}
@@ -72,7 +71,7 @@ public:
 	* Returns message statistic. Message statistic it is number of written messages per log level.
 	* @returns array of size_t valuesm one value for each log level.
 	**/
-	ulong* GetMessageCounts()
+	ullong* GetMessageCounts()
 	{
 		return FMessageCounts;
 	}

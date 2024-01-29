@@ -6,10 +6,6 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef WIN32 // required for Linux
-#include <string.h>
-#endif
-
 #include <sstream>
 #include <thread>
 #include <sys/timeb.h>
@@ -49,36 +45,26 @@ double round(const double Value,const int Precision)
 
 #define CONV_BUF 20
 
+#ifdef WIN32
+
 // function for convert int Value to string
 std::string IntToStr(int Value, int FieldSize)
 {
 	char buf[CONV_BUF];
 	char buf2[CONV_BUF];
-
-#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
     sprintf_s(buf2, CONV_BUF,"%%-%dd", FieldSize);
     sprintf_s(buf, CONV_BUF, buf2, Value);
-#else
-    sprintf(buf2, "%%-%dd", FieldSize);	
-    sprintf(buf, buf2, Value);    
-#endif
 
 	return buf;
 }
 
-// function for convert int Value to string
-std::string IntToStr(unsigned int Value, int FieldSize)
+// function for convert uint Value to string
+std::string IntToStr(uint Value, int FieldSize)
 {
 	char buf[CONV_BUF];
 	char buf2[CONV_BUF];
-
-#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(buf2, CONV_BUF, "%%-%du", FieldSize);
 	sprintf_s(buf, CONV_BUF, buf2, Value);
-#else
-	sprintf(buf2, "%%-%du", FieldSize);
-	sprintf(buf, buf2, Value);
-#endif
 
 	return buf;
 }
@@ -87,35 +73,23 @@ std::string IntToStr(unsigned int Value, int FieldSize)
 std::string IntToStr(int Value)
 {
 	char buf[CONV_BUF];
-#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(buf, CONV_BUF, "%d", Value);
-#else
-    sprintf(buf, "%d", Value);    
-#endif
 	return buf;
 }
 
-// function for convert int Value to string
-std::string IntToStr(unsigned int Value)
+// function for convert uint Value to string
+std::string IntToStr(uint Value)
 {
 	char buf[CONV_BUF];
-#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(buf, CONV_BUF, "%u", Value);
-#else
-	sprintf(buf, "%u", Value);
-#endif
 	return buf;
 }
 
-// function for convert long Value to string
-std::string IntToStr(unsigned long Value)
+// function for convert ulong Value to string
+std::string IntToStr(ulong Value)
 {
 	char buf[CONV_BUF];
-#ifdef WIN32 
 	sprintf_s(buf, CONV_BUF, "%lu", Value);
-#else
-	sprintf(buf, "%lu", Value);
-#endif
 	return buf;
 }
 
@@ -123,15 +97,72 @@ std::string IntToStr(unsigned long Value)
 std::string FloatToStr(double Value)
 {
 	char buf[50];
-
-#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400    
 	sprintf_s(buf, 50, "%f", Value);
-#else
-    sprintf(buf, "%f", Value);    
-#endif
 
 	return buf;
 }
+
+#else //WIN32
+
+
+// function for convert int Value to string
+std::string IntToStr(int Value, int FieldSize)
+{
+	char buf[CONV_BUF];
+	char buf2[CONV_BUF];
+	sprintf(buf2, "%%-%dd", FieldSize);
+	sprintf(buf, buf2, Value);
+
+	return buf;
+}
+
+// function for convert uint Value to string
+std::string IntToStr(uint Value, int FieldSize)
+{
+	char buf[CONV_BUF];
+	char buf2[CONV_BUF];
+	sprintf(buf2, "%%-%du", FieldSize);
+	sprintf(buf, buf2, Value);
+
+	return buf;
+}
+
+// function for convert int Value to string
+std::string IntToStr(int Value)
+{
+	char buf[CONV_BUF];
+	sprintf(buf, "%d", Value);
+	return buf;
+}
+
+// function for convert uint Value to string
+std::string IntToStr(uint Value)
+{
+	char buf[CONV_BUF];
+	sprintf(buf, "%u", Value);
+	return buf;
+}
+
+// function for convert ulong Value to string
+std::string IntToStr(ulong Value)
+{
+	char buf[CONV_BUF];
+	sprintf(buf, "%lu", Value);
+	return buf;
+}
+
+
+// function for convert double Value to string
+std::string FloatToStr(double Value)
+{
+	char buf[50];
+	sprintf(buf, "%f", Value);
+
+	return buf;
+}
+
+
+#endif //WIN32
 
 // function for convert bool Value to string
 std::string BoolToStr(bool Value)

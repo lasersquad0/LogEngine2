@@ -28,7 +28,7 @@ public:
 		SetLayout(new PatternLayout());
 	}
 
-	virtual ~FileSink() { FStream->Flush(); delete FStream; }
+	~FileSink() override { FStream->Flush(); delete FStream; }
 
 	void SendMsg(LogEvent& e) override
 	{

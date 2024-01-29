@@ -10,10 +10,6 @@
 #define _PATTERNLAYOUT_H_
 
 #include <vector>
-//#include <chrono>
-//#include <iomanip>
-//#include "Common.h"
-//#include "DynamicArrays.h"
 #include "Layout.h"
 #include "Pattern.h"
 
@@ -36,10 +32,13 @@ public:
 	virtual ~PatternLayout() {};
 	std::string Format(LogEvent& lv) override { return MessagePatterns[lv.msgLevel].Format(lv); }
 
-	void SetErrorPattern(const std::string& pattern, Levels::LogLevel msgType) { MessagePatterns[msgType].SetPattern(pattern); }
+	void SetPattern(const std::string& pattern, Levels::LogLevel msgType) { MessagePatterns[msgType].SetPattern(pattern); }
+	void SetCritPattern(const std::string& pattern) { MessagePatterns[Levels::llCritical].SetPattern(pattern); }
 	void SetErrorPattern(const std::string& pattern) { MessagePatterns[Levels::llError].SetPattern(pattern); }
 	void SetWarnPattern(const std::string& pattern) { MessagePatterns[Levels::llWarning].SetPattern(pattern); }
 	void SetInfoPattern(const std::string& pattern) { MessagePatterns[Levels::llInfo].SetPattern(pattern); }
+	void SetDebugPattern(const std::string& pattern) { MessagePatterns[Levels::llDebug].SetPattern(pattern); }
+	void SetTracePattern(const std::string& pattern) { MessagePatterns[Levels::llTrace].SetPattern(pattern); }
 	void SetStartAppLinePattern(const std::string& pattern) { StartAppLine.SetPattern(pattern); }
 	void SetStopAppLinePattern(const std::string& pattern) { StopAppLine.SetPattern(pattern); }
 	void SetAppName(const std::string& aname) { AppName.SetPattern(aname); }
@@ -48,9 +47,7 @@ public:
 	void SetAllPatterns(const std::string& pattern)
 	{
 		for (uint i = 0; i < Levels::n_LogLevels; i++)
-		{
 			MessagePatterns[i].SetPattern(pattern);
-		}
 
 		DefaultPattern.SetPattern(pattern);
 	}

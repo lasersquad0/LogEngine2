@@ -15,14 +15,17 @@
 #include <chrono>
 #include <mutex>
 
+typedef unsigned char uchar;
 typedef unsigned int uint;
-typedef unsigned long long ulong;
+typedef unsigned long ulong;
+typedef unsigned long long ullong;
 
 #define LOGENGINE_NS_BEGIN namespace LogEngine {
 #define LOGENGINE_NS_END }
 #define LOGENGINE_NS LogEngine
 
 #define EndLine "\n"
+#define EndLineChar '\n'
 
 typedef std::lock_guard<std::recursive_mutex> mutexguard;
 typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
@@ -35,10 +38,10 @@ double round(const double Value,const int Precision);
 
 // functions to convert varous ints and longs to string
 std::string IntToStr(int Value, int FieldSize);
-std::string IntToStr(unsigned int Value, int FieldSize);
+std::string IntToStr(uint Value, int FieldSize);
 std::string IntToStr(int Value);
-std::string IntToStr(unsigned int Value);
-std::string IntToStr(unsigned long Value);
+std::string IntToStr(uint Value);
+std::string IntToStr(ulong Value);
 
 // function to convert double to string
 std::string FloatToStr(double Value);

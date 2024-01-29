@@ -21,13 +21,14 @@ class Logger
 private:
 	Levels::LogLevel FLogLevel;
 	std::string FName;
-	THash<std::string, Sink*> sinks;
+	//THash<std::string, Sink*> sinks;
+	THArray<Sink*> sinks;
 	bool shouldLog(Levels::LogLevel ll) { return FLogLevel >= ll; }
 
 public:
 	Logger(const std::string& name, Levels::LogLevel ll = Levels::llInfo) : FName(name), FLogLevel(ll) { }
 
-	virtual ~Logger() { for (uint i = 0; i < sinks.Count(); i++) delete sinks.GetValues()[i]; sinks.Clear(); }
+	virtual ~Logger() { for (uint i = 0; i < sinks.Count(); i++) delete sinks[i]; sinks.Clear(); }
 
 	void SetLogLevel(Levels::LogLevel ll) { FLogLevel = ll; }
 
@@ -89,20 +90,27 @@ public:
 	{
 		for (uint i = 0; i < sinks.Count(); i++)
 		{
-			sinks.GetValues()[i]->PubSendMsg(le);
+			sinks[i]->PubSendMsg(le);
 		}
 	}
 
 	void AddSink(Sink* sink)
 	{
-		sinks.SetValue(sink->GetName(), sink); // if sink with the same name already exist - overwrite it
+		if (sinks.IndexOf(sink) >= 0) return; // already added
+		sinks.AddValue(sink);
 	}
 
 	void RemoveSink(std::string& sinkName)
 	{
-		if (sinks.IfExists(sinkName))
-			sinks.Delete(sinkName);
-		// if sinkName is not found in sinks - do nothing
+		for (uint i = 0; i < sinks.Count(); i++)
+		{
+			if (sinks[i]->GetName() == sinkName) sinks.DeleteValue(i);
+		}
+	}
+
+	uint SinkCount()
+	{
+		return sinks.Count();
 	}
 
 };
