@@ -7,8 +7,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _FUNCTIONS_H_
-#define _FUNCTIONS_H_
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <time.h>
 #include <string>
@@ -100,4 +100,4 @@ bool isUInt(std::string& value);
 
 uint GetThreadID();
 
-#endif //_FUNCTIONS_H_ 
+#endif //COMMON_H 

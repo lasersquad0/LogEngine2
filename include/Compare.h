@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _COMPARE_H_
-#define _COMPARE_H_
+#ifndef COMPARE_H
+#define COMPARE_H
 
 //#include <exception> //unix
 #include <string>
@@ -77,4 +77,4 @@ public:
 };
 
 
-#endif //_COMPARE_H_
+#endif //COMPARE_H

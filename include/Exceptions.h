@@ -10,6 +10,8 @@
 
 #include <string>
 
+LOGENGINE_NS_BEGIN
+
 // 2K should be enough for one format line
 #define VARIABLE_LIST_BUFFER_SIZE (2*1024)
 
@@ -49,3 +51,4 @@ public:
 	}
 };
 
+LOGENGINE_NS_END

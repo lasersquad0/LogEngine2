@@ -6,14 +6,11 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _PROPERTIES_H_
-#define _PROPERTIES_H_
+#ifndef PROPERTIES_H
+#define PROPERTIES_H
 
 #include <string>
 #include "DynamicArrays.h"
-
-
-//namespace log4cpp {
 
 class Properties : public THash<std::string, std::string, CompareStringNCase> 
 {
@@ -33,7 +30,6 @@ public:
 protected:
 	virtual void _substituteVariables(std::string& value);
 };
-//}
 
-#endif // _PROPERTIES_H_
+#endif // PROPERTIES_H
 

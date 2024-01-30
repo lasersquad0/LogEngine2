@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#if !defined(_PATTERNLAYOUT_H_)
-#define _PATTERNLAYOUT_H_
+#if !defined(PATTERNLAYOUT_H)
+#define PATTERNLAYOUT_H
 
 #include <vector>
 #include "Layout.h"
@@ -55,4 +55,4 @@ public:
 
 LOGENGINE_NS_END
 
-#endif // _PATTERNLAYOUT_H_
+#endif // PATTERNLAYOUT_H

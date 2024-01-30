@@ -1,12 +1,7 @@
 #pragma once
 
-#ifdef WIN32
 #include <string>
 #include <iostream>
-#else
-#include <string.h>
-#endif
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -44,7 +39,11 @@ struct assertion_traits<const char*>   // specialization for the char* type
 
 	static std::string toString(const char* x)
 	{
-		std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
+		std::string text;
+		text += '"';
+		text.append(x);
+		text += '"';    // add quote around the string to see whitespaces
+		
 		CppUnit::OStringStream ost;
 		ost << text;
 		return ost.str();
@@ -61,7 +60,11 @@ struct assertion_traits<char*>   // specialization for the char* type
 
 	static std::string toString(char* x)
 	{
-		std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
+		std::string text;
+		text += '"';
+		text.append(x);
+		text += '"';    // add quote around the string to see whitespaces
+		
 		CppUnit::OStringStream ost;
 		ost << text;
 		return ost.str();

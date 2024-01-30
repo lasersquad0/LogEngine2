@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#if !defined(_LOGEVENT_H_)
-#define _LOGEVENT_H_
+#if !defined(LOGEVENT_H)
+#define LOGEVENT_H
 
 #include <string_view>
 #include <sys/timeb.h>
@@ -61,4 +61,4 @@ public:
 
 LOGENGINE_NS_END
 
-#endif //_LOGEVENT_H_
+#endif //LOGEVENT_H
