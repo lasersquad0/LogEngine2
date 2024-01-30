@@ -130,7 +130,7 @@ public:
 	{
 #ifdef WIN32
 		const auto system = L"kernel32.dll";
-		DWORD dummy;
+		DWORD dummy = 0;
 		const auto cbInfo = ::GetFileVersionInfoSizeExW(FILE_VER_GET_NEUTRAL, system, &dummy);
 		std::vector<char> buffer(cbInfo);
 		::GetFileVersionInfoExW(FILE_VER_GET_NEUTRAL, system, dummy, (DWORD)buffer.size(), &buffer[0]);

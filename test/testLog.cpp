@@ -18,7 +18,7 @@ using namespace LogEngine;
 
 void LogEngineLogTest::setUp()
 {
-	mkdir(LOG_FILES_FOLDER);
+	std::ignore = mkdir(LOG_FILES_FOLDER);
 }
 
 void LogEngineLogTest::tearDown()

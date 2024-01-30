@@ -251,8 +251,7 @@ int TFileStream::Read(void* Buffer, size_t Size)
 
 int TFileStream::WriteCRLF(void)
 {
-	const char* temp = EndLine;
-	return Write(temp, strlen(temp));
+	return Write(EndLine, strlen(EndLine));
 }
 
 int TFileStream::Write(const string& str)
@@ -297,13 +296,12 @@ off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 	case smFromCurrent: return mylseek(hf, Offset, SEEK_CUR);
 	}
 
-	throw IOException("Invalid Seek() mode.");
+	throw IOException("Invalid TFileStream::Seek() mode.");
 }
 
 size_t TFileStream::Length()
 {
 	struct stat st;
-
 	fstat(hf, &st);
 	return st.st_size;
 };

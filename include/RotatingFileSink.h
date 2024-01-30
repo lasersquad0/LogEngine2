@@ -72,7 +72,7 @@ public:
 		{
 			std::string oldName = s + '.' + IntToStr(i) + BackupExt;
 			std::string newName = s + '.' + IntToStr(i + 1) + BackupExt;
-			rename(oldName.c_str(), newName.c_str());
+			std::ignore = rename(oldName.c_str(), newName.c_str());
 		}
 	}
 
@@ -119,16 +119,16 @@ public:
 		case rsSingle:
 			newName = GenerateBackupName(filename);
 			remove(newName.c_str());
-			rename(filename.c_str(), newName.c_str());
+			std::ignore = rename(filename.c_str(), newName.c_str());
 			break;
 		case rsTimeStamp:
 			newName = GenerateBackupName(filename);
 			remove(newName.c_str());
-			rename(filename.c_str(), newName.c_str());
+			std::ignore = rename(filename.c_str(), newName.c_str());
 			break;
 		case rsNumbers:
 			newName = GenerateBackupName(filename);
-			rename(filename.c_str(), newName.c_str());
+			std::ignore = rename(filename.c_str(), newName.c_str());
 			break;
 		}
 
