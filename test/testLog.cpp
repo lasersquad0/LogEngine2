@@ -8,25 +8,27 @@
 #include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
+#include "Properties.h"
 #include "RotatingFileSink.h"
 
-CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLogTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLogTest);
+//CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(LogEngineLogTest, "LogEngineLogTest");
 
 using namespace LogEngine;
 
-void LogEngineLogTest::setUp ()
+void LogEngineLogTest::setUp()
 {
 	mkdir(LOG_FILES_FOLDER);
 }
 
-void LogEngineLogTest::tearDown ()
+void LogEngineLogTest::tearDown()
 {
+	ClearLoggers();
 	// free memory allocated in setUp, do other things
 }
 
 void LogEngineLogTest::testLog0()
 {
-
 	Logger& logger1 = GetStdoutLogger("stdout");
 
 	logger1.Error("int:" + IntToStr((int)sizeof(int)));
@@ -48,32 +50,23 @@ void LogEngineLogTest::testLog0()
 
 void LogEngineLogTest::testLog1()
 {
-	// preparing parameters
-	//Properties prop;
-	//prop.SetValue("BackupType", "None");
-	//prop.SetValue("DetailLevel", "DefaultDetailLevel"); 
-	//prop.SetValue("LogFileName", LOG_FILES_FOLDER "testLog1.log");
-	//prop.SetValue("MaxLogSize", "100");
-	//prop.SetValue("ApplicationName", "LogEngine tests");
-	//prop.SetValue("Version", "1.1.1");
-
 	Logger& logger = GetLogger("def");
 	StringSink* sink = new StringSink("strsink");
 	logger.AddSink(sink);
 
 	std::string s;
 	
-	logger.Log(" ", LogEngine::llInfo);
+	logger.Log(" ", Levels::llInfo);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("  "), cutLog(s));
 
 	sink->Clear();
-	logger.Log("", LogEngine::llInfo);
+	logger.Log("", Levels::llInfo);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" "), cutLog(s));
 
 	sink->Clear();
-	logger.Log("testLog1info", LogEngine::llInfo);
+	logger.Log("testLog1info", Levels::llInfo);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog1info"), cutLog(s));
 
@@ -106,17 +99,17 @@ void LogEngineLogTest::testLog2()
 	
 	std::string s;
 	
-	logg.LogFmt("", llWarning);
+	logg.LogFmt("", Levels::llWarning);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string("#"), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2warning", llWarning);
+	logg.LogFmt("testLog2warning", Levels::llWarning);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2warning"), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2 {}.", llError, "error");
+	logg.LogFmt("testLog2 {}.", Levels::llError, "error");
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2 error."), cutLog(s));
 
@@ -126,12 +119,12 @@ void LogEngineLogTest::testLog2()
 	CPPUNIT_ASSERT_EQUAL(std::string("*testLog2test critical parameter. 3"), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2debug {}.{}.{}.{}.{}", llDebug, 1,2,3,4,5);
+	logg.LogFmt("testLog2debug {}.{}.{}.{}.{}", Levels::llDebug, 1,2,3,4,5);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string(""), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2info {}.{}.{}.{}.{}", llInfo, 1, 2, "RT", 4, 5.1);
+	logg.LogFmt("testLog2info {}.{}.{}.{}.{}", Levels::llInfo, 1, 2, "RT", 4, 5.1);
 	s = sink->GetOutput();
 	std::string ss = cutLog(s);
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s));
@@ -147,7 +140,7 @@ void LogEngineLogTest::testLog3()
 
 	std::string s1,s2;
 
-	logg.LogFmt("", llWarning);
+	logg.LogFmt("", Levels::llWarning);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -156,7 +149,7 @@ void LogEngineLogTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.LogFmt("testLog2warning", llWarning);
+	logg.LogFmt("testLog2warning", Levels::llWarning);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -165,7 +158,7 @@ void LogEngineLogTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear(); 
-	logg.LogFmt("testLog2 {}.", llError, "error");
+	logg.LogFmt("testLog2 {}.", Levels::llError, "error");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -183,7 +176,7 @@ void LogEngineLogTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear(); 
-	logg.LogFmt("testLog2debug {}.{}.{}.{}.{}", llDebug, 1, 2, 3, 4, 5);
+	logg.LogFmt("testLog2debug {}.{}.{}.{}.{}", Levels::llDebug, 1, 2, 3, 4, 5);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -192,7 +185,7 @@ void LogEngineLogTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear(); 
-	logg.LogFmt("testLog2info {}.{}.{}.{}.{}", llInfo, 1, 2, "RT", 4, 5.1);
+	logg.LogFmt("testLog2info {}.{}.{}.{}.{}", Levels::llInfo, 1, 2, "RT", 4, 5.1);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -203,17 +196,17 @@ void LogEngineLogTest::testLog3()
 void LogEngineLogTest::testLog4()
 {
 	Logger& logg = GetLogger("testLog4");
-	logg.SetLogLevel(llInfo);
+	logg.SetLogLevel(Levels::llInfo);
 	StringSink* sink1 = new StringSink("strsink1");
-	sink1->SetLogLevel(llError);
+	sink1->SetLogLevel(Levels::llError);
 	StringSink* sink2 = new StringSink("strsink2");
-	sink2->SetLogLevel(llDebug);
+	sink2->SetLogLevel(Levels::llDebug);
 	logg.AddSink(sink1);
 	logg.AddSink(sink2);
 
 	std::string s1, s2;
 
-	logg.Log("testLog4crit {}.{}", llCritical);
+	logg.Log("testLog4crit {}.{}", Levels::llCritical);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -222,7 +215,7 @@ void LogEngineLogTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4error 1234", llError);
+	logg.Log("testLog4error 1234", Levels::llError);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -231,7 +224,7 @@ void LogEngineLogTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4warning test3", llWarning);
+	logg.Log("testLog4warning test3", Levels::llWarning);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	//CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -240,7 +233,7 @@ void LogEngineLogTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4info test4", llInfo);
+	logg.Log("testLog4info test4", Levels::llInfo);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	//CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -249,7 +242,7 @@ void LogEngineLogTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4warning test5", llDebug);
+	logg.Log("testLog4warning test5", Levels::llDebug);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	//CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -258,7 +251,7 @@ void LogEngineLogTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4warning test6", llDebug);
+	logg.Log("testLog4warning test6", Levels::llDebug);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -267,7 +260,7 @@ void LogEngineLogTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4warning test7", llOff);
+	logg.Log("testLog4warning test7", Levels::llOff);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -278,12 +271,15 @@ void LogEngineLogTest::testLog4()
 // test case: when two file sinks try to write into the same file. in this case exception is thrown for the second sink.
 void LogEngineLogTest::testLog5()
 {
-	CPPUNIT_ASSERT_NO_THROW(new FileSink("filesink1", LOG_FILES_FOLDER "testLog5.log"));
+	FileSink *fs1;
+	CPPUNIT_ASSERT_NO_THROW(fs1 = new FileSink("filesink1", LOG_FILES_FOLDER "testLog5.log"));
  	CPPUNIT_ASSERT_THROW(new FileSink("filesink1", LOG_FILES_FOLDER "testLog5.log"), IOException);
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5.log"), IOException);
 
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
-	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"), IOException);
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
+
+	delete fs1;
 }
 
 void LogEngineLogTest::testLogStrategyNone()
@@ -326,17 +322,17 @@ void LogEngineLogTest::testLogStrategyNone()
 	struct stat st;
 	stat(fileName.c_str(), &st);
 
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 	
 	logger.Info("L"); // file will be truncated and re-written from beginning (because BackupType=lbNone)
 	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llTrace]);
 }
 
 
@@ -371,20 +367,20 @@ void LogEngineLogTest::testLogStrategySingle()
 	struct stat st;
 	stat(fileName.c_str(), &st);
 
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // file will be renamed to .bak and new log file created
 	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(fileName + BackupExt));
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(fileName));
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llTrace]);
 }
 
 
@@ -404,7 +400,7 @@ void LogEngineLogTest::testLogStrategyTimeStamp()
 	CPPUNIT_ASSERT_EQUAL(1024ull, rsink->GetMaxLogSize());
 	CPPUNIT_ASSERT_EQUAL(rsTimeStamp, rsink->GetStrategy());
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL(79ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL(79ull, log->GetTotalBytesWritten());
 
 	while (true)
 	{
@@ -417,19 +413,19 @@ void LogEngineLogTest::testLogStrategyTimeStamp()
 	struct stat st;
 	stat(fileName.c_str(), &st);
 
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
 	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(fileName));
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llTrace]);
 }
 
 void LogEngineLogTest::testLogStrategyBakNumber()
@@ -448,7 +444,7 @@ void LogEngineLogTest::testLogStrategyBakNumber()
 	CPPUNIT_ASSERT_EQUAL(1024ull, rsink->GetMaxLogSize());
 	CPPUNIT_ASSERT_EQUAL(rsNumbers, rsink->GetStrategy());
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL(79ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL(79ull, log->GetTotalBytesWritten());
 
 	// generate first .bak file
 	while (true)
@@ -461,19 +457,19 @@ void LogEngineLogTest::testLogStrategyBakNumber()
 	rsink->Flush();
 	struct stat st;
 	stat(fileName.c_str(), &st);
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
 	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(StripFileExt(fileName) + ".1" + BackupExt));
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llTrace]);
 
 	// generate second .bak file
 	while (true)
@@ -485,36 +481,36 @@ void LogEngineLogTest::testLogStrategyBakNumber()
 
 	rsink->Flush();
 	stat(fileName.c_str(), &st);
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
 	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(StripFileExt(fileName) + ".1" + BackupExt));
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(StripFileExt(fileName) + ".2" + BackupExt));
 
-	CPPUNIT_ASSERT_EQUAL(93ull, rsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(2ull, rsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(93ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(2ull, rsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llTrace]);
 }
 
 void LogEngineLogTest::testLogStatistic()
 {
 	Logger& log = GetLogger("testLogStatistic");
-	log.SetLogLevel(llTrace);
+	log.SetLogLevel(Levels::llTrace);
 	auto fsink = new FileSink("fsink", "testLogStatistic.log");
-	fsink->SetLogLevel(llTrace);
+	fsink->SetLogLevel(Levels::llTrace);
 	log.AddSink(fsink);
 
-	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llCritical]);
-	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[Levels::llCritical]);
+	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[Levels::llTrace]);
 
 	log.Crit("C");
 	log.Error("E");
@@ -526,24 +522,63 @@ void LogEngineLogTest::testLogStatistic()
 	log.Error("E");
 	log.Warn("W");
 
-	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[llCritical]);
-	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[Levels::llCritical]);
+	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[Levels::llTrace]);
 
 	for (size_t i = 0; i < 1001; i++)
 	{
 		log.Trace("TTTTTTTT");
 	}
 
-	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[llCritical]);
-	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[llError]);
-	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[llWarning]);
-	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llInfo]);
-	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llDebug]);
-	CPPUNIT_ASSERT_EQUAL(1002ull, fsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[Levels::llCritical]);
+	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(2ull, fsink->GetMessageCounts()[Levels::llWarning]);
+	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[Levels::llInfo]);
+	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[Levels::llDebug]);
+	CPPUNIT_ASSERT_EQUAL(1002ull, fsink->GetMessageCounts()[Levels::llTrace]);
+}
+
+void LogEngineLogTest::testGetFileLogger()
+{
+	Logger& logger1 = GetFileLogger("testGetFileLogger", "filename.log");
+	CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+
+	Logger& logger2 = GetFileLogger("testGetFileLogger", "filename.log"); // already existing logger has returned
+	CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
+
+	Logger& logger3 = GetFileLogger("testGetFileLogger", "filename2.log"); // already existing logger has returned (with old filename!!!)
+	CPPUNIT_ASSERT_EQUAL(1u, logger3.SinkCount());
+
+}
+
+void LogEngineLogTest::testGetStdoutLogger()
+{
+	Logger& logger1 = GetStdoutLogger("testGetStdoutLogger");
+	CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+
+	Logger& logger2 = GetStdoutLogger("testGetStdoutLogger"); // already existing logger has returned
+	CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
+
+	Logger& logger3 = GetStdoutLogger("testGetStdoutLogger"); // already existing logger has returned (with old filename!!!)
+	CPPUNIT_ASSERT_EQUAL(1u, logger3.SinkCount());
+
+}
+
+void LogEngineLogTest::testGetStderrLogger()
+{
+	Logger& logger1 = GetStderrLogger("testGetStderrLogger");
+	CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+
+	Logger& logger2 = GetStderrLogger("testGetStderrLogger"); // already existing logger has returned
+	CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
+
+	Logger& logger3 = GetStderrLogger("testGetStderrLogger"); // already existing logger has returned (with old filename!!!)
+	CPPUNIT_ASSERT_EQUAL(1u, logger3.SinkCount());
+
 }
 
 /*
@@ -569,28 +604,7 @@ void LogEngineLogTest::testLogEmptyFileName()
 	CloseLogEngine();
 }
 
-void LogEngineLogTest::testLogAppName()
-{
-	// preparing parameters
-	Properties prop;
-	prop.SetValue("BackupType", "None");
-	prop.SetValue("ApplicationName", "logs/AAAAAAAA");
-	prop.SetValue("Version", "1.0.555");
-	prop.SetValue("DetailLevel", "0");
 
-	InitLogEngine(prop);
-	
-	TLogEngine *log = TLogEngine::getInstance();
-
-	std::string s = log->GetAppName();
-	CPPUNIT_ASSERT_EQUAL(std::string("logs/AAAAAAAA"), s);
-	s = log->GetLogFileName();
-	CPPUNIT_ASSERT_EQUAL(std::string("logs/AAAAAAAA.log"), s);
-
-	log->Stop();
-	log->Start();
-	CloseLogEngine();
-}
 
 void LogEngineLogTest::testWrong_LFG_File()
 {

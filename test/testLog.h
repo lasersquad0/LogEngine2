@@ -19,16 +19,15 @@ class LogEngineLogTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testLog3);
   CPPUNIT_TEST( testLog4 );
   CPPUNIT_TEST( testLog5 );
-//  CPPUNIT_TEST( testLog6 );
   CPPUNIT_TEST( testLogStrategyNone );
   CPPUNIT_TEST(testLogStrategySingle);
   CPPUNIT_TEST(testLogStrategyTimeStamp);
   CPPUNIT_TEST(testLogStrategyBakNumber);
   CPPUNIT_TEST( testLogStatistic );
-/*  CPPUNIT_TEST( testLogMacro );
-  CPPUNIT_TEST( testLogEmptyFileName );
-  CPPUNIT_TEST( testLogAppName );  
-  CPPUNIT_TEST( testWrong_LFG_File );
+  CPPUNIT_TEST(testGetFileLogger);
+  CPPUNIT_TEST(testGetStdoutLogger);
+  CPPUNIT_TEST(testGetStderrLogger);
+ /* CPPUNIT_TEST( testWrong_LFG_File );
   CPPUNIT_TEST( testBadLFGFile );
   CPPUNIT_TEST( testBadLFGFile2 );
   CPPUNIT_TEST( testLogRotation1 );*/
@@ -43,16 +42,15 @@ public:
     void testLog3();
     void testLog4();
     void testLog5();
- //   void testLog6();
     void testLogStrategyNone();
     void testLogStrategySingle();
     void testLogStrategyTimeStamp();
     void testLogStrategyBakNumber();
     void testLogStatistic();
-/*    void testLogMacro();
-    void testLogEmptyFileName();
-    void testLogAppName();
-    void testWrong_LFG_File();
+    void testGetFileLogger();
+    void testGetStdoutLogger();
+    void testGetStderrLogger();
+  /*  void testWrong_LFG_File();
     void testBadLFGFile();
     void testBadLFGFile2();
     void testLogRotation1();*/

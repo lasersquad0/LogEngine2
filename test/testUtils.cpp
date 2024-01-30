@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "testUtils.h"
 
-CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineUtilsTest );
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( LogEngineUtilsTest, "LogEngineUtilsTest");
 
 void LogEngineUtilsTest::setUp ()
 {
