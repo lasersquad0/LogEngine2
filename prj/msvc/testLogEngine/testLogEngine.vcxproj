@@ -271,7 +271,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MinimalRebuild>
       </MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -679,7 +679,9 @@
     <ClCompile Include="..\..\..\test\testUtils.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Shared.cpp" />
+    <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="testLogEngine.cpp" />
+    <ClCompile Include="testTStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="testLogEngine.rc" />
@@ -699,6 +701,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shared.h" />
     <ClInclude Include="testLogEngine.h" />
+    <ClInclude Include="testTStream.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\testLogEngine.ico" />
@@ -796,9 +799,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </CustomBuild>
     <None Include="res\testLogEngine.rc2" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
