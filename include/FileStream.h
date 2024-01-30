@@ -44,17 +44,33 @@ public:
 	virtual int Write(const void* Buffer, const size_t Size) = 0;
 	virtual size_t Length() = 0;
 	virtual off_t Seek(const off_t Offset, const TSeekMode sMode) = 0;
-	virtual char ReadChar();
-	virtual std::string LoadPString();
+	virtual int ReadChar();
+	virtual std::string ReadPString();
+	virtual void WritePString(std::string& str);
 
-	void operator >>(bool& Value);
-	void operator >>(int& Value);
-	void operator <<(int Value);
-	void operator <<(double Value);
-	void operator <<(const char* Value);
-	void operator <<(std::string& Value);
+	template<class R>
+	void operator >>(R& Value)
+	{
+		static_assert(std::is_integral<R>::value || std::is_floating_point<R>::value); // template works only for integral types + float types
+		if (Read(&Value, sizeof(Value)) != sizeof(Value))
+			throw IOException("End of stream reached!");
+	}
+
+	template<class W>
+	void operator <<(const W& Value)
+	{
+		static_assert(std::is_integral<W>::value || std::is_floating_point<W>::value); // template works only for integral types + float types
+		if (Write(&Value, sizeof(Value)) != sizeof(Value))
+			throw IOException("Cannot write to the stream.");
+	}
+
+	void operator <<(const char* Value)  { Write(Value, strlen(Value)); }
+	void operator <<(char* Value)        { Write(Value, strlen(Value)); }
+	void operator <<(std::string& Value) { Write((void*)Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends 
 	void operator >>(std::string& Value);
 };
+
+#define DEFAULT_BUF_SIZE 1024
 
 class TMemoryStream : public TStream
 {
@@ -63,12 +79,13 @@ private:
 	size_t FSize = 0;
 	size_t FRPos = 0;
 	size_t FWPos = 0;
+	bool FNeedFree = true;
 
 	void ResetPos();
 	off_t Seek(const off_t, const TSeekMode) { return -1; } // hide Seek, use SeekR and SeekW instead
 public:
-	TMemoryStream() {}
-	~TMemoryStream() override {}
+	TMemoryStream(uint BuffSize = DEFAULT_BUF_SIZE) { FMemory = new uint8_t[BuffSize]; }
+	~TMemoryStream() override { if (FNeedFree) free(FMemory); }
 	int Read(void* Buffer, size_t Size) override;
 	int Write(const void* Buffer, const size_t Size) override;
 	size_t Length() override { return FSize; }
@@ -76,6 +93,7 @@ public:
 	off_t SeekW(const off_t Offset, const TSeekMode sMode);
 
 	void SetBuffer(uint8_t* Buffer, size_t Size);
+	void UnsetBuffer();
 };
 
 

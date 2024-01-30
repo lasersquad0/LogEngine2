@@ -29,51 +29,28 @@ using namespace std;
 //  TStream Class
 //////////////////////////////////////////////////////////////////////
 
-void TStream::operator >>(bool& Value)
-{
-	if (Read(&Value, sizeof(Value)) != sizeof(Value))
-		throw IOException("End of stream reached!");
-}
-
-void TStream::operator >>(int& Value)
-{
-	if (Read(&Value, sizeof(Value)) != sizeof(Value))
-		throw IOException("End of stream reached!");
-}
-void TStream::operator <<(int Value)
-{
-	Write(&Value, sizeof(Value));
-}
-void TStream::operator <<(double Value)
-{
-	Write(&Value, sizeof(Value));
-}
-
-void TStream::operator <<(const char* Value)
-{
-	Write(Value, strlen(Value));
-	//Write((void*)"\r\n", 2u);
-}
-void TStream::operator <<(string& Value)
-{
-	Write((void*)Value.data(), Value.length());
-	//Write((void*)"\r\n", 2u);
-}
-char TStream::ReadChar()
+int TStream::ReadChar()
 {
 	char c;
-	if(Read(&c, sizeof(c)) != sizeof(char))
-		throw IOException("End of stream reached!");
-	return c;
+	if (Read(&c, sizeof(c)) == sizeof(char))
+		return c;
+	else 
+		return -1;
 }
+
 void TStream::operator >>(string& Value)
 {
-	char c;
-	Value.clear(); // 16.08.23 change
-	while ((c = ReadChar()) != EndLineChar) Value += c;
-	//ReadChar();
+	Value.clear();
+	do 
+	{
+		int c = ReadChar();
+		if (c == -1) return; // end of file reached
+		if (c == EndLineChar) return;
+		Value += (char)c;
+	} while (true);
 }
-string TStream::LoadPString()
+
+string TStream::ReadPString()
 {
 	string res;
 	int i;
@@ -81,6 +58,12 @@ string TStream::LoadPString()
 	res.resize(i);
 	Read((void*)res.data(), res.length());
 	return res;
+}
+
+void TStream::WritePString(std::string& str)
+{
+	*this << str.size();
+	*this << str.data();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -97,24 +80,36 @@ void TMemoryStream::ResetPos()
 int TMemoryStream::Read(void* Buffer, size_t Size)
 {
 	assert(FRPos <= FSize);
+	assert(FWPos <= FSize);
 
-	if (Size == 0) return 0; // TODO may be return -1 because of incorrect parameter?
+	if (Buffer == nullptr) return -1;
+	if (Size == 0) return -1; 
 
 	if (FRPos + Size > FSize) Size = FSize - FRPos;
 	if (Size == 0) return 0; // we've have read everything (EOF reached)
 
 	memcpy(Buffer, FMemory + FRPos, Size);
-	//memmove(FMemory, (char*)FMemory + Size, FSize - Size);
+
 	FRPos += Size;
 	return (int)Size;
 }
 
 int TMemoryStream::Write(const void* Buffer, const size_t Size)
 {
-	if (Size == 0) return 0;
+	_set_errno(EINVAL);
+	if (Buffer == nullptr) return -1;
+	if (Size == 0) return -1;
+	_set_errno(0);
 
-	if (FWPos + Size > FSize)
-		FMemory = (uint8_t*)realloc(FMemory, FWPos + Size), FSize = FWPos + Size;
+	if (FWPos + Size > FSize) // not enough space in FMemory buffer 
+		if(FNeedFree) // we control the buffer, so we can reallocate it 
+			FMemory = static_cast<uint8_t*>(realloc(FMemory, FWPos + Size)), FSize = FWPos + Size;
+		else   // we do not control the buffer, so we cannot reallocate it
+		{
+			_set_errno(ENOSPC);
+			return -1;
+		}
+
 	memcpy(FMemory + FWPos, Buffer, Size);
 	FWPos += Size;
 	return (int)Size;
@@ -147,7 +142,7 @@ off_t TMemoryStream::SeekW(const off_t Offset, const TSeekMode sMode)
 	switch (sMode)
 	{
 	case smFromBegin:  FWPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return static_cast<off_t>(FWPos);
-	case smFromEnd:    FWPos = CHECK_RANGE_OFF_T(0,     FSize, -Offset); return static_cast<off_t>(FWPos);
+	case smFromEnd:    FWPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return static_cast<off_t>(FWPos);
 	case smFromCurrent:FWPos = CHECK_RANGE_OFF_T(FWPos, FSize,  Offset); return static_cast<off_t>(FWPos);
 	default:
 		return -1l;
@@ -157,9 +152,22 @@ off_t TMemoryStream::SeekW(const off_t Offset, const TSeekMode sMode)
 void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
 {
 	ResetPos();
-	//if (FMemory) free(FMemory);
+	if (FNeedFree) free(FMemory);
+	FNeedFree = false;
 	FMemory = Buffer;
 	FSize = Size;
+}
+
+// call this method when you want to return back to internal buffer
+void TMemoryStream::UnsetBuffer()
+{
+	if (FNeedFree) return; // if we have internal buffer - do nothing
+	
+	// otherwise reset all positions and allocate buffer of default size
+	ResetPos();
+	FNeedFree = true;
+	FMemory = new uint8_t[DEFAULT_BUF_SIZE];
+	FSize = DEFAULT_BUF_SIZE;
 }
 
 
@@ -309,4 +317,4 @@ void TFileStream::Flush()
 #endif
 }
 
-} // namespace LogEngine
+LOGENGINE_NS_END 
