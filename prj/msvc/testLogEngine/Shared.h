@@ -7,7 +7,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #ifdef WIN32
-#define TEST_FILES_FOLDER "..\\..\\..\\..\\test\\testFiles\\"
+#define TEST_FILES_FOLDER "..\\..\\..\\test\\testFiles\\"
 #else
 #define TEST_FILES_FOLDER "testFiles/"
 #endif
