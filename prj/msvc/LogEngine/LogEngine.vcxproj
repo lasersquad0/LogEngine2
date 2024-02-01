@@ -420,15 +420,10 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Compare.cpp" />
     <ClCompile Include="..\..\..\src\DynamicArrays.cpp" />
-    <ClCompile Include="..\..\..\src\FileSink.cpp" />
     <ClCompile Include="..\..\..\src\FileStream.cpp" />
     <ClCompile Include="..\..\..\src\Common.cpp" />
-    <ClCompile Include="..\..\..\src\LogEvent.cpp" />
-    <ClCompile Include="..\..\..\src\Logger.cpp" />
     <ClCompile Include="..\..\..\src\Pattern.cpp" />
-    <ClCompile Include="..\..\..\src\PatternLayout.cpp" />
     <ClCompile Include="..\..\..\src\Properties.cpp" />
     <ClCompile Include="..\..\..\src\SynchronizedQueue.cpp" />
   </ItemGroup>
@@ -439,6 +434,7 @@
     <ClInclude Include="..\..\..\include\FileSink.h" />
     <ClInclude Include="..\..\..\include\FileStream.h" />
     <ClInclude Include="..\..\..\include\Common.h" />
+    <ClInclude Include="..\..\..\include\IniReader.h" />
     <ClInclude Include="..\..\..\include\Layout.h" />
     <ClInclude Include="..\..\..\include\LogEngine.h" />
     <ClInclude Include="..\..\..\include\LogEvent.h" />
