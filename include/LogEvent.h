@@ -9,7 +9,7 @@
 #if !defined(LOGEVENT_H)
 #define LOGEVENT_H
 
-#include <string_view>
+//#include <string_view>
 #include <sys/timeb.h>
 #include "Common.h"
 

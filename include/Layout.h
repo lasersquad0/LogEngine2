@@ -1,3 +1,11 @@
+/*
+ * Logger.h
+ *
+ * Copyright 2024, LogEngine Project. All rights reserved.
+ *
+ * See the COPYING file for the terms of usage and distribution.
+ */
+
 #pragma once
 
 #include <string>

@@ -8,8 +8,11 @@
 
 #pragma once
 
-#include <string>
+#if _HAS_CXX20
 #include <format>
+#endif
+
+#include <string>
 #include "Common.h"
 #include "FileSink.h"
 #include "DynamicArrays.h"
@@ -32,11 +35,23 @@ public:
 
 	void SetLogLevel(Levels::LogLevel ll) { FLogLevel = ll; }
 
+#if _HAS_CXX20
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
 	{
 		LogFmt(fmt, Levels::llCritical, std::forward<Args>(args)...);
 	}
+
+	template<class... Args>
+	void LogFmt(const std::format_string<Args...> fmt, Levels::LogLevel ll, Args&&... args)
+	{
+		if (!shouldLog(ll)) return;
+
+		// TODO think how to pass all args into SendToAllSinks and create final string there 
+		LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
+		SendToAllSinks(ev);
+	}
+#endif
 
 	void Crit(const std::string& msg)
 	{
@@ -73,16 +88,6 @@ public:
 		if (!shouldLog(lv)) return;
 
 		LogEvent ev(msg, lv, GetThreadID(), GetCurrDateTime());
-		SendToAllSinks(ev);
-	}
-
-	template<class... Args>
-	void LogFmt(const std::format_string<Args...> fmt, Levels::LogLevel ll, Args&&... args)
-	{
-		if (!shouldLog(ll)) return;
-
-		// TODO think how to pass all args into SendToAllSinks and create final string there 
-		LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
 		SendToAllSinks(ev);
 	}
 
