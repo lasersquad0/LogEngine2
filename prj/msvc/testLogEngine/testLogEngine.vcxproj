@@ -162,7 +162,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -663,6 +663,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\test\testIniReader.cpp" />
     <ClCompile Include="..\..\..\test\testLine.cpp" />
     <ClCompile Include="..\..\..\test\testLog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -687,6 +688,22 @@
     <ResourceCompile Include="testLogEngine.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\include\Common.h" />
+    <ClInclude Include="..\..\..\include\Compare.h" />
+    <ClInclude Include="..\..\..\include\DynamicArrays.h" />
+    <ClInclude Include="..\..\..\include\Exceptions.h" />
+    <ClInclude Include="..\..\..\include\FileSink.h" />
+    <ClInclude Include="..\..\..\include\FileStream.h" />
+    <ClInclude Include="..\..\..\include\IniReader.h" />
+    <ClInclude Include="..\..\..\include\Layout.h" />
+    <ClInclude Include="..\..\..\include\LogEngine.h" />
+    <ClInclude Include="..\..\..\include\LogEvent.h" />
+    <ClInclude Include="..\..\..\include\Logger.h" />
+    <ClInclude Include="..\..\..\include\Pattern.h" />
+    <ClInclude Include="..\..\..\include\PatternLayout.h" />
+    <ClInclude Include="..\..\..\include\RotatingFileSink.h" />
+    <ClInclude Include="..\..\..\include\Sink.h" />
+    <ClInclude Include="..\..\..\test\testIniReader.h" />
     <ClInclude Include="..\..\..\test\testLine.h" />
     <ClInclude Include="..\..\..\test\testLog.h" />
     <ClInclude Include="..\..\..\test\testProperties.h">

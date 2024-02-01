@@ -19,6 +19,9 @@
     <Filter Include="Tests">
       <UniqueIdentifier>{38226099-e7c6-4352-85a0-18cc4459610b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\LogEngine2 headers">
+      <UniqueIdentifier>{841a414f-b71c-44ab-8fac-b1870d736ca9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -52,6 +55,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="testTStream.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\testIniReader.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,6 +99,54 @@
     </ClInclude>
     <ClInclude Include="testTStream.h">
       <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\testIniReader.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DynamicArrays.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Exceptions.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\FileSink.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\FileStream.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\IniReader.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Layout.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\LogEngine.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\LogEvent.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Logger.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Pattern.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\PatternLayout.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\RotatingFileSink.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Sink.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Common.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Compare.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
