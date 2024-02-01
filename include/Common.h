@@ -89,6 +89,9 @@ std::string DelCRLF(const std::string s);
 // removes all leading and trailing \n \r and space symbols from string
 std::string trimSPCRLF(std::string S);
 
+// removes all leading and trailing space and tab symbols from string
+std::string trim(std::string s);
+
 // compares two strings case insensitive
 bool EqualNCase(const std::string& str1,const std::string& str2);
 

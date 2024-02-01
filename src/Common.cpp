@@ -388,13 +388,24 @@ std::string DelCRLF(std::string s)
 
 std::string trimSPCRLF(std::string S)
 {
-	// remove any leading and traling spaces and \n, \r, just in case.
-	size_t strBegin = S.find_first_not_of(" \0x0D\0x0A");
-	size_t strEnd = S.find_last_not_of(" \0x0D\0x0A");
+	// remove any leading and traling spaces, tabs and \n, \r.
+	size_t strBegin = S.find_first_not_of(" \t\0x0D\0x0A");
+	size_t strEnd = S.find_last_not_of(" \t\0x0D\0x0A");
 	S.erase(strEnd + 1, S.size() - strEnd);
 	S.erase(0, strBegin);
 	
 	return S;
+}
+
+std::string trim(std::string s)
+{
+	// remove any leading and traling spaces tabs.
+	size_t strBegin = s.find_first_not_of(" \t");
+	size_t strEnd = s.find_last_not_of(" \t");
+	s.erase(strEnd + 1, s.size() - strEnd);
+	s.erase(0, strBegin);
+
+	return s;
 }
 
 bool EqualNCase(const std::string& str1, const std::string& str2)
