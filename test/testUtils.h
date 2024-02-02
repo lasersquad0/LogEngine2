@@ -24,8 +24,14 @@ class LogEngineUtilsTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testExtractFileName4 );  
   CPPUNIT_TEST( testIntToStr1 );  
   CPPUNIT_TEST( testIntToStr2 );  
-  //CPPUNIT_TEST( testIntToStr3 );  
-
+  CPPUNIT_TEST(testStripFileExt1);
+  CPPUNIT_TEST(testStripFileExt2);
+  CPPUNIT_TEST(testStripFileExt3);
+  CPPUNIT_TEST(testStripFileExt4);
+  CPPUNIT_TEST(testExtractFileDir1);
+  CPPUNIT_TEST(testExtractFileDir2);
+  CPPUNIT_TEST(testExtractFileDir3);
+  CPPUNIT_TEST(testExtractFileDir4);
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();
@@ -42,11 +48,16 @@ public:
     void testExtractFileName2();
     void testExtractFileName3();
     void testExtractFileName4();
- 
     void testIntToStr1();
     void testIntToStr2();
-//    void testIntToStr3();
-
+    void testStripFileExt1();
+    void testStripFileExt2();
+    void testStripFileExt3();
+    void testStripFileExt4();
+    void testExtractFileDir1();
+    void testExtractFileDir2();
+    void testExtractFileDir3();
+    void testExtractFileDir4();
 };
 
 #endif // _UTIL_TESTS_HEADER_
