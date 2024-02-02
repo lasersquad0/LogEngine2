@@ -8,7 +8,7 @@
 
 #pragma once
 
-#if _HAS_CXX20
+#if !defined(__BORLANDC__)
 #include <format>
 #endif
 
@@ -35,7 +35,7 @@ public:
 
 	void SetLogLevel(Levels::LogLevel ll) { FLogLevel = ll; }
 
-#if _HAS_CXX20
+#if !defined(__BORLANDC__)
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
 	{

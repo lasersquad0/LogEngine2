@@ -420,10 +420,13 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Compare.cpp" />
     <ClCompile Include="..\..\..\src\DynamicArrays.cpp" />
     <ClCompile Include="..\..\..\src\FileStream.cpp" />
     <ClCompile Include="..\..\..\src\Common.cpp" />
+    <ClCompile Include="..\..\..\src\Logger.cpp" />
     <ClCompile Include="..\..\..\src\Pattern.cpp" />
+    <ClCompile Include="..\..\..\src\PatternLayout.cpp" />
     <ClCompile Include="..\..\..\src\Properties.cpp" />
     <ClCompile Include="..\..\..\src\SynchronizedQueue.cpp" />
   </ItemGroup>
