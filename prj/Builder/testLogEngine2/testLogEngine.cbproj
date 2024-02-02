@@ -61,7 +61,7 @@
         <ProjectType>CppConsoleApplication</ProjectType>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>testLogEngine</SanitizedProjectName>
-        <IncludePath>..\..\..\test\;..\..\..\external;..\..\..\include;$(IncludePath)</IncludePath>
+        <IncludePath>..\..\..\src\;..\..\..\test\;..\..\..\external;..\..\..\include;$(IncludePath)</IncludePath>
         <_TCHARMapping>char</_TCHARMapping>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
@@ -71,7 +71,7 @@
         <BCC_wcln>true</BCC_wcln>
         <BCC_wdef>true</BCC_wdef>
         <BCC_wnod>true</BCC_wnod>
-        <ILINK_LibraryPath>..\..\..\test\;..\..\..\lib;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>..\..\..\src\;..\..\..\test\;..\..\..\lib;..\..\..\external\cppunit\lib;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_wexc>true</BCC_wexc>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
@@ -92,8 +92,9 @@
         <BT_BuildType>Debug</BT_BuildType>
         <Manifest_File>(None)</Manifest_File>
         <AppDPIAwarenessMode>none</AppDPIAwarenessMode>
-        <ILINK_LibraryPath>C:\Users\Andrey\Documents\Embarcadero\Studio\Projects\LogEngine2\external\cppunit\lib\;C:\Users\Andrey\Documents\Embarcadero\Studio\Projects\LogEngine2\lib\;C:\Users\Andrey\Documents\Embarcadero\Studio\Projects\LogEngine\logengine\external\cppunit\lib\;C:\Users\Andrey\Documents\Embarcadero\Studio\Projects\LogEngine\logengine\lib\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <BCC_AllWarnings>true</BCC_AllWarnings>
         <ILINK_Verbose>true</ILINK_Verbose>
+        <BCC_SelectedWarnings>false</BCC_SelectedWarnings>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
@@ -142,15 +143,6 @@
             <BuildOrder>10</BuildOrder>
             <IgnorePath>true</IgnorePath>
         </LibFiles>
-        <None Include="..\..\..\lib\LogEngine64-bcb.a" Condition="'$(Platform)'=='Win64'">
-            <Exclude>True</Exclude>
-            <BuildOrder>7</BuildOrder>
-            <IgnorePath>true</IgnorePath>
-        </None>
-        <LibFiles Include="..\..\..\lib\LogEngined64-bcb.a" Condition="'$(Platform)'=='Win64'">
-            <BuildOrder>8</BuildOrder>
-            <IgnorePath>true</IgnorePath>
-        </LibFiles>
         <CppCompile Include="Main.cpp">
             <BuildOrder>11</BuildOrder>
         </CppCompile>
@@ -163,9 +155,37 @@
         <None Include="Shared.h">
             <BuildOrder>10</BuildOrder>
         </None>
-        <CppCompile Include="..\..\..\test\testLine.cpp">
-            <BuildOrder>3</BuildOrder>
+        <CppCompile Include="..\..\..\src\Common.cpp">
+            <BuildOrder>12</BuildOrder>
         </CppCompile>
+        <CppCompile Include="..\..\..\src\Compare.cpp">
+            <BuildOrder>13</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\DynamicArrays.cpp">
+            <BuildOrder>14</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\FileSink.cpp">
+            <BuildOrder>15</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\FileStream.cpp">
+            <BuildOrder>16</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\LogEvent.cpp">
+            <BuildOrder>17</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\Logger.cpp">
+            <BuildOrder>18</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\Pattern.cpp">
+            <BuildOrder>19</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\PatternLayout.cpp">
+            <BuildOrder>20</BuildOrder>
+        </CppCompile>
+        <None Include="..\..\..\test\testLine.cpp">
+            <Exclude>True</Exclude>
+            <BuildOrder>3</BuildOrder>
+        </None>
         <None Include="..\..\..\test\testLog.cpp">
             <Exclude>True</Exclude>
             <BuildOrder>4</BuildOrder>
@@ -174,10 +194,9 @@
             <Exclude>True</Exclude>
             <BuildOrder>6</BuildOrder>
         </None>
-        <None Include="..\..\..\test\testUtils.cpp">
-            <Exclude>True</Exclude>
+        <CppCompile Include="..\..\..\test\testUtils.cpp">
             <BuildOrder>9</BuildOrder>
-        </None>
+        </CppCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -310,19 +329,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\..\lib\LogEngine64-bcb.a" Configuration="Debug" Class="ProjectFile">
-                    <Platform Name="Win64">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="..\..\..\lib\LogEngine64.a" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win64">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\..\..\lib\LogEngined64-bcb.a" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win64">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

@@ -264,14 +264,14 @@ void THArrayStringFix::Reverse()
 	for (uint i = 0; i < data.Count()/2; i++)
 	{
 		temp = GetValue(i);
-		data.Update(i, (void*)GetValue(data.Count() - 1 - i).data());
-		data.Update(data.Count() - 1 - i, (void*)temp.data());
+		data.Update(i, GetValue(data.Count() - 1 - i).data());
+		data.Update(data.Count() - 1 - i, temp.data());
 	}
 }
 
 char* THArrayStringFix::GetAddr(const uint Index) const
 {
-	return (char *)(data.GetAddr(Index));
+	return static_cast<char*>(data.GetAddr(Index));
 }
 
 std::string THArrayStringFix::operator [](const uint Index) const

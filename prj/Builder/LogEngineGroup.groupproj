@@ -7,7 +7,7 @@
             <Dependencies/>
         </Projects>
         <Projects Include="testLogEngine2\testLogEngine.cbproj">
-            <Dependencies>LogEngine2\LogEngineLIB.cbproj</Dependencies>
+            <Dependencies/>
         </Projects>
     </ItemGroup>
     <ProjectExtensions>
@@ -26,13 +26,13 @@
     <Target Name="LogEngineLIB:Make">
         <MSBuild Projects="LogEngine2\LogEngineLIB.cbproj" Targets="Make"/>
     </Target>
-    <Target Name="testLogEngine" DependsOnTargets="LogEngineLIB">
+    <Target Name="testLogEngine">
         <MSBuild Projects="testLogEngine2\testLogEngine.cbproj"/>
     </Target>
-    <Target Name="testLogEngine:Clean" DependsOnTargets="LogEngineLIB:Clean">
+    <Target Name="testLogEngine:Clean">
         <MSBuild Projects="testLogEngine2\testLogEngine.cbproj" Targets="Clean"/>
     </Target>
-    <Target Name="testLogEngine:Make" DependsOnTargets="LogEngineLIB:Make">
+    <Target Name="testLogEngine:Make">
         <MSBuild Projects="testLogEngine2\testLogEngine.cbproj" Targets="Make"/>
     </Target>
     <Target Name="Build">

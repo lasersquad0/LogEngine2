@@ -46,13 +46,13 @@ public:
 
 #pragma warning(push)
 #pragma warning(disable : 4100)
-	void endTest(CppUnit::Test* test)
+	void endTest(CppUnit::Test*)
 	{
 		if (!m_lastTestFailed) std::cout << " : OK";
 		std::cout << "\n";
 	}
 
-	void endTestRun(CppUnit::Test* test, CppUnit::TestResult* result)
+	void endTestRun(CppUnit::Test* test, CppUnit::TestResult*)
 	{
 		std::cout << "Run Tests   :" << test->countTestCases() << std::endl;
 		std::cout << "Failed Tests:" << m_failedTestCnt << std::endl;

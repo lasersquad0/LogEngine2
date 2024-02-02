@@ -102,6 +102,7 @@ int TMemoryStream::Write(const void* Buffer, const size_t Size)
 	//_set_errno(0);
 
 	if (FWPos + Size > FSize) // not enough space in FMemory buffer
+	{
 		if(FNeedFree) // we control the buffer, so we can reallocate it
 		{
 			FMemory = static_cast<uint8_t*>(realloc(FMemory, FWPos + Size));
@@ -112,6 +113,7 @@ int TMemoryStream::Write(const void* Buffer, const size_t Size)
 		 //	_set_errno(ENOSPC);
 			return -1;
 		}
+	 }
 
 	memcpy(FMemory + FWPos, Buffer, Size);
 	FWPos += Size;
