@@ -20,10 +20,10 @@ template<class C>
 class Compare
 {
 public:
-	virtual bool eq(const C& a, const C& b) const { return a == b; }; // returns True when object a is equal b
-	virtual bool lt(const C& a, const C& b) const { return b > a;  }; // lt=less than
-	virtual bool mt(const C& a, const C& b) const { return a > b;  }; // mt=more than
-	virtual ~Compare() {};
+	virtual bool eq(const C& a, const C& b) const { return a == b; } // returns True when object a is equal b
+	virtual bool lt(const C& a, const C& b) const { return b > a;  } // lt=less than
+	virtual bool mt(const C& a, const C& b) const { return a > b;  } // mt=more than
+	virtual ~Compare() {}
 };
 
 template<class C>
@@ -33,17 +33,17 @@ public:
 	bool eq(const C& a, const C& b) const override 
 	{
 		return a == b;
-	};
+	}
 
 	bool lt(const C& a, const C& b) const override
 	{
 		return a > b;
-	};
+	}
 
 	bool mt(const C& a, const C& b) const override
 	{
 		return b > a;
-	};
+	}
 };
 
 // Class to compare std::string WITHOUT CASE sensitivity
@@ -53,7 +53,7 @@ public:
 	bool eq(const std::string& a, const std::string& b) const override // returns True when string a is equal b
 	{ 
 		return EqualNCase(a, b); 
-	};
+	}
 
 	bool lt(const std::string& a, const std::string& b) const override
 	{
@@ -63,7 +63,7 @@ public:
 		std::transform(aa.begin(), aa.end(), aa.begin(), ::toupper);
 		std::transform(bb.begin(), bb.end(), bb.begin(), ::toupper);
 		return aa.compare(bb) < 0;*/ 
-	};
+	}
 
 	bool mt(const std::string& a, const std::string& b) const override
 	{ 
@@ -73,7 +73,7 @@ public:
 		std::transform(aa.begin(), aa.end(), aa.begin(), ::toupper);
 		std::transform(bb.begin(), bb.end(), bb.begin(), ::toupper);
 		return aa.compare(bb) > 0;*/ 
-	};
+	}
 };
 
 
