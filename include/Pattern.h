@@ -9,6 +9,8 @@
 #pragma once
 
 #include <cassert>
+#include <vector>
+#include <sstream>
 #include "DynamicArrays.h"
 #include "LogEvent.h"
 
