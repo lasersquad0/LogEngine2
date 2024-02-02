@@ -25,7 +25,7 @@ class Holder
 {
 public:
 	virtual std::string format(LogEvent& event) = 0;
-	virtual ~Holder() {};
+	virtual ~Holder() {}
 };
 
 #define STRFTIME_SIZE 100
@@ -38,7 +38,7 @@ public:
 		char ss[STRFTIME_SIZE];
 		std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y", &event.tmtime);
 		return ss;
-	};
+	}
 };
 
 class TimeHolder : public Holder
@@ -49,7 +49,7 @@ public:
 		char ss[STRFTIME_SIZE];
 		std::strftime(ss, STRFTIME_SIZE, "%X", &event.tmtime);
 		return ss;
-	};
+	}
 };
 
 class DateTimeHolder : public Holder
@@ -60,7 +60,7 @@ public:
 		char ss[STRFTIME_SIZE];
 		std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y %X", &event.tmtime);
 		return ss;
-	};
+	}
 };
 
 class MessageHolder : public Holder
@@ -99,7 +99,7 @@ class LiteralHolder : public Holder
 private:
 	std::string value;
 public:
-	LiteralHolder(std::string& value) { this->value = value; }
+	LiteralHolder(std::string& val) { this->value = val; }
 	std::string format(LogEvent&) { return value; }
 };
 
