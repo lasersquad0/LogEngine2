@@ -34,7 +34,7 @@ public:
 	{
 		std::string str = FormatString(e); // FormatString adds '\n' to the end of string
 		//FStream.Seek(0, smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
-		FBytesWritten += FStream->WriteLn(str);
+		FBytesWritten += static_cast<ullong>(FStream->WriteLn(str));
 	}
 
 	/**

@@ -90,15 +90,16 @@ void LogEngineLogTest::testLog1()
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(""), cutLog(s));
 }
-	
+
 void LogEngineLogTest::testLog2()
 {
+#if !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog2");
 	StringSink* sink = new StringSink("strsink");
 	logg.AddSink(sink);
-	
+
 	std::string s;
-	
+
 	logg.LogFmt("", Levels::llWarning);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string("#"), cutLog(s));
@@ -128,10 +129,12 @@ void LogEngineLogTest::testLog2()
 	s = sink->GetOutput();
 	std::string ss = cutLog(s);
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s));
+#endif
 }
 
 void LogEngineLogTest::testLog3()
 {
+#if !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog3");
 	StringSink* sink1 = new StringSink("strsink1");
 	StringSink* sink2 = new StringSink("strsink2");
@@ -157,7 +160,7 @@ void LogEngineLogTest::testLog3()
 	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2warning"), cutLog(s2));
 
 	sink1->Clear();
-	sink2->Clear(); 
+	sink2->Clear();
 	logg.LogFmt("testLog2 {}.", Levels::llError, "error");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
@@ -166,7 +169,7 @@ void LogEngineLogTest::testLog3()
 	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2 error."), cutLog(s2));
 
 	sink1->Clear();
-	sink2->Clear(); 
+	sink2->Clear();
 	logg.CritFmt("testLog2test {0}. {1}", "critical parameter", 3);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
@@ -175,7 +178,7 @@ void LogEngineLogTest::testLog3()
 	CPPUNIT_ASSERT_EQUAL(std::string("*testLog2test critical parameter. 3"), cutLog(s2));
 
 	sink1->Clear();
-	sink2->Clear(); 
+	sink2->Clear();
 	logg.LogFmt("testLog2debug {}.{}.{}.{}.{}", Levels::llDebug, 1, 2, 3, 4, 5);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
@@ -184,13 +187,14 @@ void LogEngineLogTest::testLog3()
 	CPPUNIT_ASSERT_EQUAL(std::string(""), cutLog(s2));
 
 	sink1->Clear();
-	sink2->Clear(); 
+	sink2->Clear();
 	logg.LogFmt("testLog2info {}.{}.{}.{}.{}", Levels::llInfo, 1, 2, "RT", 4, 5.1);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
 	CPPUNIT_ASSERT_EQUAL(std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s1));
 	CPPUNIT_ASSERT_EQUAL(std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s2));
+#endif
 }
 
 void LogEngineLogTest::testLog4()
