@@ -66,7 +66,7 @@ public:
 
 	void operator <<(const char* Value)  { Write(Value, strlen(Value)); }
 	void operator <<(char* Value)        { Write(Value, strlen(Value)); }
-	void operator <<(std::string& Value) { Write((void*)Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends
+	void operator <<(std::string& Value) { Write(Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends
 	void operator >>(std::string& Value);
 };
 

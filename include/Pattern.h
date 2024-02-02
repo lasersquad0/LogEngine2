@@ -135,7 +135,7 @@ public:
 		DWORD dummy = 0;
 		const auto cbInfo = ::GetFileVersionInfoSizeExW(FILE_VER_GET_NEUTRAL, system, &dummy);
 		std::vector<char> buffer(cbInfo);
-		GetFileVersionInfoExW(FILE_VER_GET_NEUTRAL, system, dummy, (DWORD)buffer.size(), &buffer[0]);
+		GetFileVersionInfoExW(FILE_VER_GET_NEUTRAL, system, dummy, static_cast<DWORD>(buffer.size()), &buffer[0]);
 		void* p = nullptr;
 		UINT size = 0;
 		::VerQueryValueW(buffer.data(), L"\\", &p, &size);

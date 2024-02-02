@@ -163,10 +163,9 @@
         <None Include="Shared.h">
             <BuildOrder>10</BuildOrder>
         </None>
-        <None Include="..\..\..\test\testLine.cpp">
-            <Exclude>True</Exclude>
+        <CppCompile Include="..\..\..\test\testLine.cpp">
             <BuildOrder>3</BuildOrder>
-        </None>
+        </CppCompile>
         <None Include="..\..\..\test\testLog.cpp">
             <Exclude>True</Exclude>
             <BuildOrder>4</BuildOrder>
@@ -175,9 +174,10 @@
             <Exclude>True</Exclude>
             <BuildOrder>6</BuildOrder>
         </None>
-        <CppCompile Include="..\..\..\test\testUtils.cpp">
+        <None Include="..\..\..\test\testUtils.cpp">
+            <Exclude>True</Exclude>
             <BuildOrder>9</BuildOrder>
-        </CppCompile>
+        </None>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

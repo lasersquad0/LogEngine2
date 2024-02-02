@@ -46,17 +46,17 @@ void TStream::operator >>(string& Value)
 		int c = ReadChar();
 		if (c == -1) return; // end of file reached
 		if (c == EndLineChar) return;
-		Value += (char)c;
+		Value += static_cast<char>(c);
 	} while (true);
 }
 
 string TStream::ReadPString()
 {
 	string res;
-	int i;
+	uint i;
 	*this >> i;
 	res.resize(i);
-	Read((void*)res.data(), res.length());
+	Read(res.data(), res.length());
 	return res;
 }
 
@@ -83,7 +83,7 @@ int TMemoryStream::Read(void* Buffer, size_t Size)
 	assert(FWPos <= FSize);
 
 	if (Buffer == nullptr) return -1;
-	if (Size == 0) return -1; 
+	if (Size == 0) return -1;
 
 	if (FRPos + Size > FSize) Size = FSize - FRPos;
 	if (Size == 0) return 0; // we've have read everything (EOF reached)
@@ -91,7 +91,7 @@ int TMemoryStream::Read(void* Buffer, size_t Size)
 	memcpy(Buffer, FMemory + FRPos, Size);
 
 	FRPos += Size;
-	return (int)Size;
+	return static_cast<int>(Size);
 }
 
 int TMemoryStream::Write(const void* Buffer, const size_t Size)
@@ -103,7 +103,10 @@ int TMemoryStream::Write(const void* Buffer, const size_t Size)
 
 	if (FWPos + Size > FSize) // not enough space in FMemory buffer
 		if(FNeedFree) // we control the buffer, so we can reallocate it
-			FMemory = static_cast<uint8_t*>(realloc(FMemory, FWPos + Size)), FSize = FWPos + Size;
+		{
+			FMemory = static_cast<uint8_t*>(realloc(FMemory, FWPos + Size));
+			FSize = FWPos + Size;
+		}
 		else   // we do not control the buffer, so we cannot reallocate it
 		{
 		 //	_set_errno(ENOSPC);
@@ -112,7 +115,7 @@ int TMemoryStream::Write(const void* Buffer, const size_t Size)
 
 	memcpy(FMemory + FWPos, Buffer, Size);
 	FWPos += Size;
-	return (int)Size;
+	return static_cast<int>(Size);
 }
 
 template<typename T>
@@ -303,7 +306,7 @@ size_t TFileStream::Length()
 {
 	struct stat st;
 	fstat(hf, &st);
-	return st.st_size;
+	return static_cast<size_t>(st.st_size);
 };
 
 void TFileStream::Flush()

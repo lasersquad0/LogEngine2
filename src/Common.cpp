@@ -12,7 +12,7 @@
 #include <Common.h>
 
 // truncates Value to Precision digits after point
-double round(const double Value,const int Precision)
+double round(const double Value, const int Precision)
 {
 	int i = Precision;
 	double ret;
@@ -25,7 +25,7 @@ double round(const double Value,const int Precision)
 
 	double temp = Value * p;
 
-	double ttt = temp - (int)temp;
+	double ttt = temp - static_cast<int>(temp);
 	if (ttt == 0) 
 		return temp/p;
 	
@@ -181,54 +181,67 @@ bool StrToBool(std::string& Value)
 // extracts filename from path with filename
 std::string ExtractFileName(const std::string& FileName)
 {
-	int i = (int)FileName.length();
-	while(i >= 0)
+	size_t i = FileName.length();
+	do
 	{
-		if((FileName[i] == '\\')||(FileName[i] == '/'))
-			break;
 		i--;
+		if((FileName[i] == '\\') || (FileName[i] == '/'))
+			break;
 	}
-	
+	while(i > 0);
+
 	return FileName.substr(i+1);
 }
 
 // extracts file dir from path with filename
 std::string ExtractFileDir(const std::string& FileName)
 {
-	int i = (int)FileName.length();
-	while (i >= 0)
+	size_t i = FileName.length();
+	do
 	{
+		i--;
 		if ((FileName[i] == '\\') || (FileName[i] == '/'))
 			break;
-		i--;
-	}
+	}while (i > 0);
 
 	return FileName.substr(0, i+1);
 }
 
 std::string StripFileExt(const std::string& FileName)
 {
-	int i = (int)FileName.length(); 
+	size_t i = FileName.length();
 
 	if(i == 0)
 		return "";
 
 	bool f = false;
-	
-	i--; //last index
-	while(i >= 0)
+
+	//i--; //calc last index
+	do
 	{
-		if(FileName[i] == '.')
+	   i--;
+	   if(FileName[i] == '.')
 		{
 			f = true; // we found a dot
 			break;
 		}
-		i--;
+
 	}
+	while(i > 0);
+
+	//while(i >= 0)
+	//{
+	//	if(FileName[i] == '.')
+	//	{
+	//		f = true; // we found a dot
+	//		break;
+	//	}
+	//	i--;
+	//}
 
 	if(f)
 		return FileName.substr(0, i);
-	else 
+	else
 		return FileName;
 }
 
@@ -246,7 +259,7 @@ std::string StringReplace(const std::string& S, const std::string& SearchPattern
 	temp1 = SearchStr.c_str();
 	while(true)
 	{
-		temp2 = (char*)strstr(temp1, SearchPattern.c_str());// explicit cast requred by C++ Builder 6
+		temp2 = (char*)strstr(temp1, SearchPattern.c_str()); // explicit cast requred by C++ Builder 6
 		if(temp2 == nullptr)
 		{
 			Result += temp1;
@@ -459,10 +472,10 @@ int CompareNCase(const std::string& str1, const std::string& str2)
 //#ifdef HAVE_STRCASECMP
 //	return strcasecmp(s1, s2);
 //#else
-	for (int i = 0; i < str1.length() && str2.length(); i++)
+	for (uint i = 0; i < str1.length() && str2.length(); i++)
 	{
-		int upper1 = toupper(static_cast<unsigned char>(str1[i]));
-		int upper2 = toupper(static_cast<unsigned char>(str2[i]));
+		int upper1 = toupper(static_cast<uchar>(str1[i]));
+		int upper2 = toupper(static_cast<uchar>(str2[i]));
 
 		if (upper1 > upper2)
 			return 1;
@@ -493,7 +506,7 @@ uint GetThreadID()
 {
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
-	int thrID;
+	uint thrID;
 	ss >> thrID;
 	return thrID;
 }
