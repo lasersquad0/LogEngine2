@@ -103,4 +103,4 @@ bool isUInt(std::string& value);
 
 uint GetThreadID();
 
-#endif //COMMON_H 
+#endif //COMMON_H
