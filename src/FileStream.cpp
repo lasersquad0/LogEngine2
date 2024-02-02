@@ -96,17 +96,17 @@ int TMemoryStream::Read(void* Buffer, size_t Size)
 
 int TMemoryStream::Write(const void* Buffer, const size_t Size)
 {
-	_set_errno(EINVAL);
+   //	_set_errno(EINVAL);
 	if (Buffer == nullptr) return -1;
 	if (Size == 0) return -1;
-	_set_errno(0);
+	//_set_errno(0);
 
-	if (FWPos + Size > FSize) // not enough space in FMemory buffer 
-		if(FNeedFree) // we control the buffer, so we can reallocate it 
+	if (FWPos + Size > FSize) // not enough space in FMemory buffer
+		if(FNeedFree) // we control the buffer, so we can reallocate it
 			FMemory = static_cast<uint8_t*>(realloc(FMemory, FWPos + Size)), FSize = FWPos + Size;
 		else   // we do not control the buffer, so we cannot reallocate it
 		{
-			_set_errno(ENOSPC);
+		 //	_set_errno(ENOSPC);
 			return -1;
 		}
 

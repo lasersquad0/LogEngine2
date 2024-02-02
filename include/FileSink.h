@@ -41,7 +41,7 @@ public:
 	* Get the FileName of this file sink. The name of the file where sink writes its logs.
 	* @returns the FileName of the sink.
 	**/
-	std::string getFileName() const { return FStream->GetFileName(); };
+	std::string getFileName() const { return FStream->GetFileName(); }
 
 protected:
 	TFileStream* FStream;
@@ -51,7 +51,7 @@ protected:
 class StdoutSink : public Sink
 {
 public:
-	StdoutSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); };
+	StdoutSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
 
 	void SendMsg(LogEvent& e) override
 	{
@@ -64,7 +64,7 @@ public:
 class StderrSink : public Sink
 {
 public:
-	StderrSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); };
+	StderrSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
 
 	void SendMsg(LogEvent& e) override
 	{
@@ -78,7 +78,7 @@ class StringSink : public Sink
 private:
 	std::ostringstream output;
 public:
-	StringSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); };
+	StringSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
 
 	void SendMsg(LogEvent& e) override
 	{
@@ -92,3 +92,4 @@ public:
 
 
 LOGENGINE_NS_END
+

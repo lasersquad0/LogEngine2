@@ -29,7 +29,7 @@ private:
 	bool shouldLog(Levels::LogLevel ll) { return FLogLevel >= ll; }
 
 public:
-	Logger(const std::string& name, Levels::LogLevel ll = Levels::llInfo) : FName(name), FLogLevel(ll) { }
+	Logger(const std::string& name, Levels::LogLevel ll = Levels::llInfo) : FLogLevel(ll), FName(name) { }
 
 	virtual ~Logger() { for (uint i = 0; i < sinks.Count(); i++) delete sinks[i]; sinks.Clear(); }
 

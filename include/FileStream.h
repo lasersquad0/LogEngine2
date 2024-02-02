@@ -26,7 +26,7 @@ public:
 	IOException(const char* Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + std::string(Message); }
 	IOException(const std::string& Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + Message; }
 	IOException(const IOException& ex) { Text = ex.Text; whatText = ex.whatText; }
-	~IOException() noexcept override {};
+	~IOException() noexcept override {}
 	IOException& operator=(const IOException& ex) { Text = ex.Text; whatText = ex.whatText;	return *this; }
 	const char* what() const noexcept override { return whatText.c_str(); }
 	//std::string GetError(void);
@@ -66,7 +66,7 @@ public:
 
 	void operator <<(const char* Value)  { Write(Value, strlen(Value)); }
 	void operator <<(char* Value)        { Write(Value, strlen(Value)); }
-	void operator <<(std::string& Value) { Write((void*)Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends 
+	void operator <<(std::string& Value) { Write((void*)Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends
 	void operator >>(std::string& Value);
 };
 
@@ -82,7 +82,7 @@ private:
 	bool FNeedFree = true;
 
 	void ResetPos();
-	off_t Seek(const off_t, const TSeekMode) { return -1; } // hide Seek, use SeekR and SeekW instead
+	off_t Seek(const off_t, const TSeekMode) override { return -1; } // hide Seek, use SeekR and SeekW instead
 public:
 	TMemoryStream(uint BuffSize = DEFAULT_BUF_SIZE) { FMemory = new uint8_t[BuffSize]; }
 	~TMemoryStream() override { if (FNeedFree) free(FMemory); }

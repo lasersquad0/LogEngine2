@@ -35,14 +35,14 @@ public:
 		//	FMessageCounts[i] = 0;
 	}
 
-	virtual ~Sink() { delete FLayout; };
+	virtual ~Sink() { delete FLayout; }
 
 	void PubSendMsg(LogEvent& e)
 	{
 		if (!shouldLog(e.msgLevel)) return;
 
 		SendMsg(e);
-	};
+	}
 
 	virtual void SetLayout(Layout* layout)
 	{
@@ -81,7 +81,7 @@ public:
 	 * Get the name of this sink. The name identifies the sink.
 	 * @returns the name of the sink.
 	 **/
-	const std::string& GetName() const { return FName; };
+	const std::string& GetName() const { return FName; }
 };
 
 LOGENGINE_NS_END

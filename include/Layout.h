@@ -18,7 +18,7 @@ LOGENGINE_NS_BEGIN
 class Layout
 {
 public:
-	virtual ~Layout() {};
+	virtual ~Layout() {}
 	virtual std::string Format(LogEvent& event) = 0;
 };
 

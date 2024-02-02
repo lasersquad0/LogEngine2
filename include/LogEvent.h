@@ -54,8 +54,8 @@ public:
 	struct tm tmtime;
 	std::string message;
 
-	LogEvent(const std::string& message, Levels::LogLevel msgType, unsigned int threadID, struct tm time)
-		: message(message), msgLevel(msgType), threadID(threadID), tmtime(time) {}
+	LogEvent(const std::string& msg, Levels::LogLevel msgType, unsigned int thrID, struct tm time)
+		: msgLevel(msgType), threadID(thrID), tmtime(time), message(msg) {}
 
 };
 
