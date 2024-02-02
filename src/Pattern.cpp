@@ -38,7 +38,7 @@ void Pattern::parsePattern(const std::string& pattern)
 
 	clearHolders();
 
-	unsigned int i = 0;
+	uint i = 0;
 	while (i < pattern.size())
 	{
 		if (pattern[i] == '%')

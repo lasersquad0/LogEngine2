@@ -210,13 +210,9 @@ std::string ExtractFileDir(const std::string& FileName)
 std::string StripFileExt(const std::string& FileName)
 {
 	size_t i = FileName.length();
-
-	if(i == 0)
-		return "";
+	if(i == 0) return "";
 
 	bool f = false;
-
-	//i--; //calc last index
 	do
 	{
 	   i--;
@@ -228,16 +224,6 @@ std::string StripFileExt(const std::string& FileName)
 
 	}
 	while(i > 0);
-
-	//while(i >= 0)
-	//{
-	//	if(FileName[i] == '.')
-	//	{
-	//		f = true; // we found a dot
-	//		break;
-	//	}
-	//	i--;
-	//}
 
 	if(f)
 		return FileName.substr(0, i);
@@ -389,7 +375,7 @@ std::string DelCRLF(std::string s)
 /*	int j = 0;
 	std::string res;
 	res.resize(S.length());
-	for(unsigned int i = 0; i < S.length(); i++)
+	for(uint i = 0; i < S.length(); i++)
 	{
 		if(S[i] != '\n' && S[i] != '\r')
 			res[j++] = S[i];
@@ -447,8 +433,8 @@ bool EqualNCase(const std::string& str1, const std::string& str2)
 //#else
 
 	//for (; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
-	for (unsigned int i = 0; i < str1.length() && i < str2.length(); i++)
-		if (toupper(static_cast<unsigned char>(str1[i])) != toupper(static_cast<unsigned char>(str2[i])))
+	for (uint i = 0; i < str1.length() && i < str2.length(); i++)
+		if (toupper(static_cast<uchar>(str1[i])) != toupper(static_cast<uchar>(str2[i])))
 			return false;
 
 	if (str1.length() == str2.length())
