@@ -3,9 +3,10 @@
 #include <direct.h>
 #else
 #include <unistd.h>
+#include <stdarg.h>
 #endif 
 
-#include <thread>
+//#include <thread>
 #include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
