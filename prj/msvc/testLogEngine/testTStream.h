@@ -1,7 +1,7 @@
 #if !defined(TEST_TSTREAM_H)
 #define TEST_TSTREAM_H
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/extensions/HelperMacros.h"
 
 /*
  * A test case to test TMemoryStream and TFileStream classes

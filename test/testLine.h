@@ -1,7 +1,7 @@
-#if !defined(_TEST_LINE_)
-#define _TEST_LINE_
+#if !defined(TEST_LINE)
+#define TEST_LINE
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/extensions/HelperMacros.h"
 
 /* 
  * A test case to test LogEngine Line class
@@ -62,4 +62,4 @@ public:
 
 
 
-#endif //_TEST_LINE_
+#endif //TEST_LINE

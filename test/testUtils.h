@@ -1,7 +1,7 @@
-#ifndef _UTIL_TESTS_HEADER_
-#define _UTIL_TESTS_HEADER_
+#ifndef UTIL_TESTS_HEADER
+#define UTIL_TESTS_HEADER
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/extensions/HelperMacros.h"
 
 /* 
  * A test case to test LogEngine utils 
@@ -60,4 +60,4 @@ public:
     void testExtractFileDir4();
 };
 
-#endif // _UTIL_TESTS_HEADER_
+#endif // UTIL_TESTS_HEADER
