@@ -20,24 +20,24 @@ namespace Levels
 	enum LogLevel:int { llOff, llCritical, llError, llWarning, llInfo, llDebug, llTrace, n_LogLevels };
 }
 
-#define LM_NAMES       { "off", "critical", "error", "warning", "info", "debug", "trace" }
-#define LM_CAPS_NAMES  { "OFF", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE" }
-#define LM_SHORT_NAMES { "O", "C", "E", "W", "I", "D", "T" }
+#define LL_NAMES       { "off", "critical", "error", "warning", "info", "debug", "trace" }
+#define LL_CAPS_NAMES  { "OFF", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE" }
+#define LL_SHORT_NAMES { "O", "C", "E", "W", "I", "D", "T" }
 
-static const std::string MessageTypeNames[] LM_NAMES;
-static const std::string MessageTypeCapsNames[] LM_CAPS_NAMES;
-static const char* MessageTypeShortNames[] LM_SHORT_NAMES;
+static const std::string LogLevelNames[] LL_NAMES;
+static const std::string LogLevelCapsNames[] LL_CAPS_NAMES;
+static const char* LogLevelShortNames[] LL_SHORT_NAMES;
 
-inline const std::string& LLtoString(Levels::LogLevel ll) { return MessageTypeNames[ll]; }
-inline const std::string& LLtoCapsString(Levels::LogLevel ll) { return MessageTypeCapsNames[ll]; }
+inline const std::string& LLtoString(Levels::LogLevel ll) { return LogLevelNames[ll]; }
+inline const std::string& LLtoCapsString(Levels::LogLevel ll) { return LogLevelCapsNames[ll]; }
 
-inline const char* LLtoShortString(Levels::LogLevel ll) { return MessageTypeShortNames[ll]; }
+inline const char* LLtoShortString(Levels::LogLevel ll) { return LogLevelShortNames[ll]; }
 
 inline Levels::LogLevel LLfromString(const std::string& name)
 {
-	auto it = std::find(std::begin(MessageTypeNames), std::end(MessageTypeNames), name);
-	if (it != std::end(MessageTypeNames))
-		return static_cast<Levels::LogLevel>(std::distance(std::begin(MessageTypeNames), it));
+	const std::string* it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), name);
+	if (it != std::end(LogLevelNames))
+		return static_cast<Levels::LogLevel>(std::distance(std::begin(LogLevelNames), it));
 
 	// check also for "warn" and "err" before giving up..
 	if (name == "warn") return Levels::llWarning;
