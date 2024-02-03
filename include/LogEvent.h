@@ -17,15 +17,15 @@ LOGENGINE_NS_BEGIN
 
 namespace Levels
 {
-	enum  LogLevel { llOff, llCritical, llError, llWarning, llInfo, llDebug, llTrace, n_LogLevels };
+	enum LogLevel:int { llOff, llCritical, llError, llWarning, llInfo, llDebug, llTrace, n_LogLevels };
 }
 
 #define LM_NAMES       { "off", "critical", "error", "warning", "info", "debug", "trace" }
 #define LM_CAPS_NAMES  { "OFF", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE" }
 #define LM_SHORT_NAMES { "O", "C", "E", "W", "I", "D", "T" }
 
-static std::string MessageTypeNames[] LM_NAMES;
-static std::string MessageTypeCapsNames[] LM_CAPS_NAMES;
+static const std::string MessageTypeNames[] LM_NAMES;
+static const std::string MessageTypeCapsNames[] LM_CAPS_NAMES;
 static const char* MessageTypeShortNames[] LM_SHORT_NAMES;
 
 inline const std::string& LLtoString(Levels::LogLevel ll) { return MessageTypeNames[ll]; }

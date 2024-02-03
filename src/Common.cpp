@@ -6,6 +6,7 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
+#include <string.h> // need for strstr under Linux
 #include <sstream>
 #include <thread>
 #include <sys/timeb.h>
