@@ -9,6 +9,7 @@
 #ifndef FILESTREAM_H
 #define FILESTREAM_H
 
+#include <string.h> // for strlen() under Linux
 #include <string>
 #include <exception>
 #include "Common.h"
