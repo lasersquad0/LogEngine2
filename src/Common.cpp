@@ -267,29 +267,30 @@ tm_point GetCurrTimePoint()
 	return std::chrono::system_clock::now();
 }
 
+struct tm time_t_to_tm(time_t t)
+{
+#ifdef WIN32
+	struct tm ttm;
+	localtime_s(&ttm, &t);
+	return ttm;
+#else
+	return *localtime(&t);
+#endif
+}
+
 struct tm GetCurrDateTime()
 {
 	const std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	struct tm t;
-	localtime_s(&t, &tt);
-	return t;
+	//struct tm t;
+	//localtime_s(&t, &tt);
+	return time_t_to_tm(tt);
 }
+
 
 
 // retrieves current time as std::string
 std::string GetCurrTimeAsString(void)
 { 
-    //tm tp;
-    //tm *ptp = &tp;
-
-	//timeb t;
-	//ftime(&t);
-//#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
-	//localtime_s(ptp, &(t.time));
-//#else
- //   ptp = localtime(&(t.time));    
-    
-//#endif
 	std::chrono::system_clock::time_point stime = GetCurrTimePoint();
 	std::chrono::system_clock::time_point sstime = std::chrono::time_point_cast<std::chrono::seconds>(stime); // round to seconds
 	long long millis = std::chrono::duration_cast<std::chrono::milliseconds>(stime - sstime).count();
@@ -297,15 +298,14 @@ std::string GetCurrTimeAsString(void)
 	const std::time_t tt = std::chrono::system_clock::to_time_t(stime);
 
     char ss[DATETIME_BUF];
-	struct tm t;
-	localtime_s(&t, &tt);
-    std::strftime(ss, DATETIME_BUF, "%X", &t);
+	struct tm t = time_t_to_tm(tt);
+	std::strftime(ss, DATETIME_BUF, "%X", &t);
 
 	char sss[20];
-#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400    
+#ifdef WIN32       
 	sprintf_s(sss, 20, ".%03lld", millis);
 #else
-    sprintf(sss, ".%03lld", millis);    
+	sprintf(sss, ".%03lld", millis);
 #endif
 
 	std::string s = DelCRLF(ss);
@@ -336,8 +336,7 @@ std::string GetCurrDateTimeAsString(void)
 // converts native datetime value into string
 std::string DateTimeToStr(time_t t)
 {
-	struct tm ttm;
-	localtime_s(&ttm, &t);
+	struct tm ttm = time_t_to_tm(t);
 	char ss[DATETIME_BUF];
 	strftime(ss, DATETIME_BUF, "%F %T", &ttm);
 
