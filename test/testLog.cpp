@@ -19,7 +19,11 @@ using namespace LogEngine;
 
 void LogEngineLogTest::setUp()
 {
+#ifdef WIN32
 	std::ignore = mkdir(LOG_FILES_FOLDER);
+#else
+	mkdir(LOG_FILES_FOLDER, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#endif
 }
 
 void LogEngineLogTest::tearDown()
@@ -94,7 +98,7 @@ void LogEngineLogTest::testLog1()
 
 void LogEngineLogTest::testLog2()
 {
-#if !defined(__BORLANDC__)
+#if defined(WIN32) && !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog2");
 	StringSink* sink = new StringSink("strsink");
 	logg.AddSink(sink);
@@ -135,7 +139,7 @@ void LogEngineLogTest::testLog2()
 
 void LogEngineLogTest::testLog3()
 {
-#if !defined(__BORLANDC__)
+#if defined(WIN32) && !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog3");
 	StringSink* sink1 = new StringSink("strsink1");
 	StringSink* sink2 = new StringSink("strsink2");

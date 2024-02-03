@@ -15,7 +15,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TIniReaderTest);
 void TIniReaderTest::setUp()
 {
 #ifdef WIN32
-	mkdir(LOG_FILES_FOLDER);
+	std::ignore = mkdir(LOG_FILES_FOLDER);
 #else
 	mkdir(LOG_FILES_FOLDER, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
