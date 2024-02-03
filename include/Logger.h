@@ -8,7 +8,7 @@
 
 #pragma once
 
-#if !defined(__BORLANDC__)
+#if defined(WIN32) && !defined(__BORLANDC__)
 #include <format>
 #endif
 
@@ -35,7 +35,7 @@ public:
 
 	void SetLogLevel(Levels::LogLevel ll) { FLogLevel = ll; }
 
-#if !defined(__BORLANDC__)
+#if defined(WIN32) && !defined(__BORLANDC__)
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
 	{
