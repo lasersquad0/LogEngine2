@@ -207,14 +207,53 @@ public:
 template<class T>
 class THArray : public THArrayBase
 {
+private:
+	template<class Cont>
+	class THArrayIterator //: public std::iterator<std::input_iterator_tag, T>
+	{
+	public:
+		using value_type = typename Cont::item_type;
+		using iterator_category = std::random_access_iterator_tag;
+		using difference_type = ptrdiff_t;
+		using pointer = typename Cont::pointer;
+		using reference = typename Cont::reference;
+
+		THArrayIterator(const THArrayIterator& it) : FCont(it.FCont), FPtr(it.FPtr) {}
+		THArrayIterator(Cont* cont, pointer ptr) : FCont(cont), FPtr(ptr) {}
+
+		bool operator!=(THArrayIterator const& other) const { return FCont != other.FCont || FPtr != other.FPtr; }
+		bool operator==(THArrayIterator const& other) const { return FCont == other.FCont && FPtr == other.FPtr; }
+		reference operator*() const { return *FPtr; }
+		THArrayIterator& operator++() { if (FPtr != FCont->FMemory + FCont->FCount) ++FPtr; return *this; }
+		THArrayIterator& operator--() { if (FPtr != FCont->FMemory) --FPtr; return *this; }
+	private:
+		Cont* FCont{ nullptr };
+		pointer FPtr{ nullptr };
+	};
+
+	//friend class THArrayIterator<THArray>;
+
 protected:
 	uint 	FCount;
 	uint 	FCapacity;
-	T* FMemory;
+	T*		FMemory;
 	void	Error(const uint Value, /*const uint vmin,*/ const uint vmax) const;
 	uint	GetGrowDelta();
 	void	Grow();	/// Grow memory size allocated for elements
+
 public:
+	using iterator = THArrayIterator<THArray>;
+	//using const_iterator = THArrayIterator<const T>;
+	using item_type = T;
+	using pointer = T*;
+	using reference = T&;
+
+
+	iterator begin() { return iterator(this, FMemory); }
+	iterator end()   { return iterator(this, FMemory + FCount); }
+	//const_iterator begin() const { return const_iterator(FMemory); }
+	//const_iterator end() const   { return const_iterator(FMemory + FCount); }
+
 	THArray();
 	THArray(std::initializer_list<T> list);
 	THArray(const THArray<T>& a);
@@ -258,6 +297,7 @@ public:
 #ifdef _USE_STREAMS_
 	void		SaveToStream(TStream& stre);
 #endif
+
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -319,12 +359,43 @@ public:
 //  THash Class Interface
 //////////////////////////////////////////////////////////////////////
 
+
 template <class I, class V, class Cmp = Compare<I> >
 class THash
 {
+private:
+	template<class Hash>
+	class THashIterator
+	{
+	public:
+		using value_type = std::pair<typename Hash::KeyType&, typename Hash::ValueType&>;
+		using iterator_category = std::random_access_iterator_tag;
+		using difference_type = ptrdiff_t;
+		using pointer = value_type*;
+		using reference = value_type&;
+
+		//THashIterator(const THashIterator& it) : FCont(it.FCont), FCurIndex(it.FCurIndex) {}
+		THashIterator(Hash* cont, uint curr) : FCont(cont), FCurIndex(curr) {}
+
+		bool operator!=(THashIterator const& other) const { return FCont != other.FCont || FCurIndex != other.FCurIndex; }
+		bool operator==(THashIterator const& other) const { return FCont == other.FCont && FCurIndex == other.FCurIndex; }
+		THashIterator& operator++() { if (FCurIndex < FCont->Count()) ++FCurIndex; return *this; }
+		THashIterator& operator--() { if (FCurIndex > 0) --FCurIndex; return *this; }
+		value_type operator*() const { return value_type{ FCont->FAKeys[FCurIndex], FCont->FAValues[FCurIndex] }; }
+		//value_type* operator->() const { ??? }
+	private:
+		Hash* FCont{ nullptr };
+		uint FCurIndex{ 0 };
+	};
+
+	//friend class THashIterator<THash>;
 public:
+	using KeyType = I;
+	using ValueType = V;
 	using KeysType = THArraySorted<I, Cmp>;
 	using ValuesType = THArray<V>;
+	using iterator = THashIterator<THash>;
+	//using const_iterator = THArrayIterator<const T>;
 private:
 	KeysType FAKeys;
 	ValuesType FAValues;
@@ -335,6 +406,9 @@ public:
 	THash(const THash<I, V, Cmp>& a);
 	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); }
 	//~THash();
+
+	iterator begin() { return iterator(this, 0); }
+	iterator end() { return iterator(this, Count()); }
 
 	bool operator==(const THash<I, V, Cmp>& a) const;
 	bool operator> (const THash<I, V, Cmp>& a) const;
@@ -953,7 +1027,7 @@ uint THash2<I1, I2, V, Cmp>::InternalGetCount()
 	//}
 
 	KeysArray& ind = GetAIndexes();
-	for (uint i = 0; i < ind->Count(); i++)
+	for (uint i = 0; i < ind.Count(); i++)
 	{
 		I1 a = ind[i];
 		ValuesHash& val = hash.GetValue(a);

@@ -1,16 +1,16 @@
 /*
- * functions.cpp
+ * Common.cpp
  *
- * Copyright 2003, LogEngine Project. All rights reserved.
+ * Copyright 2023, LogEngine Project. All rights reserved.
  *
  * See the COPYING file for the terms of usage and distribution.
  */
 
 #include <string.h> // need for strstr under Linux
 #include <sstream>
-#include <thread>
+//#include <thread>
 #include <sys/timeb.h>
-#include <Common.h>
+#include "Common.h"
 
 // truncates Value to Precision digits after point
 double round(const double Value, const int Precision)
