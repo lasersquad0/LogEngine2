@@ -16,24 +16,65 @@
 #include "Common.h"
 #include "FileSink.h"
 #include "DynamicArrays.h"
+#include "SynchronizedQueue.h"
 
 LOGENGINE_NS_BEGIN
+
+class Logger;
+
+typedef SafeQueue<LogEvent*> LoggerQueue;
+struct LoggerThreadInfo
+{
+	LoggerQueue* queue;
+	Logger* logger;
+};
 
 class Logger
 {
 private:
 	Levels::LogLevel FLogLevel;
 	std::string FName;
-	//THash<std::string, Sink*> sinks;
+	LoggerQueue FQueue{1000};
+	std::thread FThread;
+	bool FAsync = false;
 	THArray<Sink*> sinks;
-	bool shouldLog(Levels::LogLevel ll) { return FLogLevel >= ll; }
+	bool shouldLog(const Levels::LogLevel ll) const { return FLogLevel >= ll; }
+	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
 	Logger(const std::string& name, Levels::LogLevel ll = Levels::llInfo) : FLogLevel(ll), FName(name) { }
 
-	virtual ~Logger() { for (uint i = 0; i < sinks.Count(); i++) delete sinks[i]; sinks.Clear(); }
+	virtual ~Logger() 
+	{ 
+		SetAsyncMode(false); // send stop to async thread and wait till it finishes.  
+		for (uint i = 0; i < sinks.Count(); i++) delete sinks[i]; 
+		sinks.Clear(); 
+	}
 
-	void SetLogLevel(Levels::LogLevel ll) { FLogLevel = ll; }
+	void SetLogLevel(const Levels::LogLevel ll) { FLogLevel = ll; }
+
+	void SetAsyncMode(bool amode)
+	{
+		if (FAsync == amode) return; //mode hasn't changed
+
+		if (amode == true)
+		{
+			LoggerThreadInfo* info = new LoggerThreadInfo;
+			info->queue = &FQueue;
+			info->logger = this;
+
+			std::thread thr(ThreadProc, info);
+			FThread.swap(thr);
+			FAsync = amode;
+		}
+		else
+		{
+			FAsync = amode; // stop adding new log messages
+			FQueue.PushElement(nullptr);
+			FThread.join(); // waiting till thread finishes
+		}
+
+	}
 
 #if defined(WIN32) && !defined(__BORLANDC__)
 	template<class ... Args>
@@ -49,54 +90,44 @@ public:
 
 		// TODO think how to pass all args into SendToAllSinks and create final string there 
 		LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
-		SendToAllSinks(ev);
+		InternalLog(ev);
 	}
 #endif
 
-	void Crit(const std::string& msg)
-	{
-		Log(msg, Levels::llCritical);
-	}
+	void Crit(const std::string& msg)  { Log(msg, Levels::llCritical); }
+	void Error(const std::string& msg) { Log(msg, Levels::llError); }
+	void Warn(const std::string& msg)  { Log(msg, Levels::llWarning);}
+	void Info(const std::string& msg)  { Log(msg, Levels::llInfo); }
+	void Debug(const std::string& msg) { Log(msg, Levels::llDebug); }
+	void Trace(const std::string& msg) { Log(msg, Levels::llTrace); }
 
-	void Error(const std::string& msg)
-	{
-		Log(msg, Levels::llError);
-	}
-
-	void Warn(const std::string& msg)
-	{
-		Log(msg, Levels::llWarning);
-	}
-
-	void Info(const std::string& msg)
-	{
-		Log(msg, Levels::llInfo);
-	}
-
-	void Debug(const std::string& msg)
-	{
-		Log(msg, Levels::llDebug);
-	}
-
-	void Trace(const std::string& msg)
-	{
-		Log(msg, Levels::llTrace);
-	}
-
-	void Log(const std::string& msg, Levels::LogLevel lv)
+	void Log(const std::string& msg, const Levels::LogLevel lv)
 	{
 		if (!shouldLog(lv)) return;
 
-		LogEvent ev(msg, lv, GetThreadID(), GetCurrDateTime());
-		SendToAllSinks(ev);
+		if (FAsync)
+		{
+			LogEvent* event = new LogEvent(msg, lv, GetThreadID(), GetCurrDateTime());
+			FQueue.PushElement(event);
+		}
+		else
+		{
+			LogEvent ev(msg, lv, GetThreadID(), GetCurrDateTime());
+			InternalLog(ev);
+		}
 	}
 
-	void SendToAllSinks(LogEvent& le)
+	void SendToAllSinks(const LogEvent& le)
 	{
-		for (uint i = 0; i < sinks.Count(); i++)
+		for (auto si : sinks)
+		{
+			si->PubSendMsg(le);
+		}
+
+		/*for (uint i = 0; i < sinks.Count(); i++)
 		{
 			sinks[i]->PubSendMsg(le);
-		}
+		}*/
 	}
 
 	void AddSink(Sink* sink)
@@ -116,6 +147,43 @@ public:
 	uint SinkCount()
 	{
 		return sinks.Count();
+	}
+
+	Sink* GetSink(std::string& sinkName)
+	{
+		for(Sink* si : sinks)
+		{
+			if (si->GetName() == sinkName) return si;
+		}
+
+		return nullptr;
+	}
+	
+	void WaitQueue()
+	{
+		FQueue.WaitEmptyQueue();
+	}
+
+	static int ThreadProc(void* parameter)
+	{
+		LoggerThreadInfo* info = (LoggerThreadInfo*)parameter;
+
+		LogEvent* current_msg;
+		do
+		{
+			current_msg = info->queue->WaitForElement();
+			if (current_msg)
+			{
+				LogEvent* event = current_msg;
+				info->logger->InternalLog(*event);
+				delete event;
+			}
+
+		} while (current_msg); // null as msg means that we need to stop this thread
+
+		delete info;
+
+		return 0;
 	}
 
 };

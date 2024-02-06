@@ -1,7 +1,7 @@
 /*
  * SynchronizedQueue.h
  *
- * Copyright 2003, LogEngine Project. All rights reserved.
+ * Copyright 2024, LogEngine Project. All rights reserved.
  *
  * See the COPYING file for the terms of usage and distribution.
  */
@@ -22,31 +22,37 @@ private:
     std::condition_variable cv;
 
 public:
-    T WaitForElement();
-    void PushElement(T in_element);
+    SafeQueue(uint capacity) { this->SetCapacity(capacity); }
+
+    T WaitForElement()
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+        while (this->Count() == 0)
+            cv.wait(lock);
+
+        //    T out = this->GetValue(0);
+        //    this->DeleteValue(0);
+
+        return this->PopFront(); // TODO PopFront causes all the other elements to be moved in memory. Think of container that does not require moving elements during PopFront
+    }
+
+    void PushElement(T in_element)
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+
+        this->AddValue(in_element);
+        cv.notify_one();
+    }
+
+    // wait till Queue becomes empty
+    void WaitEmptyQueue()
+    {
+        //std::lock_guard<std::mutex> lock(mtx);
+        while(this->Count() > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
 };
 
-template<class T>
-T SafeQueue<T>::WaitForElement()
-{
-    std::unique_lock<std::mutex> lock(mtx);
-    while (this->Count() == 0)
-        cv.wait(lock);
-
-//    T out = this->GetValue(0);
-//    this->DeleteValue(0);
-
-    return this->PopFront(); //out;
-}
-
-template<class T>
-void SafeQueue<T>::PushElement(T in_element)
-{
-    std::lock_guard<std::mutex> lock(mtx);
-
-    this->AddValue(in_element);
-    cv.notify_one();
-}
 
 //-------------------------------------------------------------------
 // Old implementation based on WinAPI and pthread calls
