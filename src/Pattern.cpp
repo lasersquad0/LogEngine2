@@ -2,7 +2,7 @@
 
 LOGENGINE_NS_BEGIN
 
-std::string Pattern::Format(LogEvent& event)
+std::string Pattern::Format(const LogEvent& event)
 {
 	std::string result;
 

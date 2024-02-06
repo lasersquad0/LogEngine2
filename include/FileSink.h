@@ -30,7 +30,7 @@ public:
 
 	~FileSink() override { FStream->Flush(); delete FStream; }
 
-	void SendMsg(LogEvent& e) override
+	void SendMsg(const LogEvent& e) override
 	{
 		std::string str = FormatString(e); // FormatString adds '\n' to the end of string
 		//FStream.Seek(0, smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
@@ -43,6 +43,8 @@ public:
 	**/
 	std::string getFileName() const { return FStream->GetFileName(); }
 
+	void Flush() override {	FStream->Flush(); }
+
 protected:
 	TFileStream* FStream;
 };
@@ -53,7 +55,7 @@ class StdoutSink : public Sink
 public:
 	StdoutSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
 
-	void SendMsg(LogEvent& e) override
+	void SendMsg(const LogEvent& e) override
 	{
 		std::string str = FormatString(e);
 		std::cout << str << EndLine;
@@ -66,7 +68,7 @@ class StderrSink : public Sink
 public:
 	StderrSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
 
-	void SendMsg(LogEvent& e) override
+	void SendMsg(const LogEvent& e) override
 	{
 		std::string str = FormatString(e);
 		std::cerr << str << std::endl;
@@ -80,7 +82,7 @@ private:
 public:
 	StringSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
 
-	void SendMsg(LogEvent& e) override
+	void SendMsg(const LogEvent& e) override
 	{
 		std::string str = FormatString(e);
 		output << str << std::endl;

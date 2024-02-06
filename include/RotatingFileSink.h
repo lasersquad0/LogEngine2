@@ -42,7 +42,7 @@ public:
 		FInitialFileSize = FStream->Length();
 	}
 
-	void SendMsg(LogEvent& e) override
+	void SendMsg(const LogEvent& e) override
 	{
 		if (FInitialFileSize + FBytesWritten > FMaxLogSize) truncLogFile();
 

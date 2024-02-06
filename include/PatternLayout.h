@@ -30,7 +30,7 @@ protected:
 public:
 	PatternLayout() {}
 	~PatternLayout() override {}
-	std::string Format(LogEvent& lv) override { return MessagePatterns[lv.msgLevel].Format(lv); }
+	std::string Format(const LogEvent& lv) override { return MessagePatterns[lv.msgLevel].Format(lv); }
 
 	void SetPattern(const std::string& pattern, Levels::LogLevel msgType) { MessagePatterns[msgType].SetPattern(pattern); }
 	void SetCritPattern(const std::string& pattern) { MessagePatterns[Levels::llCritical].SetPattern(pattern); }

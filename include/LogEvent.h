@@ -28,14 +28,14 @@ static const std::string LogLevelNames[] LL_NAMES;
 static const std::string LogLevelCapsNames[] LL_CAPS_NAMES;
 static const char* LogLevelShortNames[] LL_SHORT_NAMES;
 
-inline const std::string& LLtoString(Levels::LogLevel ll) { return LogLevelNames[ll]; }
-inline const std::string& LLtoCapsString(Levels::LogLevel ll) { return LogLevelCapsNames[ll]; }
+inline const std::string& LLtoString(const Levels::LogLevel ll) { return LogLevelNames[ll]; }
+inline const std::string& LLtoCapsString(const Levels::LogLevel ll) { return LogLevelCapsNames[ll]; }
 
-inline const char* LLtoShortString(Levels::LogLevel ll) { return LogLevelShortNames[ll]; }
+inline const char* LLtoShortString(const Levels::LogLevel ll) { return LogLevelShortNames[ll]; }
 
 inline Levels::LogLevel LLfromString(const std::string& name)
 {
-	const std::string* it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), name);
+	auto it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), name);
 	if (it != std::end(LogLevelNames))
 		return static_cast<Levels::LogLevel>(std::distance(std::begin(LogLevelNames), it));
 

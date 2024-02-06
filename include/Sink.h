@@ -23,13 +23,12 @@ protected:
 	ullong FMessageCounts[(int)Levels::n_LogLevels]{0,0,0,0,0,0};
 	ullong FBytesWritten = 0;
 
-	bool shouldLog(Levels::LogLevel ll) { return FLogLevel >= ll; }
+	bool shouldLog(const Levels::LogLevel ll) { return FLogLevel >= ll; }
 
-	virtual void SendMsg(LogEvent& e) = 0;
-	virtual void Flush() { /* does nothing here*/ }
+	virtual void SendMsg(const LogEvent& e) = 0;
 
 public:
-	Sink(const std::string& name, Levels::LogLevel ll = Levels::llInfo) : FLogLevel{ ll }, FName{ name }, FLayout{ new FixedLayout() }
+	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FLogLevel{ ll }, FName{ name }, FLayout{ new FixedLayout() }
 	{
 		//for (uint i = 0; i < n_LogLevels; i++)
 		//	FMessageCounts[i] = 0;
@@ -37,7 +36,9 @@ public:
 
 	virtual ~Sink() { delete FLayout; }
 
-	void PubSendMsg(LogEvent& e)
+	virtual void Flush() { /* does nothing here*/ }
+	
+	void PubSendMsg(const LogEvent& e)
 	{
 		if (!shouldLog(e.msgLevel)) return;
 
@@ -51,7 +52,7 @@ public:
 		FLayout = layout;
 	}
 
-	virtual std::string FormatString(LogEvent& e)
+	virtual std::string FormatString(const LogEvent& e)
 	{
 		std::string str = FLayout->Format(e);
 		FMessageCounts[e.msgLevel]++;

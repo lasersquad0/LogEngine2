@@ -174,7 +174,7 @@ std::string BoolToStr(bool Value)
 		return "0";
 
 }
-bool StrToBool(std::string& Value)
+bool StrToBool(const std::string& Value)
 {
 	return EqualNCase(Value, "1") || EqualNCase(Value, "yes") || EqualNCase(Value, "true");
 }
@@ -183,50 +183,61 @@ bool StrToBool(std::string& Value)
 std::string ExtractFileName(const std::string& FileName)
 {
 	size_t i = FileName.length();
+	if (i == 0) return "";
+
 	do
 	{
 		i--;
-		if((FileName[i] == '\\') || (FileName[i] == '/'))
+		if ((FileName[i] == '\\') || (FileName[i] == '/'))
+		{
+			i++;
 			break;
-	}
-	while(i > 0);
+		}
+	} while (i > 0);
 
-	return FileName.substr(i+1);
+	return FileName.substr(i);
 }
 
 // extracts file dir from path with filename
 std::string ExtractFileDir(const std::string& FileName)
 {
 	size_t i = FileName.length();
+	if (i == 0) return "";
+
 	do
 	{
 		i--;
 		if ((FileName[i] == '\\') || (FileName[i] == '/'))
+		{
+			i++;
 			break;
-	}while (i > 0);
+		}
+	} while (i > 0);
 
-	return FileName.substr(0, i+1);
+	return FileName.substr(0, i);
 }
 
 std::string StripFileExt(const std::string& FileName)
 {
 	size_t i = FileName.length();
-	if(i == 0) return "";
+	if (i == 0) return "";
 
 	bool f = false;
 	do
 	{
-	   i--;
-	   if(FileName[i] == '.')
+		i--;
+		if (FileName[i] == '.')
 		{
 			f = true; // we found a dot
 			break;
 		}
 
-	}
-	while(i > 0);
+		if (FileName[i] == '\\' || FileName[i] == '/') // stop is folder delimiter found
+			break;
 
-	if(f)
+	} while (i > 0);
+
+	if (f)
 		return FileName.substr(0, i);
 	else
 		return FileName;
@@ -267,7 +278,7 @@ tm_point GetCurrTimePoint()
 	return std::chrono::system_clock::now();
 }
 
-struct tm time_t_to_tm(time_t t)
+struct tm time_t_to_tm(const time_t t)
 {
 #ifdef WIN32
 	struct tm ttm;
@@ -334,7 +345,7 @@ std::string GetCurrDateTimeAsString(void)
 }
 
 // converts native datetime value into string
-std::string DateTimeToStr(time_t t)
+std::string DateTimeToStr(const time_t t)
 {
 	struct tm ttm = time_t_to_tm(t);
 	char ss[DATETIME_BUF];
@@ -344,7 +355,7 @@ std::string DateTimeToStr(time_t t)
 }
 
 // converts native datetime value into string
-std::string DateTimeToStr(struct tm& t)
+std::string DateTimeToStr(struct tm const& t)
 {
 	char ss[DATETIME_BUF];
 	strftime(ss, DATETIME_BUF, "%F %T", &t);

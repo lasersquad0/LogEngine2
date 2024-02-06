@@ -34,7 +34,7 @@ tm_point GetCurrTimePoint();
 struct tm GetCurrDateTime();
 
 // truncates Value to Precision digits after point
-double round(const double Value,const int Precision);
+double round(const double Value, const int Precision);
 
 // functions to convert varous ints and longs to string
 std::string IntToStr(int Value, int FieldSize);
@@ -50,7 +50,7 @@ std::string FloatToStr(double Value);
 std::string BoolToStr(bool Value);
 
 // function to convert string value (1,0,yes,no,true,false) to the bool
-bool StrToBool(std::string& Value);
+bool StrToBool(const std::string& Value);
 
 // extracts filename from path with filename
 std::string ExtractFileName(const std::string& FileName);
@@ -62,7 +62,7 @@ std::string ExtractFileDir(const std::string& FileName);
 std::string StripFileExt(const std::string& FileName);
 
 // replaces in string S all occurrences of OldPattern by NewPattern
-std::string StringReplace(const std::string& S,const std::string& OldPattern,const std::string& NewPattern);
+std::string StringReplace(const std::string& S, const std::string& OldPattern, const std::string& NewPattern);
 
 // converts date to string representation
 //std::string DateToString(int Date);
@@ -81,7 +81,7 @@ std::string FormatCurrDateTime(const std::string& FormatStr);
 
 // converts native datetime value into std::string
 std::string DateTimeToStr(time_t t);
-std::string DateTimeToStr(struct tm& t);
+std::string DateTimeToStr(struct tm const& t);
 
 // deletes all leading and trailing \n \r symbols from string
 std::string DelCRLF(const std::string s);

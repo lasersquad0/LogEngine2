@@ -19,14 +19,14 @@ class Layout
 {
 public:
 	virtual ~Layout() {}
-	virtual std::string Format(LogEvent& event) = 0;
+	virtual std::string Format(const LogEvent& event) = 0;
 };
 
 
 class FixedLayout : public Layout
 {
 public:
-	virtual std::string Format(LogEvent& lv)
+	virtual std::string Format(const LogEvent& lv)
 	{
 		std::string msgTypeName = LLtoString(lv.msgLevel);
 
