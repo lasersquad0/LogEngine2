@@ -11,6 +11,7 @@
 
 #include <exception> 
 #include <string>
+#include <format>
 #include "Compare.h"
 
 #define valuemin(v1,v2) (((v1)<(v2))?(v1):(v2))
