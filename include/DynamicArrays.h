@@ -235,10 +235,11 @@ protected:
 	uint 	FCount;
 	uint 	FCapacity; 
 	T*		FMemory;
+	T*		FBegin;
 	void	Error(const uint Value, /*const uint vmin,*/ const uint vmax) const;
 	uint	GetGrowDelta();
 	void	Grow();	/// Grow memory size allocated for elements
-
+	void	EnsureCapacity(const uint numItems) { if(FBegin + numItems > FMemory + FCapacity) GrowTo(numItems); }
 public:
 	using iterator = THArrayIterator<THArray>;
 	//using const_iterator = THArrayIterator<const T>;
@@ -247,8 +248,8 @@ public:
 	using reference = T&;
 
 
-	iterator begin() { return iterator(this, FMemory); }
-	iterator end() { return iterator(this, FMemory + FCount); }
+	iterator begin() { return iterator(this, FBegin); }
+	iterator end() { return iterator(this, FBegin + FCount); }
 	//const_iterator begin() const { return const_iterator(FMemory); }
 	//const_iterator end() const   { return const_iterator(FMemory + FCount); }
 
@@ -261,7 +262,7 @@ public:
 	bool operator==(const THArray<T>& a) const;
 	bool operator>(const THArray<T>& a) const;
 
-	inline	 T* Memory() const { return FMemory; }
+	//inline	 T* Memory() const { return FMemory; }
 	inline uint ItemSize() const override { return sizeof(T); }
 	inline uint Count() const override { return FCount; }
 	void		Clear() override { FCount = 0; }
@@ -298,23 +299,7 @@ public:
 
 };
 
-template<class T>
-class THDeque : public THArray<T>
-{
-protected:
-	T*		FBegin; // points to place in FMemory where read data beging i.e. points to array[0] item
-	T*		Memory() const { return FBegin; } // do not need this method
-public:
-	THDeque() : THArray() { FBegin = nullptr; }
-	THDeque<T>& operator=(const THDeque<T>& a); // copy constructor
-	bool operator==(const THDeque<T>& a) const;
-	//bool operator>(const THDeque<T>& a) const;
 
-	uint Capacity() const override { return this->FCapacity; }
-	void ClearMem() override;
-	void Zero() override;
-
-};
 
 //////////////////////////////////////////////////////////////////////
 //  THArraySorted Class Interface
@@ -508,6 +493,7 @@ THArray<T>::THArray()
 	FCount = 0;
 	FCapacity = 0;
 	FMemory = nullptr;
+	FBegin = nullptr;
 }
 
 template<class T>
@@ -515,7 +501,7 @@ THArray<T>::THArray(const THArray<T>& a) :THArray()
 {
 	SetCapacity(a.FCount);
 	for (uint i = 0; i < a.FCount; i++)
-		FMemory[i] = a.FMemory[i];
+		FBegin[i] = a.FBegin[i];
 
 	FCount = a.FCount;
 }
@@ -544,6 +530,7 @@ void THArray<T>::Error(const uint Value, /*const uint vmin, */ const uint vmax) 
 	}
 };
 
+// calculate grow delta value depending on current array size
 template<class T>
 uint THArray<T>::GetGrowDelta()
 {
@@ -572,8 +559,7 @@ void THArray<T>::Grow()
 template<class T>
 void THArray<T>::GrowTo(const uint ToCount)
 {
-	if (ToCount <= FCapacity)
-		return;
+	if (ToCount <= FCapacity) return; 
 
 	uint Delta = GetGrowDelta();
 
@@ -592,11 +578,12 @@ void THArray<T>::SetCapacity(const uint Value)
 	{
 		newMemory = new T[Value];
 		for (uint i = 0; i < valuemin(Value, FCount); i++)
-			newMemory[i] = FMemory[i];
+			newMemory[i] = FBegin[i];
 	}
 
 	delete[] FMemory;
 	FMemory = newMemory;
+	FBegin  = newMemory;
 	FCapacity = Value;
 	if (FCapacity < FCount)
 		FCount = FCapacity;
@@ -641,7 +628,7 @@ THArray<T>& THArray<T>::operator=(const THArray<T>& a)
 
 	//memcpy(FMemory, a.FMemory, sizeof(T) * a.FCount);
 	for (uint i = 0; i < a.FCount; i++)
-		FMemory[i] = a.FMemory[i];
+		FBegin[i] = a.FBegin[i];
 
 	FCount = a.FCount;
 
@@ -652,16 +639,32 @@ template<class T>
 bool THArray<T>::operator==(const THArray<T>& a) const
 {
 	if (FCount == a.FCount)
-		return memcmp(FMemory, a.FMemory, FCount * sizeof(T)) == 0;
+		return memcmp(FBegin, a.FBegin, FCount * sizeof(T)) == 0;
 	else
 		return false;
+}
+
+template <class T>
+bool THArray<T>::operator>(const THArray<T>& a) const
+{
+	for (uint i = 0; i < valuemin(FCount, a.Count()); i++)
+	{
+		if (FBegin[i] > a[i])
+			return true;
+		else if (a[i] > FBegin[i])
+			return false;
+	}
+
+	if (FCount > a.Count()) return true;
+
+	return false;
 }
 
 template<class T>
 void THArray<T>::Zero()
 {
 	for (uint i = 0; i < FCount; i++)
-		FMemory[i] = T();
+		FBegin[i] = T();
 }
 
 template<class T>
@@ -669,6 +672,7 @@ void THArray<T>::ClearMem()
 {
 	delete[] FMemory;
 	FMemory = nullptr;
+	FBegin = nullptr;
 	FCount = 0;
 	FCapacity = 0;
 }
@@ -677,25 +681,38 @@ template<class T>
 void THArray<T>::SetValue(const uint Index, const T& Value)
 {
 	Error(Index, FCount);
-	FMemory[Index] = Value;
+	FBegin[Index] = Value;
 }
 
 template<class T>
 T& THArray<T>::GetValue(const uint Index) const
 {
 	Error(Index, FCount);
-	return FMemory[Index];
+	return FBegin[Index];
 }
 
 template<class T>
 uint THArray<T>::InsertValue(const uint Index, const T& Value)
 {
 	Error(Index, FCount + 1);
-	if (FCount >= FCapacity)
-		Grow();
-	for (uint i = FCount; i > Index; i--)
-		FMemory[i] = FMemory[i - 1];
-	FMemory[Index] = Value;
+
+	//if (FCount >= FCapacity) Grow();
+	EnsureCapacity(FCount + 1);
+
+	if (Index < (FCount >> 1) && // check which part (left or right) of an array is smaller and move data of that part 
+		FBegin > FMemory)   // make sure that we have free space on the left 	
+	{
+		FBegin--;
+		for (uint i = 0; i < Index; i++)
+			FBegin[i] = FBegin[i + 1];
+	}
+	else
+	{
+		for (uint i = FCount; i > Index; i--)
+			FBegin[i] = FBegin[i - 1];
+	}
+
+	FBegin[Index] = Value;
 	FCount++;
 
 	return Index;
@@ -705,8 +722,24 @@ template<class T>
 void THArray<T>::DeleteValue(const uint Index)
 {
 	Error(Index, FCount);
-	for (uint i = Index; i < FCount - 1; i++)
-		FMemory[i] = FMemory[i + 1];
+
+	//if (Index == 0) PopFront();
+	//else if (Index == FCount - 1) Pop();
+	//else 
+		
+	if (Index < (FCount >> 1))  // check which part (left or right) of an array is smaller and move data of part 
+  		 //&& FBegin > FMemory))   // make sure that we have free space on the left 	
+	{
+		for (uint i = Index; i > 0; i--)
+			FBegin[i] = FBegin[i - 1];
+		FBegin++;
+	}
+	else
+	{
+		for (uint i = Index; i < FCount - 1; i++)
+			FBegin[i] = FBegin[i + 1];
+	}
+
 	FCount--;
 }
 
@@ -714,7 +747,7 @@ template<class T>
 inline T* THArray<T>::GetValuePointer(const uint Index) const
 {
 	Error(Index, FCount);
-	return FMemory + Index;
+	return FBegin + Index;
 }
 
 template<class T>
@@ -724,7 +757,7 @@ int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const
 	Cmp cmp;
 	for (uint i = Start; i < FCount; i++)
 	{
-		T& v = FMemory[i];
+		T& v = FBegin[i];
 		if (cmp.eq(v, Value))
 			return static_cast<int>(i);
 	}
@@ -735,7 +768,7 @@ template<class T>
 int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const
 {
 	for (uint i = Start; i < FCount; i++)
-		if (FMemory[i] == Value)
+		if (FBegin[i] == Value)
 			return static_cast<int>(i);
 	return NPOS;
 }
@@ -743,28 +776,31 @@ int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const
 template<class T>
 void THArray<T>::AddFillValues(const uint Num)
 {
-	if ((FCount + Num) > FCapacity)
-		GrowTo(FCount + Num);
+	EnsureCapacity(FCount + Num);
+	//if ((FCount + Num) > FCapacity) GrowTo(FCount + Num);
+
 	for (uint i = FCount; i < FCount + Num; i++)
-		FMemory[i] = T();
+		FBegin[i] = T();
 	FCount = FCount + Num;
 }
 
-
+// return last item in array and delete it from array
 template<class T>
 T	THArray<T>::Pop()
 {
-	Error(0/*FCount - 1 */, FCount); // just check that array is not empty
+	Error(0, FCount); // just check that array is not empty
 	FCount--;
-	return FMemory[FCount];
+	return FBegin[FCount];
 }
 
 template<class T>
 T	THArray<T>::PopFront()
 {
 	Error(0, FCount); // just check that array is not empty
-	T tmp = FMemory[0];
-	DeleteValue(0);
+	T tmp = FBegin[0];
+	FBegin++;   // no need to move data, just move begin pointer
+	FCount--;
+	//DeleteValue(0);
 	return tmp;
 }
 
@@ -777,101 +813,19 @@ inline void THArray<T>::Swap(const uint Index1, const uint Index2)
 	if (Index1 == Index2)
 		return;
 
-	T temp = FMemory[Index1];
-	FMemory[Index1] = FMemory[Index2];
-	FMemory[Index2] = temp;
+	T temp = FBegin[Index1];
+	FBegin[Index1] = FBegin[Index2];
+	FBegin[Index2] = temp;
 }
-
-template <class T>
-bool THArray<T>::operator>(const THArray<T>& a) const
-{
-	for (uint i = 0; i < valuemin(FCount, a.Count()); i++)
-	{
-		if (FMemory[i] > a[i])
-			return true;
-		else if (a[i] > FMemory[i])
-			return false;
-	}
-
-	if (FCount > a.Count()) return true;
-
-	return false;
-}
-
 
 #ifdef _USE_STREAMS_
 template<class T>
 void THArray<T>::SaveToStream(TStream& stre)
 {
 	stre << FCount;
-	stre.Write(FMemory, FCount * sizeof(T));
+	stre.Write(FBegin, FCount * sizeof(T));
 }
 #endif //_USE_STREAMS_
-
-//////////////////////////////////////////////////////////////////////
-//  THDeque Class Interface
-//////////////////////////////////////////////////////////////////////
-
-template<class T>
-void THDeque<T>::SetCapacity(const uint Value)
-{
-	T* newMemory = nullptr;
-
-	if (Value > 0)
-	{
-		newMemory = new T[Value];
-		for (uint i = 0; i < valuemin(Value, this->FCount); i++)
-			newMemory[i] = FBegin[i];
-	}
-
-	delete[] this->FMemory;
-	this->FMemory = newMemory;
-	FBegin = newMemory;
-	this->FCapacity = Value;
-	if (this->FCapacity < this->FCount)
-		this->FCount = this->FCapacity;
-};
-
-template<class T>
-void THDeque<T>::Zero()
-{
-	for (uint i = 0; i < this->FCount; i++)
-		FBegin[i] = T();
-}
-
-template<class T>
-void THDeque<T>::ClearMem()
-{
-	delete[] this->FMemory;
-	this->FMemory = nullptr;
-	FBegin = nullptr;
-	this->FCount = 0;
-	this->FCapacity = 0;
-}
-
-template<class T>
-THDeque<T>& THDeque<T>::operator=(const THDeque<T>& a)
-{
-	ClearMem();
-	SetCapacity(a.FCount);
-
-	//memcpy(FMemory, a.FMemory, sizeof(T) * a.FCount);
-	for (uint i = 0; i < a.FCount; i++)
-		FBegin[i] = a.FBegin[i];
-
-	FCount = a.FCount;
-
-	return *this;
-}
-
-template<class T>
-bool THDeque<T>::operator==(const THDeque<T>& a) const
-{
-	if (FCount == a.FCount)
-		return memcmp(FBegin, a.FBegin, FCount * sizeof(T)) == 0;
-	else
-		return false;
-}
 
 
 //////////////////////////////////////////////////////////////////////
