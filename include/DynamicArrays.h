@@ -224,8 +224,8 @@ private:
 		bool operator!=(THArrayIterator const& other) const { return FCont != other.FCont || FPtr != other.FPtr; }
 		bool operator==(THArrayIterator const& other) const { return FCont == other.FCont && FPtr == other.FPtr; }
 		reference operator*() const { return *FPtr; }
-		THArrayIterator& operator++() { if (FPtr != FCont->FMemory + FCont->FCount) ++FPtr; return *this; }
-		THArrayIterator& operator--() { if (FPtr != FCont->FMemory) --FPtr; return *this; }
+		THArrayIterator& operator++() { if (FPtr != FCont->FBegin + FCont->FCount) ++FPtr; return *this; }
+		THArrayIterator& operator--() { if (FPtr != FCont->FBegin) --FPtr; return *this; }
 	private:
 		Cont* FCont{ nullptr };
 		pointer FPtr{ nullptr };
@@ -239,10 +239,11 @@ protected:
 	void	Error(const uint Value, /*const uint vmin,*/ const uint vmax) const;
 	uint	GetGrowDelta();
 	void	Grow();	/// Grow memory size allocated for elements
-	void	EnsureCapacity(const uint numItems) { if(FBegin + numItems > FMemory + FCapacity) GrowTo(numItems); }
+	inline bool	EnoughCapacity(const uint numItems) { return FBegin + numItems < FMemory + FCapacity; }
+	inline void	EnsureCapacity(const uint numItems) { if(!EnoughCapacity(numItems)) GrowTo(numItems); }
 public:
 	using iterator = THArrayIterator<THArray>;
-	//using const_iterator = THArrayIterator<const T>;
+	using const_iterator = THArrayIterator<const T>;
 	using item_type = T;
 	using pointer = T*;
 	using reference = T&;
@@ -427,7 +428,6 @@ public:
 	V& GetValue(const I& Key) const;
 	V* GetValuePointer(const I& Key) const;
 	void	SetCapacity(const uint Value) { FAKeys.SetCapacity(Value); FAValues.SetCapacity(Value); }
-	//void	Sort();
 	//void	Reverse();
 
 /*	void Minus(THash<I, V> in);	*/
@@ -514,19 +514,21 @@ THArray<T>::THArray(std::initializer_list<T> list) :THArray()
 }
 
 template<class T>
-void THArray<T>::Error(const uint Value, /*const uint vmin, */ const uint vmax) const
+void THArray<T>::Error(const uint Value, const uint vmax) const
 {
-	if (/*(vmin > Value) ||*/ Value >= vmax)
+	if (Value >= vmax)
 	{
-		char str[100];
+		throw THArrayException(std::format("Error in THArray: Element with index {} not found!", Value));
 
-#ifdef WIN32
-		sprintf_s(str, 100, "Error in THArray: Element with index %i not found!", Value);
-#else
-		sprintf(str, "Error in THArray: Element with index %i not found!", Value);
-#endif
-
-		throw THArrayException(str);
+//		char str[100];
+//
+//#ifdef WIN32
+//		sprintf_s(str, 100, "Error in THArray: Element with index %i not found!", Value);
+//#else
+//		sprintf(str, "Error in THArray: Element with index %i not found!", Value);
+//#endif
+//
+//		throw THArrayException(str);
 	}
 };
 
@@ -555,18 +557,23 @@ void THArray<T>::Grow()
 	SetCapacity(FCapacity + Delta);
 };
 
-// Grow to either Capacity+25% or to ToCount what is bigger.
+// Grows only if not enough Capacity for ToCount elements. if it is grows to either Capacity+25% or to ToCount what is bigger.
 template<class T>
 void THArray<T>::GrowTo(const uint ToCount)
 {
-	if (ToCount <= FCapacity) return; 
+	//if (ToCount <= FCapacity) return; 
+	if (EnoughCapacity(ToCount)) return;
 
 	uint Delta = GetGrowDelta();
 
-	if ((FCapacity + Delta) < ToCount)
-		Delta = ToCount - FCapacity;
+	//if ((FCapacity + Delta) < ToCount)
+	//	Delta = ToCount - FCapacity;
+	//SetCapacity(FCapacity + Delta);
 
-	SetCapacity(FCapacity + Delta);
+	if (FBegin + ToCount > FMemory + FCapacity + Delta)
+		SetCapacity(ToCount);
+	else
+		SetCapacity(FCapacity + Delta);
 };
 
 template<class T>
@@ -873,18 +880,18 @@ int THArraySorted<T, Cmp>::InternalIndexOfFrom(const T& Value, const uint Start)
 	{
 		step = count / 2;
 		middle = left + step;
-		if (FCompare.mt(Value, this->FMemory[middle]))
+		if (FCompare.mt(Value, this->FBegin[middle]))
 		{
 			left = middle + 1;
 			count -= step + 1;
 		}
-		else if (FCompare.lt(Value, this->FMemory[middle]))
+		else if (FCompare.lt(Value, this->FBegin[middle]))
 			count = step;
 		else
 			return static_cast<int>(middle);
 	}
 
-	if (left < this->FCount && FCompare.eq(Value, this->FMemory[left])) return static_cast<int>(left);
+	if (left < this->FCount && FCompare.eq(Value, this->FBegin[left])) return static_cast<int>(left);
 
 	return -static_cast<int>(left + 1);  // return position (with negative sign) where element is going to be according to sorting
 }

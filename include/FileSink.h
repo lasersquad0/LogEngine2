@@ -20,6 +20,9 @@ LOGENGINE_NS_BEGIN
 
 class FileSink : public Sink
 {
+protected:
+	TFileStream* FStream;
+
 public:
 	FileSink(const std::string& name, const std::string& fileName) : Sink(name)
 	{
@@ -44,9 +47,6 @@ public:
 	std::string getFileName() const { return FStream->GetFileName(); }
 
 	void Flush() override {	FStream->Flush(); }
-
-protected:
-	TFileStream* FStream;
 };
 
 

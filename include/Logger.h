@@ -34,7 +34,7 @@ class Logger
 private:
 	Levels::LogLevel FLogLevel;
 	std::string FName;
-	LoggerQueue FQueue{1000};
+	LoggerQueue FQueue;
 	std::thread FThread;
 	bool FAsync = false;
 	THArray<Sink*> sinks;
@@ -42,7 +42,7 @@ private:
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
-	Logger(const std::string& name, Levels::LogLevel ll = Levels::llInfo) : FLogLevel(ll), FName(name) { }
+	Logger(const std::string& name, Levels::LogLevel ll = LL_DEFAULT) : FLogLevel(ll), FName(name), FQueue(10) {}
 
 	virtual ~Logger() 
 	{ 
@@ -119,15 +119,15 @@ public:
 
 	void SendToAllSinks(const LogEvent& le)
 	{
-		for (auto si : sinks)
+		for (Sink* si : sinks)
 		{
 			si->PubSendMsg(le);
 		}
 
-		/*for (uint i = 0; i < sinks.Count(); i++)
-		{
-			sinks[i]->PubSendMsg(le);
-		}*/
+		//for (uint i = 0; i < sinks.Count(); i++)
+		//{
+		//	sinks[i]->PubSendMsg(le);
+		//}
 	}
 
 	void AddSink(Sink* sink)
@@ -155,6 +155,11 @@ public:
 		{
 			if (si->GetName() == sinkName) return si;
 		}
+
+		//for (uint i = 0; i < sinks.Count(); i++)
+		//{
+		//	if (sinks[i]->GetName() == sinkName) return sinks[i];
+		//}
 
 		return nullptr;
 	}

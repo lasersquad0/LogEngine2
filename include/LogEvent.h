@@ -20,6 +20,8 @@ namespace Levels
 	enum LogLevel:int { llOff, llCritical, llError, llWarning, llInfo, llDebug, llTrace, n_LogLevels };
 }
 
+#define LL_DEFAULT Levels::llInfo
+
 #define LL_NAMES       { "off", "critical", "error", "warning", "info", "debug", "trace" }
 #define LL_CAPS_NAMES  { "OFF", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE" }
 #define LL_SHORT_NAMES { "O", "C", "E", "W", "I", "D", "T" }

@@ -17,9 +17,9 @@ LOGENGINE_NS_BEGIN
 class Sink
 {
 protected:
-	Levels::LogLevel FLogLevel;
+	Levels::LogLevel FLogLevel{LL_DEFAULT};
 	std::string FName;
-	Layout* FLayout;
+	Layout* FLayout{nullptr};
 	ullong FMessageCounts[(int)Levels::n_LogLevels]{0,0,0,0,0,0};
 	ullong FBytesWritten = 0;
 
@@ -28,7 +28,7 @@ protected:
 	virtual void SendMsg(const LogEvent& e) = 0;
 
 public:
-	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FLogLevel{ ll }, FName{ name }, FLayout{ new FixedLayout() }
+	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FLogLevel{ ll }, FName{ name }/*, FLayout{new FixedLayout()}*/
 	{
 		//for (uint i = 0; i < n_LogLevels; i++)
 		//	FMessageCounts[i] = 0;
