@@ -424,6 +424,7 @@
     <ClCompile Include="..\..\..\src\DynamicArrays.cpp" />
     <ClCompile Include="..\..\..\src\FileStream.cpp" />
     <ClCompile Include="..\..\..\src\Common.cpp" />
+    <ClCompile Include="..\..\..\src\LogEngine.cpp" />
     <ClCompile Include="..\..\..\src\Logger.cpp" />
     <ClCompile Include="..\..\..\src\Pattern.cpp" />
     <ClCompile Include="..\..\..\src\PatternLayout.cpp" />
