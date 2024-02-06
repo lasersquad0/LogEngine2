@@ -185,6 +185,7 @@ void ThreadLogTest::testThreadLogMeasureTime1()
 	
 }
 
+
 void ThreadLogTest::testNONThreadLogMeasureTime1()
 {
 	std::string fileName = LOG_FILES_FOLDER "testNONThreadLogMeasureTime1.log";
