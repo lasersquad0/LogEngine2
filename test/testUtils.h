@@ -8,9 +8,9 @@
  *
  */
 
-class LogEngineUtilsTest : public CPPUNIT_NS::TestFixture
+class UtilsTest : public CPPUNIT_NS::TestFixture
 {
-  CPPUNIT_TEST_SUITE( LogEngineUtilsTest );
+  CPPUNIT_TEST_SUITE( UtilsTest );
   CPPUNIT_TEST( testStringReplace1 );
   CPPUNIT_TEST( testStringReplace2 );  
   CPPUNIT_TEST( testStringReplace3 );  

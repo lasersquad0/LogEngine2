@@ -4,8 +4,8 @@
 #include "Pattern.h"
 #include "LogEvent.h"
 
-CPPUNIT_TEST_SUITE_REGISTRATION(LogEngineLineTest);
-//CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(LogEngineLineTest, "LogEngineLineTest");
+CPPUNIT_TEST_SUITE_REGISTRATION(LineTest);
+//CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(LineTest, "LineTest");
 
 using namespace LogEngine;
 
@@ -24,17 +24,17 @@ struct tm getFixedTime()
 }
 
 
-void LogEngineLineTest::setUp ()
+void LineTest::setUp ()
 {
 
 }
 
-void LogEngineLineTest::tearDown ()
+void LineTest::tearDown ()
 {
     // free memory allocated in setUp, do other things
 }
 
-void LogEngineLineTest::testLine1()
+void LineTest::testLine1()
 {
 	Pattern line("");
 	struct tm tp = getFixedTime();
@@ -44,7 +44,7 @@ void LogEngineLineTest::testLine1()
 	CPPUNIT_ASSERT(res.empty());
 }
 
-void LogEngineLineTest::testLine2()
+void LineTest::testLine2()
 {
 	Pattern line("%DATE%Line%TIME%");
 	struct tm tp = getFixedTime();
@@ -54,7 +54,7 @@ void LogEngineLineTest::testLine2()
     CPPUNIT_ASSERT_EQUAL(std::string("01-Jan-1970Line03:07:24"), res);
 }
 
-void LogEngineLineTest::testLine3()
+void LineTest::testLine3()
 {
 	Pattern line("Line");
 	struct tm tp = getFixedTime();
@@ -64,7 +64,7 @@ void LogEngineLineTest::testLine3()
 	CPPUNIT_ASSERT_EQUAL(std::string("Line"), res);
 }
 
-void LogEngineLineTest::testLine4()
+void LineTest::testLine4()
 {
 	Pattern line("%DATE%");
 	struct tm tp = getFixedTime();
@@ -74,7 +74,7 @@ void LogEngineLineTest::testLine4()
 	CPPUNIT_ASSERT_EQUAL(std::string("01-Jan-1970"), res);
 }
 
-void LogEngineLineTest::testLine5()
+void LineTest::testLine5()
 {
 	Pattern line("%DATE%%DATE%%THREAD%");
 	struct tm tp = getFixedTime();
@@ -84,7 +84,7 @@ void LogEngineLineTest::testLine5()
 	CPPUNIT_ASSERT_EQUAL(std::string("01-Jan-197001-Jan-1970555"), res);
 }
 
-void LogEngineLineTest::testLine6()
+void LineTest::testLine6()
 {
 	Pattern line("%DsssATE%%DATE%");
 	struct tm tp = getFixedTime();
@@ -93,7 +93,7 @@ void LogEngineLineTest::testLine6()
 	std::string res = line.Format(event);
 	CPPUNIT_ASSERT_EQUAL(std::string("%DsssATE%01-Jan-1970"), res);
 }
-void LogEngineLineTest::testLine6_1()
+void LineTest::testLine6_1()
 {
 	Pattern line("%DATE %DsssATE%");
 	struct tm tp = getFixedTime();
@@ -103,7 +103,7 @@ void LogEngineLineTest::testLine6_1()
 	CPPUNIT_ASSERT_EQUAL(std::string("%DATE %DsssATE%"), res);
 }
 
-void LogEngineLineTest::testLine7()
+void LineTest::testLine7()
 {
 	Pattern line("%DsssATE%");
 	struct tm tp = getFixedTime();
@@ -113,7 +113,7 @@ void LogEngineLineTest::testLine7()
 	CPPUNIT_ASSERT_EQUAL(std::string("%DsssATE%"), res);
 }
 
-void LogEngineLineTest::testLine8()
+void LineTest::testLine8()
 {
 	Pattern line("DsssATE%");
 	struct tm tp = getFixedTime();
@@ -123,7 +123,7 @@ void LogEngineLineTest::testLine8()
 	CPPUNIT_ASSERT_EQUAL(std::string("DsssATE%"), res);
 }
 
-void LogEngineLineTest::testLine9()
+void LineTest::testLine9()
 {
 	Pattern line("dff%%dsf");
 	struct tm tp = getFixedTime();
@@ -133,7 +133,7 @@ void LogEngineLineTest::testLine9()
 	CPPUNIT_ASSERT_EQUAL(std::string("dff%%dsf"), res);
 }
 
-void LogEngineLineTest::testLine10()
+void LineTest::testLine10()
 {
 	Pattern line("d%%d%d");
 	struct tm tp = getFixedTime();
@@ -143,7 +143,7 @@ void LogEngineLineTest::testLine10()
 	CPPUNIT_ASSERT_EQUAL(std::string("d%%d%d"), res);
 }
 
-void LogEngineLineTest::testLine11()
+void LineTest::testLine11()
 {
 	Pattern line("Line%DATE%mama%MSG%%TIME%");
 	struct tm tp = getFixedTime();
@@ -157,7 +157,7 @@ void LogEngineLineTest::testLine11()
 	CPPUNIT_ASSERT_EQUAL(std::string("Line01-Jan-1970mama78903:07:24"), res);
 }
 
-void LogEngineLineTest::testLine12()
+void LineTest::testLine12()
 {
 	Pattern line("testLine12 %DATE% %MSG% %TIME% #%THREAD");
 	struct tm tp = getFixedTime();
@@ -171,7 +171,7 @@ void LogEngineLineTest::testLine12()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine12 01-Jan-1970 789 03:07:24 #%THREAD"), res);
 }
 
-void LogEngineLineTest::testLine13()
+void LineTest::testLine13()
 {
 	Pattern line("testLine13 %DATE% %MSG% %TIME% %THRD% #%THREAD%");
 	struct tm tp = getFixedTime();
@@ -185,7 +185,7 @@ void LogEngineLineTest::testLine13()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine13 01-Jan-1970 789 03:07:24 %THRD% #2"), res);
 }
 
-void LogEngineLineTest::testLine14()
+void LineTest::testLine14()
 {
 	Pattern line("testLine14 %DATETIME%..%DATE%..%TIME%");
 	struct tm tp = getFixedTime();
@@ -195,7 +195,7 @@ void LogEngineLineTest::testLine14()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine14 01-Jan-1970 03:07:24..01-Jan-1970..03:07:24"), res);
 }
 
-void LogEngineLineTest::testLine15()
+void LineTest::testLine15()
 {
 	Pattern line("testLine15 %OSVERSION%");
 	struct tm tp = getFixedTime();
@@ -205,7 +205,7 @@ void LogEngineLineTest::testLine15()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.22621.2506"), res);
 }
 
-void LogEngineLineTest::testLine16()
+void LineTest::testLine16()
 {
 	Pattern line("testLine16 %APPNAME%");
 	struct tm tp = getFixedTime();
@@ -215,7 +215,7 @@ void LogEngineLineTest::testLine16()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine16 " DefaultAppName), res);
 }
 
-void LogEngineLineTest::testLine17()
+void LineTest::testLine17()
 {
 	Pattern line("testLine17 %APPVERSION%");
 	struct tm tp = getFixedTime();
@@ -225,7 +225,7 @@ void LogEngineLineTest::testLine17()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine17 " DefaultAppVersion), res);
 }
 
-void LogEngineLineTest::testLine18()
+void LineTest::testLine18()
 {
 	Pattern line("testLine18 %OS% %Msg%");
 	struct tm tp = getFixedTime();
@@ -235,7 +235,7 @@ void LogEngineLineTest::testLine18()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine18 6.3 SP 0.0 4 msgggg"), res);
 }
 
-void LogEngineLineTest::testLine19()
+void LineTest::testLine19()
 {
 	Pattern line("testLine19 %DATE% %MSG% ! %TIME% ! %THRD% ! #%THrEAD% ! %DateTime% ! %APPVERSIOn% ! %appName%" );
 	struct tm tp = getFixedTime();
@@ -249,7 +249,7 @@ void LogEngineLineTest::testLine19()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine19 01-Jan-1970  ! 03:07:24 ! %THRD% ! #98765 ! 01-Jan-1970 03:07:24 ! " DefaultAppVersion " ! " DefaultAppName), res);
 }
 
-void LogEngineLineTest::testLine20()
+void LineTest::testLine20()
 {
 	Pattern line("testLine20 %DATE% %TIME% [#%thread%] [%appName%] [%loglevel%] %MSG%");
 	struct tm tp = getFixedTime();

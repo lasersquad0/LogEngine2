@@ -3,61 +3,62 @@
 #include "Common.h"
 #include "testUtils.h"
 
-CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( LogEngineUtilsTest, "LogEngineUtilsTest");
+CPPUNIT_TEST_SUITE_REGISTRATION(UtilsTest);
+//CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( UtilsTest, "UtilsTest");
 
-void LogEngineUtilsTest::setUp ()
+void UtilsTest::setUp ()
 {
 
 }
 
-void LogEngineUtilsTest::tearDown ()
+void UtilsTest::tearDown ()
 {
     // free memory allocated in setUp, do other things
 }
 
-void LogEngineUtilsTest::testStringReplace1()
+void UtilsTest::testStringReplace1()
 {
 	std::string s = StringReplace("", "", "");
 	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
-void LogEngineUtilsTest::testStringReplace2()
+void UtilsTest::testStringReplace2()
 {
 	std::string s = StringReplace("", "a", "b");
 	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
-void LogEngineUtilsTest::testStringReplace3()
+void UtilsTest::testStringReplace3()
 {
 	std::string s = StringReplace("", "zzz", "bbb");
 	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
-void LogEngineUtilsTest::testStringReplace4()
+void UtilsTest::testStringReplace4()
 {
 	std::string s = StringReplace("", "zzz", "");
 	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
-void LogEngineUtilsTest::testStringReplace5()
+void UtilsTest::testStringReplace5()
 {
 	std::string s = StringReplace("", "", "bbbb");
 	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
-void LogEngineUtilsTest::testStringReplace6()
+void UtilsTest::testStringReplace6()
 {
 	std::string s = StringReplace("gaaah vvvvb aa aaa hghg4aaa54", "aaa", "ZZZZ");
 	CPPUNIT_ASSERT(s.compare("gZZZZh vvvvb aa ZZZZ hghg4ZZZZ54") == 0);
 }
 
-void LogEngineUtilsTest::testStringReplace7()
+void UtilsTest::testStringReplace7()
 {
 	std::string s = StringReplace("gaaah vvvvb aa aaa hghg4aaa", "aaa", "");
 	CPPUNIT_ASSERT_EQUAL(std::string("gh vvvvb aa  hghg4"), s);
 }
 
-void LogEngineUtilsTest::testExtractFileName1()
+void UtilsTest::testExtractFileName1()
 {
 	std::string s = ExtractFileName("c:\\aaa\\bbb\\pp.log");
 	CPPUNIT_ASSERT_EQUAL(std::string("pp.log"), s);
@@ -66,22 +67,22 @@ void LogEngineUtilsTest::testExtractFileName1()
 	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
 
 	s = ExtractFileName("/");
-	CPPUNIT_ASSERT_EQUAL(std::string("/"), s);
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
 
 	s = ExtractFileName("\\");
-	CPPUNIT_ASSERT_EQUAL(std::string("\\"), s);
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
 
 	s = ExtractFileName("c:");
 	CPPUNIT_ASSERT_EQUAL(std::string("c:"), s);
 }
 
-void LogEngineUtilsTest::testExtractFileName2()
+void UtilsTest::testExtractFileName2()
 {
 	std::string s = ExtractFileName("\\sssss.ss\\dsd\\ffffff");
 	CPPUNIT_ASSERT_EQUAL(std::string{ "ffffff" }, s);
 }
 
-void LogEngineUtilsTest::testExtractFileName3()
+void UtilsTest::testExtractFileName3()
 {
 	std::string s = ExtractFileName("/dfdfd/dfdf/gfg/dffff/");
 	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
@@ -90,20 +91,20 @@ void LogEngineUtilsTest::testExtractFileName3()
 	CPPUNIT_ASSERT_EQUAL(std::string("d4444"), s);
 }
 
-void LogEngineUtilsTest::testExtractFileName4()
+void UtilsTest::testExtractFileName4()
 {
 	std::string s = ExtractFileName("app.log.fgh");
     CPPUNIT_ASSERT_EQUAL(std::string("app.log.fgh"), s);
 }
 
-void LogEngineUtilsTest::testIntToStr1()
+void UtilsTest::testIntToStr1()
 {
 	CPPUNIT_ASSERT_EQUAL(std::string("1"), IntToStr(1, 1));
 	CPPUNIT_ASSERT_EQUAL(std::string("34"), IntToStr(34, 1));
 	CPPUNIT_ASSERT_EQUAL(std::string("34"), IntToStr(34, 2));
 }
 
-void LogEngineUtilsTest::testIntToStr2()
+void UtilsTest::testIntToStr2()
 {
 	CPPUNIT_ASSERT_EQUAL(std::string("123450"), IntToStr(123450, 6));
 	CPPUNIT_ASSERT_EQUAL(std::string("123450"), IntToStr(123450, 5));
@@ -111,7 +112,7 @@ void LogEngineUtilsTest::testIntToStr2()
 	CPPUNIT_ASSERT_EQUAL(std::string("12     "), IntToStr(12, 7));
 }
 
-void LogEngineUtilsTest::testStripFileExt1()
+void UtilsTest::testStripFileExt1()
 {
 	std::string s = StripFileExt("c:\\aaa\\bbb\\pp.log");
 	CPPUNIT_ASSERT_EQUAL(std::string("c:\\aaa\\bbb\\pp"), s);
@@ -129,22 +130,22 @@ void LogEngineUtilsTest::testStripFileExt1()
 	CPPUNIT_ASSERT_EQUAL(std::string("c:"), s);
 }
 
-void LogEngineUtilsTest::testStripFileExt2()
+void UtilsTest::testStripFileExt2()
 {
 	std::string s = StripFileExt("\\sssss.ss\\dsd\\ffffff");
 	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\ffffff" }, s);
 
-	StripFileExt("\\sssss.ss\\dsd\\ffffff.");
+	s = StripFileExt("\\sssss.ss\\dsd\\ffffff.");
 	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\ffffff" }, s);
 
-	StripFileExt("\\sssss.ss\\dsd\\ffffff.a");
+	s = StripFileExt("\\sssss.ss\\dsd\\ffffff.a");
 	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\ffffff" }, s);
 
-	StripFileExt("\\sssss.ss\\dsd\\a. rrffffff ");
+	s = StripFileExt("\\sssss.ss\\dsd\\a. rrffffff ");
 	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\a" }, s);
 }
 
-void LogEngineUtilsTest::testStripFileExt3()
+void UtilsTest::testStripFileExt3()
 {
 	std::string s = StripFileExt("/dfdfd/dfdf/gfg/dffff/");
 	CPPUNIT_ASSERT_EQUAL(std::string("/dfdfd/dfdf/gfg/dffff/"), s);
@@ -153,10 +154,19 @@ void LogEngineUtilsTest::testStripFileExt3()
 	CPPUNIT_ASSERT_EQUAL(std::string("/dfdfd/dfdf/gfg/d4444.rrr.ttt"), s);
 
 	s = StripFileExt("c:\\aaa\\bbb\\pp.log");
-	CPPUNIT_ASSERT_EQUAL(std::string("c:\\aaa\\bbb"), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("c:\\aaa\\bbb\\pp"), s);
+
+	s = StripFileExt("c:\\.aaa");
+	CPPUNIT_ASSERT_EQUAL(std::string("c:\\"), s);
+
+	s = StripFileExt(".bbb");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = StripFileExt("/.deps");
+	CPPUNIT_ASSERT_EQUAL(std::string("/"), s);
 }
 
-void LogEngineUtilsTest::testStripFileExt4()
+void UtilsTest::testStripFileExt4()
 {
 	std::string s = StripFileExt("app.log.fgh");
 	CPPUNIT_ASSERT_EQUAL(std::string("app.log"), s);
@@ -171,53 +181,53 @@ void LogEngineUtilsTest::testStripFileExt4()
 	CPPUNIT_ASSERT_EQUAL(std::string("a"), s);
 }
 
-void LogEngineUtilsTest::testExtractFileDir1()
+void UtilsTest::testExtractFileDir1()
 {
 	std::string s = ExtractFileDir("\\sssss.ss\\dsd\\ffffff");
-	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd" }, s);
+	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\" }, s);
 
 	s = ExtractFileDir("\\sssss.ss\\dsd\\ffffff.");
-	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd" }, s);
+	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\" }, s);
 
 	s = ExtractFileDir("\\sssss.ss\\dsd\\ffffff.a");
-	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd" }, s);
+	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\" }, s);
 
 	s = ExtractFileDir("\\sssss.ss\\dsd\\a. rrffffff ");
-	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd" }, s);
+	CPPUNIT_ASSERT_EQUAL(std::string{ "\\sssss.ss\\dsd\\" }, s);
 }
 
-void LogEngineUtilsTest::testExtractFileDir2()
+void UtilsTest::testExtractFileDir2()
 {
 	std::string s = ExtractFileDir("/dfdfd/dfdf/gfg/dffff/");
 	CPPUNIT_ASSERT_EQUAL(std::string("/dfdfd/dfdf/gfg/dffff/"), s);
 
 	s = ExtractFileDir("c:/dfdfd/dfdf/gfg/d4444.rrr.ttt.y");
-	CPPUNIT_ASSERT_EQUAL(std::string("c:/dfdfd/dfdf/gfg"), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("c:/dfdfd/dfdf/gfg/"), s);
 }
 
-void LogEngineUtilsTest::testExtractFileDir3()
+void UtilsTest::testExtractFileDir3()
 {
 	std::string s = ExtractFileDir("app.log.fgh");
 	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
 
 	s = ExtractFileDir("/app.log.fgh.");
-	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("/"), s);
 
 	s = ExtractFileDir("a.b/");
 	CPPUNIT_ASSERT_EQUAL(std::string("a.b/"), s);
 
 }
 
-void LogEngineUtilsTest::testExtractFileDir4()
+void UtilsTest::testExtractFileDir4()
 {
 	std::string s = ExtractFileDir("");
 	CPPUNIT_ASSERT_EQUAL(std::string{ "" }, s);
 
 	s = ExtractFileDir("a");
-	CPPUNIT_ASSERT_EQUAL(std::string("a"), s);
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
 
 	s = ExtractFileDir("/");
-	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("/"), s);
 
 	s = ExtractFileDir("\\");
 	CPPUNIT_ASSERT_EQUAL(std::string("\\"), s);

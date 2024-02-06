@@ -8,9 +8,9 @@
  *
  */
 
-class LogEngineLineTest : public CPPUNIT_NS::TestFixture
+class LineTest : public CPPUNIT_NS::TestFixture
 {
-  CPPUNIT_TEST_SUITE( LogEngineLineTest );
+  CPPUNIT_TEST_SUITE( LineTest );
   CPPUNIT_TEST( testLine1 );
   CPPUNIT_TEST( testLine2 );
   CPPUNIT_TEST( testLine3 );
