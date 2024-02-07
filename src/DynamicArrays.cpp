@@ -16,7 +16,6 @@
 
 THArrayRaw::THArrayRaw()
 {
-    //Sorted    = false;
     FCount    = 0;
     FCapacity = 0;
     FItemSize = 1;
@@ -53,11 +52,6 @@ void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const uint vmax) c
 	}
  }
 
-void* THArrayRaw::CalcAddr(const uint num) const 
-{
-	return (void*)((unsigned char *)FMemory + static_cast<size_t>(num) * FItemSize);
-}
-
 void THArrayRaw::SetItemSize(const uint Size)
 {
  	if (Size > 0)
@@ -71,7 +65,7 @@ void THArrayRaw::SetItemSize(const uint Size)
 void THArrayRaw::Delete(const uint num)
 {
 	Error(num, FCount);
-	if (num < (FCount - 1)) // do not need to call memmove if we delete last item.
+	if (num < FCount - 1) // do not need to call memmove if we delete last item.
 		memmove(GetAddr(num), GetAddr(num + 1), (FCount - (static_cast<size_t>(num) + 1)) * FItemSize);
 	FCount--;
 }
@@ -87,19 +81,13 @@ void THArrayRaw::ClearMem()
 void THArrayRaw::Get(const uint num, void *pValue) const
 {
 	Error(num, FCount);
+
 	if (pValue != nullptr) 
 		memmove(pValue, CalcAddr(num), FItemSize);
 }
 
-uint THArrayRaw::Add(const void *pValue)
-{
-    //Sorted = false;
-	return Insert(FCount, pValue);
-}
-
 void THArrayRaw::AddMany(const void *pValue, const uint Count)
 {
-    //Sorted = false;
 	if (Count == 0) 
 	{ 
 		char str[512];
@@ -110,18 +98,20 @@ void THArrayRaw::AddMany(const void *pValue, const uint Count)
 #endif  
 		throw THArrayException(str);
 	}
+
     InsertMany(FCount, pValue, Count);
 }
 
 uint THArrayRaw::Insert(const uint Index, const void *pValue)
 {
 	Error(Index, FCount + 1);
-	if (FCount >= FCapacity) 
-		Grow();
+	
+	if (FCount >= FCapacity) Grow();
+
 	FCount++;
 	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - static_cast<size_t>(Index) - 1) * FItemSize);
 	Update(Index, pValue);
-    //Sorted = false;
+    
 	return Index;
 }
 
@@ -131,10 +121,9 @@ void THArrayRaw::InsertMany(const uint num, const void *pValue, const uint Count
 	if ((FCount + Count) > FCapacity) 
 		GrowTo(FCount + Count);
 
-	FCount=FCount + Count;
+	FCount = FCount + Count;
 	memmove(CalcAddr(num + Count), CalcAddr(num), (FCount - static_cast<size_t>(num) - Count) * FItemSize);
-    //Sorted = false;
-	UpdateMany(num, pValue, Count);
+  	UpdateMany(num, pValue, Count);
 }
 
 void THArrayRaw::Update(const uint num, const void *pValue)
@@ -144,14 +133,12 @@ void THArrayRaw::Update(const uint num, const void *pValue)
 		memmove(CalcAddr(num), pValue, FItemSize);
 	else
 		memset(CalcAddr(num), 0, FItemSize);
-    //Sorted = false;
 }
 
 void THArrayRaw::UpdateMany(const uint num, const void *pValue, const uint Count)
 {
 	Error(num + Count - 1, FCount);
 	memmove(GetAddr(num), pValue, FItemSize * static_cast<size_t>(Count));
-    //Sorted = false;
 }
 
 void THArrayRaw::Grow()
@@ -219,18 +206,6 @@ void THArrayRaw::AddFillValues(const uint Count)
 		GrowTo(FCount + Count);
 	memset(CalcAddr(FCount), 0, static_cast<size_t>(Count) * FItemSize);
     FCount = FCount + Count;
-    //Sorted = false;
-}
-
-void THArrayRaw::Zero()
-{
-    if (FCount > 0)
-        memset(FMemory, 0, static_cast<size_t>(FCount) * FItemSize);
-}
-
-void THArrayRaw::Hold()
-{
-    SetCapacity(FCount);
 }
 
 void THArrayRaw::Swap(const uint Index1, const uint Index2)
@@ -238,8 +213,7 @@ void THArrayRaw::Swap(const uint Index1, const uint Index2)
 	Error(Index1, FCount);
 	Error(Index2, FCount);
 
-	if(Index1 == Index2)
-		return;
+	if(Index1 == Index2) return;
 	
 	void* temp = malloc(FItemSize);
 	if(temp)

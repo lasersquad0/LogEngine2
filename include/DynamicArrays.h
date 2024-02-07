@@ -11,7 +11,6 @@
 
 #include <exception> 
 #include <string>
-#include <format>
 #include "Compare.h"
 
 #define valuemin(v1,v2) (((v1)<(v2))?(v1):(v2))
@@ -93,26 +92,25 @@ public:
 class THArrayRaw
 {
 protected:
-	//bool	Sorted;
 	uint	FCount;
 	uint	FCapacity;
 	uint	FItemSize;
-	void* FMemory;
-	void	Error(const uint Value, /*const uint vmin,*/ const uint vmax) const;
+	void*	FMemory;
+	void	Error(const uint Value, const uint vmax) const;
 	void	Grow();
-	void	GrowTo(const uint Count);
-	void* CalcAddr(const uint num) const;
-	void	ThrowZeroItemSize() { throw THArrayException("Error in THArrayRaw: ItemSize cannot be zero!"); }
+	void	GrowTo(const uint ToCount);
+	void*	CalcAddr(const uint num) const { return (void*)((unsigned char*)FMemory + static_cast<size_t>(num) * FItemSize); }
+	void	ThrowZeroItemSize() const { throw THArrayException("Error in THArrayRaw: ItemSize cannot be zero!"); }
 public:
 	THArrayRaw();
 	THArrayRaw(uint ItemSize);
 	virtual ~THArrayRaw() { ClearMem(); }
 	//	void operator=(const THArrayRaw& a);
 	void		SetItemSize(const uint ItemSize);
-	inline uint	GetItemSize()const { return FItemSize; }
+	inline uint	GetItemSize() const { return FItemSize; }
 	virtual void Clear() { FCount = 0; }
 	void		ClearMem();
-	uint		Add(const void* pValue);
+	uint		Add(const void* pValue) { return Insert(FCount, pValue); }
 	void		AddMany(const void* pValue, const uint Count);
 	uint		Insert(const uint Index, const void* pValue);
 	void		InsertMany(const uint Index, const void* pValue, const uint Count);
@@ -122,13 +120,12 @@ public:
 	virtual	void Delete(const uint Index);
 	void		Get(const uint num, void* pValue) const;
 	void* GetPointer(const uint num) const { return GetAddr(num); }
-	void		Hold();
+	void		Hold() { SetCapacity(FCount); }
 	void		MoveData(const int FromPos, const int Count, const int Offset);
-	inline uint	Count() const { return FCount; }
+	inline uint	Count()    const { return FCount; }
 	inline uint	Capacity() const { return FCapacity; }
-	inline void* Memory() const { return FMemory; }
-	//inline void SetSorted()  		{ Sorted = true; }
-	void		Zero();
+	inline void* Memory()  const { return FMemory; }
+	void		Zero() { if (FCount > 0) memset(FMemory, 0, static_cast<size_t>(FCount) * FItemSize); }
 	void		SetCapacity(const uint Value);
 	void		AddFillValues(const uint Count);
 	void		Swap(const uint Index1, const uint Index2);
@@ -519,16 +516,15 @@ void THArray<T>::Error(const uint Value, const uint vmax) const
 {
 	if (Value >= vmax)
 	{
-		throw THArrayException(std::format("Error in THArray: Element with index {} not found!", Value));
+		//throw THArrayException(std::format("Error in THArray: Element with index {} not found!", Value));
+		throw THArrayException("Error in THArray: Element with index " + IntToStr(Value) + " not found!");
 
 //		char str[100];
-//
 //#ifdef WIN32
 //		sprintf_s(str, 100, "Error in THArray: Element with index %i not found!", Value);
 //#else
 //		sprintf(str, "Error in THArray: Element with index %i not found!", Value);
 //#endif
-//
 //		throw THArrayException(str);
 	}
 };
