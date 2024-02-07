@@ -243,27 +243,6 @@ void THArrayStringFix::Reverse()
 	}
 }
 
-char* THArrayStringFix::GetAddr(const uint Index) const
-{
-	return static_cast<char*>(data.GetAddr(Index));
-}
-
-std::string THArrayStringFix::operator [](const uint Index) const
-{
-	return GetValue(Index);
-}
-
-void THArrayStringFix::SetValue(const uint Index, const std::string& Value)
-{
-	data.Update(Index, Value.c_str());
-}
-
-std::string THArrayStringFix::GetValue(const uint Index) const 
-{
-	std::string s(GetAddr(Index), data.GetItemSize());
-	return s;
-}
-
 uint THArrayStringFix::AddChars(const void *pValue, const uint len) 
 {
 	uint i;

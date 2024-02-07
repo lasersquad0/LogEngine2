@@ -143,20 +143,21 @@ class THArrayBase
 public:
 	static const int NPOS = -1;  // return value that usually mean "item is not found", this value returned by functions like IndexOf()
 	virtual ~THArrayBase() {}
-	virtual uint	Add(const void*) = 0;
+	virtual void Error(const uint Value, const uint vmax) const { if (Value >= vmax) throw THArrayException("Element with index " + IntToStr(Value) + " not found!");	}
+	virtual uint Add(const void*) = 0;
 	//virtual	void	AddMany(const void* Values) = 0; not implememnted
-	virtual void	AddFillValues(const uint Num) = 0;
-	virtual uint	Capacity() const = 0;
-	virtual uint	Count() const = 0;
-	virtual void	Clear() = 0;
-	virtual void	ClearMem() = 0;
-	virtual	void	DeleteValue(const uint Index) = 0;
-	virtual uint	Insert(const uint Index, const void* Value) = 0;
-	virtual uint	ItemSize() const = 0;
-	virtual void	Hold() = 0;
-	virtual void	SetCapacity(const uint Value) = 0;
-	virtual void	Zero() = 0;
-	//	virtual inline void Swap(const int Index1, const int Index2);
+	virtual void AddFillValues(const uint Num) = 0;
+	virtual uint Capacity() const = 0;
+	virtual uint Count() const = 0;
+	virtual void Clear() = 0;
+	virtual void ClearMem() = 0;
+	virtual	void DeleteValue(const uint Index) = 0;
+	virtual uint Insert(const uint Index, const void* Value) = 0;
+	virtual uint ItemSize() const = 0;
+	virtual void Hold() = 0;
+	virtual void SetCapacity(const uint Value) = 0;
+	virtual void Zero() = 0;
+	virtual void Swap(const uint Index1, const uint Index2) = 0;
 	/*	void	Reverse ();
 		void	Reverse (int endIndex);*/
 
@@ -172,29 +173,29 @@ class THArrayStringFix :public THArrayBase
 private:
 	THArrayRaw data;
 protected:
-	char* GetAddr(const uint Index) const;
+	char* GetAddr(const uint Index) const {	return static_cast<char*>(data.GetAddr(Index));	}
 public:
 	//	void operator=(const THArrayStringFix& a) {
 	//		printf("THArrayStringFix =");
 	//	}
-		//THArrayStringFix(){};
 	THArrayStringFix(uint Length) { data.SetItemSize(Length); }
-	virtual ~THArrayStringFix() { ClearMem(); }
-	std::string GetValue(const uint Index) const;
-	void	SetValue(const uint Index, const std::string& Value);
-	std::string operator[](const uint Index) const;
+	~THArrayStringFix() override { ClearMem(); }
+	std::string GetValue(const uint Index) const { std::string s(GetAddr(Index), data.GetItemSize()); return s; }
+	void	SetValue(const uint Index, const std::string& Value) { data.Update(Index, Value.c_str()); }
+	std::string operator[](const uint Index) const { return GetValue(Index); }
 	inline uint	Count() const { return data.Count(); }
-	void		Clear() { data.Clear(); }
-	void		ClearMem() { data.ClearMem(); }
-	void		Zero() { data.Zero(); }
-	void		Hold() { data.Hold(); }
-	void		DeleteValue(const uint Index) { data.Delete(Index); }
-	uint		Add(const void* pValue) { return data.Add(pValue); }
-	uint		AddValue(const std::string& Value) { return data.Add(Value.c_str()); }
-	void		AddFillValues(const uint Num) { data.AddFillValues(Num); }
-	uint		Insert(const uint Index, const void* Value) { return data.Insert(Index, Value); }
-	uint		AddChars(const void* pValue, const uint len);
-	void		Reverse();
+	void	Clear()    override { data.Clear(); }
+	void	ClearMem() override { data.ClearMem(); }
+	void	Zero()     override { data.Zero(); }
+	void	Hold()     override { data.Hold(); }
+	void	DeleteValue(const uint Index) override { data.Delete(Index); }
+	uint	Add(const void* pValue) override       { return data.Add(pValue); }
+	uint	AddValue(const std::string& Value)     { return data.Add(Value.c_str()); }
+	void	AddFillValues(const uint Num) override { data.AddFillValues(Num); }
+	uint	Insert(const uint Index, const void* Value) override { return data.Insert(Index, Value); }
+	void	Swap(const uint Index1, const uint Index2) override { data.Swap(Index1, Index2); }
+	uint	AddChars(const void* pValue, const uint len);
+	void	Reverse();
 };
 
 
@@ -234,7 +235,6 @@ protected:
 	uint 	FCapacity; 
 	T*		FMemory;
 	T*		FBegin;
-	void	Error(const uint Value, /*const uint vmin,*/ const uint vmax) const;
 	uint	GetGrowDelta();
 	void	Grow();	/// Grow memory size allocated for elements
 	inline bool	EnoughCapacity(const uint numItems) { return FBegin + numItems < FMemory + FCapacity; }
@@ -255,7 +255,7 @@ public:
 	THArray();
 	THArray(std::initializer_list<T> list);
 	THArray(const THArray<T>& a);
-	virtual	~THArray() { ClearMem(); }
+	~THArray() override { ClearMem(); }
 	inline T& operator[](const uint Index) const { return GetValue(Index); }
 	THArray<T>& operator=(const THArray<T>& a); // copy constructor
 	bool operator==(const THArray<T>& a) const;
@@ -275,7 +275,7 @@ public:
 	T&			GetValue(const uint Index) const;
 	virtual uint InsertValue(const uint Index, const T& Value);
 	virtual uint Insert(const uint Index, const void* Value) { return InsertValue(Index, *static_cast<const T*>(Value)); }
-	void DeleteValue(const uint Index) override;
+	void		DeleteValue(const uint Index) override;
 	virtual uint AddValue(const T& Value) { return InsertValue(FCount, Value); }
 	virtual uint Add(const void* pValue) { return AddValue(*static_cast<const T*>(pValue)); }
 	inline	 T* GetValuePointer(const uint Index) const;
@@ -288,8 +288,7 @@ public:
 	virtual inline void Push(const T& Value) { AddValue(Value); }
 	virtual inline T    Pop();
 	virtual inline T    PopFront();
-	virtual inline void Swap(const uint Index1, const uint Index2);
-	//void		Sort();
+	inline void			Swap(const uint Index1, const uint Index2) override;
 	virtual void		Reverse();
 	virtual void		Reverse(uint endIndex); // Reverse till specified element
 #ifdef _USE_STREAMS_
@@ -309,9 +308,6 @@ class THArraySorted : public THArray<T>
 {
 protected:
 	Cmp		FCompare;
-public:
-	//	THArray();
-	//	virtual	   ~THArray() { ClearMem(); }
 private:
 	void	SetValue(const uint Index, const T& Value) = delete;
 	uint	Insert(const uint Index, const void* Value)   override { return THArray<T>::Insert(Index, Value); }
@@ -511,23 +507,15 @@ THArray<T>::THArray(std::initializer_list<T> list) :THArray()
 		AddValue(item);
 }
 
-template<class T>
-void THArray<T>::Error(const uint Value, const uint vmax) const
-{
-	if (Value >= vmax)
-	{
-		//throw THArrayException(std::format("Error in THArray: Element with index {} not found!", Value));
-		throw THArrayException("Error in THArray: Element with index " + IntToStr(Value) + " not found!");
-
-//		char str[100];
-//#ifdef WIN32
-//		sprintf_s(str, 100, "Error in THArray: Element with index %i not found!", Value);
-//#else
-//		sprintf(str, "Error in THArray: Element with index %i not found!", Value);
-//#endif
-//		throw THArrayException(str);
-	}
-};
+//template<class T>
+//void THArray<T>::Error(const uint Value, const uint vmax) const
+//{
+//	if (Value >= vmax)
+//	{
+//		//throw THArrayException(std::format("Error in THArray: Element with index {} not found!", Value));
+//		throw THArrayException("Error in THArray: Element with index " + IntToStr(Value) + " not found!");
+//	}
+//}
 
 // calculate grow delta value depending on current array size
 template<class T>
@@ -552,7 +540,7 @@ void THArray<T>::Grow()
 {
 	uint Delta = GetGrowDelta();
 	SetCapacity(FCapacity + Delta);
-};
+}
 
 // Grows only if not enough Capacity for ToCount elements. if it is grows to either Capacity+25% or to ToCount what is bigger.
 template<class T>
@@ -571,7 +559,7 @@ void THArray<T>::GrowTo(const uint ToCount)
 		SetCapacity(ToCount);
 	else
 		SetCapacity(FCapacity + Delta);
-};
+}
 
 template<class T>
 void THArray<T>::SetCapacity(const uint Value)
@@ -591,7 +579,7 @@ void THArray<T>::SetCapacity(const uint Value)
 	FCapacity = Value;
 	if (FCapacity < FCount)
 		FCount = FCapacity;
-};
+}
 
 template<class T>
 void THArray<T>::Reverse()
