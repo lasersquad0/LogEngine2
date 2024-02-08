@@ -60,6 +60,9 @@
     <ClCompile Include="..\..\..\test\testTStream.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\testConfigFile.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="testLogEngine.rc">
@@ -146,6 +149,9 @@
       <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\test\testTStream.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\testConfigFile.h">
       <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>

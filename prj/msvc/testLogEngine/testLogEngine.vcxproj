@@ -672,6 +672,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\testConfigFile.cpp" />
     <ClCompile Include="..\..\..\test\testLogger.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -682,10 +683,8 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\testRunner.cpp" />
     <ClCompile Include="..\..\..\test\testThreadLog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\test\testTStream.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -721,6 +720,7 @@
     <ClInclude Include="..\..\..\include\Sink.h" />
     <ClInclude Include="..\..\..\test\testIniReader.h" />
     <ClInclude Include="..\..\..\test\testLine.h" />
+    <ClInclude Include="..\..\..\test\testConfigFile.h" />
     <ClInclude Include="..\..\..\test\testLogger.h" />
     <ClInclude Include="..\..\..\test\testProperties.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
