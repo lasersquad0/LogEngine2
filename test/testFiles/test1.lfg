@@ -1,0 +1,14 @@
+[logger]
+logLevel=
+MaxLogSize = 1
+BackupType = None
+
+[logger.]
+loglevel=4
+
+[logger.1]
+loglevel=DEBug
+
+[logger.A]
+LOGLEVEL	=
+

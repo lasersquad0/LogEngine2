@@ -1,0 +1,3 @@
+[Sink.sinkk]
+LogLevel = INFO
+SINK = sink

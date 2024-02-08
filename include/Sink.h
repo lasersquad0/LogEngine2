@@ -76,6 +76,8 @@ public:
 	{
 		return FMessageCounts;
 	}
+
+	Levels::LogLevel GetLogLevel() { return FLogLevel; }
 	void SetLogLevel(Levels::LogLevel ll) { FLogLevel = ll; }
 
 	/**

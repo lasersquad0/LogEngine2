@@ -11,6 +11,7 @@
 
 //#include <string_view>
 #include <sys/timeb.h>
+#include <algorithm>
 #include "Common.h"
 
 LOGENGINE_NS_BEGIN
@@ -21,6 +22,7 @@ namespace Levels
 }
 
 #define LL_DEFAULT Levels::llInfo
+#define LL_DEFAULT_NAME "llInfo"
 
 #define LL_NAMES       { "off", "critical", "error", "warning", "info", "debug", "trace" }
 #define LL_CAPS_NAMES  { "OFF", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE" }
@@ -35,8 +37,15 @@ inline const std::string& LLtoCapsString(const Levels::LogLevel ll) { return Log
 
 inline const char* LLtoShortString(const Levels::LogLevel ll) { return LogLevelShortNames[ll]; }
 
-inline Levels::LogLevel LLfromString(const std::string& name)
+inline char mytolower(int c) // to eliminate compile warning "warning C4244: '=': conversion from 'int' to 'char', possible loss of data"
 {
+	return (char)tolower(c);
+}
+
+inline Levels::LogLevel LLfromString(std::string name)
+{
+	std::transform(name.begin(), name.end(), name.begin(), mytolower);
+
 	auto it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), name);
 	if (it != std::end(LogLevelNames))
 		return static_cast<Levels::LogLevel>(std::distance(std::begin(LogLevelNames), it));
@@ -45,8 +54,28 @@ inline Levels::LogLevel LLfromString(const std::string& name)
 	if (name == "warn") return Levels::llWarning;
 	if (name == "err") return Levels::llError;
 
-	return Levels::llOff;
+	return LL_DEFAULT; // Levels::llOff;
 }
+
+enum LogSinkType { stStdout, stStderr, stFile, stRotatingFile, stString, n_SinkTypes };
+
+#define ST_NAMES { "stdout", "stderr", "file", "rotatingfile", "string" }
+#define ST_DEFAULT stStdout
+#define ST_DEFAULT_NAME "Stdout"
+
+static const std::string SinkTypeNames[] ST_NAMES;
+
+inline LogSinkType STfromString(std::string name) // parameter needs to be passed by value
+{
+	std::transform(name.begin(), name.end(), name.begin(), mytolower);
+
+	auto it = std::find(std::begin(SinkTypeNames), std::end(SinkTypeNames), name);
+	if (it != std::end(SinkTypeNames))
+		return static_cast<LogSinkType>(std::distance(std::begin(SinkTypeNames), it));
+
+	return ST_DEFAULT; 
+}
+
 
 class LogEvent
 {

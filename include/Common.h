@@ -30,9 +30,6 @@ typedef unsigned long long ullong;
 typedef std::lock_guard<std::recursive_mutex> mutexguard;
 typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
 
-tm_point GetCurrTimePoint();
-struct tm GetCurrDateTime();
-
 // truncates Value to Precision digits after point
 double round(const double Value, const int Precision);
 
@@ -64,6 +61,10 @@ std::string StripFileExt(const std::string& FileName);
 // replaces in string S all occurrences of OldPattern by NewPattern
 std::string StringReplace(const std::string& S, const std::string& OldPattern, const std::string& NewPattern);
 
+tm_point GetCurrTimePoint();
+
+struct tm GetCurrDateTime();
+
 // converts date to string representation
 //std::string DateToString(int Date);
 
@@ -92,10 +93,17 @@ std::string trimSPCRLF(std::string S);
 // removes all leading and trailing space and tab symbols from string
 std::string trim(std::string s);
 
+// removes any leading space and tab symbols from string
+std::string trimLeft(std::string str);
+
+// removes any trailing space and tab symbols from string
+std::string trimRight(std::string str);
+
 // compares two strings case insensitive
 bool EqualNCase(const std::string& str1,const std::string& str2);
 
 // compares two strings case insensitive
+// return 0 if strings are equal, -1 if str1 is "less" then str2, 1 if str1 is "larger" than str2 
 int CompareNCase(const std::string& str1, const std::string& str2);
 
 // checks if string contains unsigned integer or not

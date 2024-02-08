@@ -1,0 +1,18 @@
+#
+#
+#ddddd
+#
+[logger.rotlog]
+sink=siii
+#
+[Sink.siii]
+FileName  =   sink.siii.log
+Type=RotatingFile
+LogLevel = ERROR
+MaxLogFileSize = 10K
+MaxBackupIndex = 5
+Strategy = numbers
+
+#
+#
+#

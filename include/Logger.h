@@ -52,7 +52,9 @@ public:
 	}
 
 	void SetLogLevel(const Levels::LogLevel ll) { FLogLevel = ll; }
+	Levels::LogLevel GetLogLevel() { return FLogLevel; }
 
+	bool GetAsyncMode() { return FAsync; }
 	void SetAsyncMode(bool amode)
 	{
 		if (FAsync == amode) return; //mode hasn't changed
@@ -140,7 +142,7 @@ public:
 	{
 		for (uint i = 0; i < sinks.Count(); i++)
 		{
-			if (sinks[i]->GetName() == sinkName) sinks.DeleteValue(i);
+			if (EqualNCase(sinks[i]->GetName(), sinkName)) sinks.DeleteValue(i);
 		}
 	}
 
@@ -149,11 +151,11 @@ public:
 		return sinks.Count();
 	}
 
-	Sink* GetSink(std::string& sinkName)
+	Sink* GetSink(const std::string& sinkName)
 	{
 		for(Sink* si : sinks)
 		{
-			if (si->GetName() == sinkName) return si;
+			if (EqualNCase(si->GetName(), sinkName)) return si;
 		}
 
 		//for (uint i = 0; i < sinks.Count(); i++)

@@ -19,23 +19,6 @@ void Pattern::parsePattern(const std::string& pattern)
 {
 	static THArray<std::string> placeHolders = { "", DateMacro, TimeMacro, DateTimeMacro, MessageMacro, ThreadMacro, AppNameMacro, AppVersionMacro, OSMacro, OSVersionMacro, LogLevelMacro };
 
-	/*
-	placeHolders.AddFillValues(12); // do not replace by SetCapacity()
-
-	placeHolders.SetValue(0,  ""); // for LiteralHolder
-	placeHolders.SetValue(1,  DateMacro);
-	placeHolders.SetValue(2,  TimeMacro);
-	placeHolders.SetValue(3,  DateTimeMacro);
-	placeHolders.SetValue(4,  MessageMacro);
-	placeHolders.SetValue(5,  ThreadMacro);
-	placeHolders.SetValue(6,  AppNameMacro);
-	placeHolders.SetValue(7,  AppVersionMacro);
-	placeHolders.SetValue(8,  "%OS%");
-	placeHolders.SetValue(9,  "%OSVERSION%");
-	placeHolders.SetValue(10, "%DETAILLEVEL%");
-	placeHolders.SetValue(11, "%DEBUGLEVEL%");
-	*/
-
 	clearHolders();
 
 	uint i = 0;

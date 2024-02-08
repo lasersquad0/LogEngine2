@@ -1,0 +1,8 @@
+[LOGGER.!]
+logLevel = 
+ASYNCmode = 
+SINK=
+
+[ LOGGER.!! ]
+Sink=
+

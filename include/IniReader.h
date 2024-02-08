@@ -5,31 +5,13 @@
 #include "Common.h"
 #include <DynamicArrays.h>
 
-std::string trimLeft(std::string str)
-{
-	// remove any leading spaces and tabs
-	size_t strBegin = str.find_first_not_of(" \t");
-	str.erase(0, strBegin);
-
-	return str;
-}
-
-std::string trimRight(std::string str)
-{
-	// remove any trailing spaces and tabs
-	size_t strEnd = str.find_last_not_of(" \t");
-	str.erase(strEnd + 1, str.size() - strEnd);
-
-	return str;
-}
-
-#define IO_EXCEPTION_PREFIX "Ini file exception : "
+#define FIO_EXCEPTION_PREFIX "Ini file exception : "
 
 class file_exception : public std::exception
 {
 public:
-	file_exception(const char* Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + std::string(Message); }
-	file_exception(const std::string& Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + Message; }
+	file_exception(const char* Message) { Text = Message; whatText = FIO_EXCEPTION_PREFIX + std::string(Message); }
+	file_exception(const std::string& Message) { Text = Message; whatText = FIO_EXCEPTION_PREFIX + Message; }
 	file_exception(const file_exception& ex) { Text = ex.Text; whatText = ex.whatText; }
 	~file_exception() noexcept override {};
 	file_exception& operator=(const file_exception& ex) { Text = ex.Text; whatText = ex.whatText;	return *this; }
@@ -46,13 +28,42 @@ private:
 /// ограничения на символы в названии секции? в имени параметра? может ли быть пробел в имени параметра
 /// многострочные значения?????
 /// репортинг ошибок? (нету первой секции, нету = в строчке)
+/// комментарии в конце строи с параметром например:
+///      VerParam=v2  #this is version number of xxx
 
 class IniReader
 {
-private:
+public:
 	using ValueType = THArray<std::string>;
-	THash2<std::string, std::string, ValueType, CompareStringNCase> inidata;
+	using StorageType = THash2<std::string, std::string, ValueType, CompareStringNCase>;
+private:
+	StorageType inidata;
 
+	template<class P>
+	class IniReaderIterator //: public std::iterator<std::input_iterator_tag, T>
+	{
+	public:
+		using value_type = typename P::item_type;
+		using iterator_category = std::random_access_iterator_tag;
+		using difference_type = ptrdiff_t;
+		using pointer = typename P::pointer;
+		using reference = typename P::reference;
+
+		IniReaderIterator(const IniReaderIterator& it) : FIniRd(it.FIniRd), FEdge(it.FEdge), FIter(it.FIter) {}
+		IniReaderIterator(P* rd, int edge) : FIniRd(rd), FEdge(edge), FIter(edge==0 ? rd->inidata.GetAIndexes().begin(): rd->inidata.GetAIndexes().end()) { }
+
+		bool operator!=(IniReaderIterator const& other) const { return FIniRd != other.FIniRd || FIter != other.FIter; }
+		bool operator==(IniReaderIterator const& other) const { return FIniRd == other.FIniRd && FIter == other.FIter; }
+		reference operator*() const { return *FIter; }
+		IniReaderIterator& operator++() { ++FIter; return *this; }
+		//THArrayIterator& operator--() { if (FPtr != FCont->FBegin) --FPtr; return *this; }
+	private:
+		int FEdge;
+		P* FIniRd{ nullptr };
+		StorageType::KeysArray::iterator FIter;
+		pointer FPtr{ nullptr };
+	};
+private:
 	void SetValue(const std::string& Key1, const std::string& Key2, const std::string& Value)
 	{
 		auto p = inidata.GetValuePointer(Key1, Key2);
@@ -70,8 +81,15 @@ private:
 	}
 
 public:
-//	using SectionType = decltype(inidata)::ValuesHash;
-	
+	using iterator = IniReaderIterator<IniReader>;
+	using const_iterator = IniReaderIterator<const IniReader>;
+	using item_type = StorageType::KeyType;
+	using pointer = StorageType::KeyType*;
+	using reference = StorageType::KeyType&;
+
+	iterator begin() { return iterator(this, 0); }
+	iterator end() { return iterator(this, 1); }
+
 	IniReader() { }
 
 	IniReader(std::string& fileName) { LoadIniFile(fileName); }
@@ -118,14 +136,15 @@ public:
 
 			// check the command and handle it
 			length = line.find('=');
-			if (length != std::string::npos)
+			if (length == std::string::npos)
 			{
-				leftSide = line.substr(0, length);
-				rightSide = line.substr(length + 1, line.size() - length);
+				leftSide = line; // if line does not contain '=', we consider that entire line is parameter name 
+				rightSide = "";
 			}
 			else
 			{
-				leftSide = line; // if line does not contain '=', we consider that entire line is parameter name 
+				leftSide = line.substr(0, length);
+				rightSide = line.substr(length + 1, line.size() - length);
 			}
 
 			SetValue(trimSPCRLF(section), trimSPCRLF(leftSide), trimSPCRLF(rightSide)); // trimSPCRLF is required here for Linux since its \n and \r differ from Windows.
@@ -154,6 +173,11 @@ public:
 	uint SectionsCount()
 	{
 		return inidata.GetAIndexes().Count();
+	}
+
+	StorageType::ValuesHash& GetSection(std::string& section)
+	{
+		return inidata.GetValue(section);
 	}
 
 	bool HasSection(const std::string& section)

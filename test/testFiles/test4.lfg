@@ -1,0 +1,11 @@
+[Logger.abc]
+logLevel = debug
+loglevel=error
+AsyncMode = somemode
+
+[Logger.cde]
+AsyncMode = bla
+AsyncMode = true
+loglevel=critical
+
+

@@ -297,8 +297,6 @@ struct tm GetCurrDateTime()
 	return time_t_to_tm(tt);
 }
 
-
-
 // retrieves current time as std::string
 std::string GetCurrTimeAsString(void)
 { 
@@ -416,6 +414,24 @@ std::string trim(std::string s)
 	s.erase(0, strBegin);
 
 	return s;
+}
+
+std::string trimLeft(std::string str)
+{
+	// remove any leading spaces and tabs
+	size_t strBegin = str.find_first_not_of(" \t");
+	str.erase(0, strBegin);
+
+	return str;
+}
+
+std::string trimRight(std::string str)
+{
+	// remove any trailing spaces and tabs
+	size_t strEnd = str.find_last_not_of(" \t");
+	str.erase(strEnd + 1, str.size() - strEnd);
+
+	return str;
 }
 
 bool EqualNCase(const std::string& str1, const std::string& str2)

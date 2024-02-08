@@ -237,11 +237,11 @@ protected:
 	T*		FBegin;
 	uint	GetGrowDelta();
 	void	Grow();	/// Grow memory size allocated for elements
-	inline bool	EnoughCapacity(const uint numItems) { return FBegin + numItems < FMemory + FCapacity; }
+	inline bool	EnoughCapacity(const uint numItems) { return FBegin + numItems <= FMemory + FCapacity; }
 	inline void	EnsureCapacity(const uint numItems) { if(!EnoughCapacity(numItems)) GrowTo(numItems); }
 public:
 	using iterator = THArrayIterator<THArray>;
-	using const_iterator = THArrayIterator<const T>;
+	using const_iterator = THArrayIterator<const THArray>;
 	using item_type = T;
 	using pointer = T*;
 	using reference = T&;
@@ -391,7 +391,7 @@ public:
 	using KeysType = THArraySorted<I, Cmp>;
 	using ValuesType = THArray<V>;
 	using iterator = THashIterator<THash>;
-	//using const_iterator = THArrayIterator<const T>;
+	//using const_iterator = THArrayIterator<const THash>;
 private:
 	KeysType FAKeys;
 	ValuesType FAValues;
@@ -436,6 +436,7 @@ template <class I1, class I2, class V, class Cmp = Compare<I1>>
 class THash2
 {
 public:
+	using KeyType = I1;
 	using KeysArray = THArray<I1>;
 	using ValuesArray = THArray<THash<I2, V, Cmp> >;
 	using ValuesHash = THash<I2, V, Cmp>;
