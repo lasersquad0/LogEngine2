@@ -12,6 +12,8 @@
 #include <string.h> // for strlen() under Linux
 #include <string>
 #include <exception>
+#include <locale>
+
 #include "Common.h"
 
 LOGENGINE_NS_BEGIN
@@ -39,36 +41,109 @@ private:
 
 class TStream
 {
+protected:
+	bool FEOF = false;
 public:
 	virtual ~TStream() {}
 	virtual int Read(void* Buffer, size_t Size) = 0;
 	virtual int Write(const void* Buffer, const size_t Size) = 0;
 	virtual size_t Length() = 0;
 	virtual off_t Seek(const off_t Offset, const TSeekMode sMode) = 0;
-	virtual int ReadChar();
+	//virtual int ReadChar();
+	//virtual int ReadWChar();
 	virtual std::string ReadPString();
 	virtual void WritePString(std::string& str);
+	virtual bool Eof() { return FEOF; }
 
 	template<class R>
 	void operator >>(R& Value)
 	{
-		static_assert(std::is_integral<R>::value || std::is_floating_point<R>::value); // template works only for integral types + float types
-		if (Read(&Value, sizeof(Value)) != sizeof(Value))
-			throw IOException("End of stream reached!");
+		//static_assert(std::is_integral<R>::value || std::is_floating_point<R>::value); // template works only for integral types + float types
+		if constexpr (std::is_integral<R>::value || std::is_floating_point<R>::value)
+		{
+			if (Read(&Value, sizeof(Value)) != sizeof(Value))
+				throw IOException("End of stream reached!");
+		}
+		else if constexpr (std::is_base_of<std::basic_string<typename R::value_type, typename R::traits_type>, R>::value)
+		{
+			Value = ReadString<R>();
+			//auto sizeInBytes = Value.size() * sizeof(R::value_type);
+			//if (Read(Value.data(), sizeInBytes) != sizeInBytes)
+			//	throw IOException("Cannot write to the stream.");
+		}
+
 	}
 
-	template<class W>
+	template<typename W>
 	void operator <<(const W& Value)
 	{
-		static_assert(std::is_integral<W>::value || std::is_floating_point<W>::value); // template works only for integral types + float types
-		if (Write(&Value, sizeof(Value)) != sizeof(Value))
-			throw IOException("Cannot write to the stream.");
+		//static_assert(std::is_integral<W>::value || std::is_floating_point<W>::value); // template works only for integral types + float types
+		if constexpr (std::is_integral<W>::value || std::is_floating_point<W>::value)
+		{
+			if (Write(&Value, sizeof(Value)) != sizeof(Value))
+				throw IOException("Cannot write to the stream.");
+		}
+		else if constexpr (std::is_base_of<std::basic_string<typename W::value_type, typename W::traits_type>, W>::value)
+		{			
+			auto sizeInBytes = Value.size() * sizeof(W::value_type);
+			if (Write(Value.data(), sizeInBytes) != sizeInBytes)
+				throw IOException("Cannot write to the stream.");
+			
+			W endL;
+			BUILD_ENDL(endL);
+			Write(endL.data(), endL.size() * sizeof(W::value_type));
+		}
 	}
+
+	template<typename R>
+	int ReadChar()
+	{
+		typename R::value_type c;
+		if (Read(&c, sizeof(c)) == sizeof(R::value_type))
+			return c;
+		else
+			return -1;
+	}
+
+	int ReadChar()
+	{
+		char c;
+		if (Read(&c, sizeof(c)) == sizeof(char))
+			return c;
+		else
+			return -1;
+	}
+
+	template<typename R>
+	R ReadString()
+	{
+		// check if class R is instantioation or descendant of std::basic_string
+		static_assert(std::is_base_of<std::basic_string<typename R::value_type, typename R::traits_type>, R>::value);
+	
+		R value;
+		do
+		{
+			int c = ReadChar<R>();
+			if (c == EndLineChar)
+			{
+				if (value[value.size() - 1] == CRChar) value.resize(value.size() - 1); // if '\r' has been read right BEFORE '\n' delete it
+				return value;
+			};
+			if (c == -1) return value; // end of file reached
+			value += static_cast<R::value_type>(c);
+		} while (true);
+
+		return value;
+	}
+
 
 	void operator <<(const char* Value)  { Write(Value, strlen(Value)); }
 	void operator <<(char* Value)        { Write(Value, strlen(Value)); }
-	void operator <<(std::string& Value) { Write(Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends
-	void operator >>(std::string& Value);
+	//void operator <<(const std::string& Value) { Write(Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends
+	//void operator <<(const std::wstring& Value) { Write(Value.data(), Value.length()*sizeof(std::wstring::value_type)); Write(EndLineU, wcslen(EndLineU)*sizeof(std::wstring::value_type)); } // need Endline to determine where string ends
+	//void operator >>(std::string& Value);
+	//void operator >>(std::wstring& Value);
+
 };
 
 #define DEFAULT_BUF_SIZE 1024
@@ -125,7 +200,6 @@ public:
 	std::string GetFileName() const { return FFileName; }
 
 };
-
 
 LOGENGINE_NS_END
 

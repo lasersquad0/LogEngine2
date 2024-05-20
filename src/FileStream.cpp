@@ -28,13 +28,23 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////
 //  TStream Class
 //////////////////////////////////////////////////////////////////////
-
+/*
 int TStream::ReadChar()
 {
 	char c;
-	if (Read(&c, sizeof(c)) == sizeof(char))
+	if (Read(&c, sizeof(c)) == sizeof(char)) // in case of error Read() throws an exception
 		return c;
 	else 
+		return -1; // EOF reached
+}
+
+
+int TStream::ReadWChar()
+{
+	wchar_t c;
+	if (Read(&c, sizeof(c)) == sizeof(wchar_t))
+		return c;
+	else
 		return -1;
 }
 
@@ -44,11 +54,32 @@ void TStream::operator >>(string& Value)
 	do 
 	{
 		int c = ReadChar();
+		if (c == EndLineChar)
+		{
+			if (Value[Value.size() - 1] == '\r') Value.resize(Value.size() - 1); // if '\r' has been read right BEFORE '\n' delete it
+			return;
+		}
 		if (c == -1) return; // end of file reached
-		if (c == EndLineChar) return;
 		Value += static_cast<char>(c);
 	} while (true);
 }
+
+void TStream::operator >>(wstring& Value)
+{
+	Value.clear();
+	do
+	{
+		int c = ReadWChar();
+		if (c == EndLineChar)
+		{
+			if (Value[Value.size() - 1] == '\r') Value.resize(Value.size() - 1); // if '\r' has been read right BEFORE '\n' delete it
+			return;
+		};
+		if (c == -1) return; // end of file reached
+		Value += static_cast<wchar_t>(c);
+	} while (true);
+}
+*/
 
 string TStream::ReadPString()
 {
@@ -84,6 +115,8 @@ int TMemoryStream::Read(void* Buffer, size_t Size)
 
 	if (Buffer == nullptr) return -1;
 	if (Size == 0) return -1;
+
+	FEOF = Size >= FSize - FRPos;
 
 	if (FRPos + Size > FSize) Size = FSize - FRPos;
 	if (Size == 0) return 0; // we've have read everything (EOF reached)
@@ -244,6 +277,8 @@ int TFileStream::Read(void* Buffer, size_t Size)
 		throw IOException("File opened in write-only mode. Can't read!");
 
 	int c = myread(hf, Buffer, (uint)Size);
+	
+	FEOF = (c != Size);
 
 	if (c == -1)
 	{
@@ -320,4 +355,4 @@ void TFileStream::Flush()
 #endif
 }
 
-LOGENGINE_NS_END 
+LOGENGINE_NS_END

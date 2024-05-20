@@ -24,12 +24,17 @@ typedef unsigned long long ullong;
 #define LOGENGINE_NS_END }
 #define LOGENGINE_NS LogEngine
 
+#define CRChar '\r'
+#define LFChar '\n'
+
 #ifdef WIN32 
 #define EndLine "\r\n"
 #define EndLineChar '\n'
+#define BUILD_ENDL(_) (_) += CRChar; (_) += LFChar;
 #else
 #define EndLine "\n"
 #define EndLineChar '\n'
+#define BUILD_ENDL(_) (_) += LFChar;
 #endif
 
 typedef std::lock_guard<std::recursive_mutex> mutexguard;
