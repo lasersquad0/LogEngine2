@@ -199,8 +199,8 @@ public:
 class Pattern
 {
 protected:
-	THArray<Holder*> holders; // container of pointers is required here to support proper virtual "->format()" calls 
-
+	THArray<Holder*> FHolders; // container of pointers is required here to support proper virtual "->format()" calls 
+	std::string FPattern;
 	void parsePattern(const std::string& pattern);
 	void clearHolders();
 public:
@@ -208,6 +208,7 @@ public:
 	virtual ~Pattern() { clearHolders(); }
 	virtual std::string Format(const LogEvent& event);
 	void SetPattern(const std::string& pattern) { parsePattern(pattern); }
+	std::string GetPattern() { return FPattern; }
 };
 
 LOGENGINE_NS_END

@@ -1,10 +1,36 @@
 
 #include "Compare.h"
+#include "Properties.h"
+#include "RotatingFileSink.h"
+#include "IniReader.h"
 #include "LogEngine.h"
 
 LOGENGINE_NS_BEGIN
 
+class Destructor
+{
+public:
+	~Destructor() { ClearLoggers(); }
+};
+
 static THash<std::string, Logger*, CompareStringNCase> loggers;
+static Properties properties;
+static Destructor destructor; // variable destructor must be located BELOW variable loggers because loggers should exist when destructor is being destroyed.
+
+void SetProperty(const std::string& name, const std::string& value)
+{
+	properties.SetValue(name, value);
+}
+
+std::string GetProperty(const std::string& name, const std::string& defaultValue)
+{
+	return properties.getString(name, defaultValue);
+}
+
+bool PropertyExist(const std::string& name)
+{
+	return properties.IfExists(name);
+}
 
 void ClearLoggers()
 {
@@ -78,7 +104,41 @@ Logger& GetMultiLogger(const std::string& loggerName, THArray<Sink*> sinks)
 }
 
 
-void InitFromFile(std::string fileName)
+static uint ParseInt(std::string s, uint defaultValue = 0)
+{
+	if (s.empty()) return defaultValue;
+
+	int factor = 1;
+	std::string sl = StrToLower(s);
+
+	if (sl.find_last_of('k') != std::string::npos)
+	{
+		sl = sl.substr(0, sl.length() - 1);
+		factor = 1024;
+	}
+	else if (sl.find_last_of('m') != std::string::npos)
+	{
+		sl = sl.substr(0, sl.length() - 1);
+		factor = 1024 * 1024;
+	}
+	else if (sl.find_last_of('g') != std::string::npos)
+	{
+		sl = sl.substr(0, sl.length() - 1);
+		factor = 1024 * 1024 * 1024;
+	}
+
+	try
+	{
+		uint result = stoi(sl) * factor;
+		return result;
+	}
+	catch (...)
+	{
+		return defaultValue;
+	}
+}
+
+void InitFromFile(const std::string& fileName)
 {
 	IniReader reader;
 	reader.LoadIniFile(fileName);
@@ -99,9 +159,9 @@ void InitFromFile(std::string fileName)
 			logger.SetLogLevel(LLfromString(reader.GetValue(sectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
 			logger.SetAsyncMode(StrToBool(reader.GetValue(sectName, ASYNMODE_PARAM, "false", 0)));
 
-			if (!section.IfExists("Sink")) continue;
+			if (!section.IfExists(SINK_PARAM)) continue;
 
-			IniReader::ValueType& sinks = section.GetValue("Sink");
+			IniReader::ValueType& sinks = section.GetValue(SINK_PARAM);
 			for (auto sn : sinks)
 			{
 				if (sn.empty()) continue;
@@ -122,17 +182,26 @@ void InitFromFile(std::string fileName)
 				case stStderr: sink = new StderrSink(sn); break;
 				case stString: sink = new StringSink(sn); break;
 				case stFile:
-				case stRotatingFile:
 				{
 					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
 					if (sinkFileName.empty())
 						throw file_exception("File sink '" + sn + "' missing FileName parameter.");
 
-					if (stype == stFile)
-						sink = new FileSink(sn, sinkFileName);
-					else
-						sink = new RotatingFileSink(sn, sinkFileName);
+					sink = new FileSink(sn, sinkFileName);
+					
+					break;
+				}
+				case stRotatingFile:
+				{
+					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
+					if (sinkFileName.empty())
+						throw file_exception("File sink '" + sn + "' missing FileName parameter.");
+					
+					LogRotatingStrategy strategy = RSfromString(reader.GetValue(sinkSectName, STRATEGY_PARAM, RS_DEFAULT_NAME));
+					uint maxlogsize = ParseInt(reader.GetValue(sinkSectName, MAXLOGSIZE_PARAM, DefaultMaxLogSizeStr), DefaultMaxLogSize);
+					uint maxIndex = ParseInt(reader.GetValue(sinkSectName, MAXBACKUPINDEX_PARAM, DefaultMaxBackupIndexStr), DefaultMaxBackupIndex);
 
+					sink = new RotatingFileSink(sn, sinkFileName, maxlogsize, strategy, maxIndex);
 
 					break;
 				}
@@ -146,6 +215,9 @@ void InitFromFile(std::string fileName)
 				lay->SetCritPattern(reader.GetValue(sinkSectName, CRITPATTERN_PARAM, DefaultCritPattern, 0));
 				lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM, DefaultErrorPattern, 0));
 				lay->SetWarnPattern(reader.GetValue(sinkSectName, WARNPATTERN_PARAM, DefaultWarningPattern, 0));
+				lay->SetInfoPattern(reader.GetValue(sinkSectName, INFOPATTERN_PARAM, DefaultInfoPattern, 0));
+				lay->SetDebugPattern(reader.GetValue(sinkSectName, DEBUGPATTERN_PARAM, DefaultDebugPattern, 0));
+				lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM, DefaultTracePattern, 0));
 
 				sink->SetLayout(lay);
 				logger.AddSink(sink);

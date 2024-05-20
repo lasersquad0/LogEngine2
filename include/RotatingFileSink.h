@@ -19,9 +19,29 @@
 LOGENGINE_NS_BEGIN
 
 enum LogRotatingStrategy { rsNone, rsSingle, rsTimeStamp, rsNumbers };
-#define DefaultMaxLogSize  1024*1024 // 1 kbyte 
-#define DefaultMaxBackupIndex  10  // max number of backup files for strategy rsNumbers
-#define DefaultRotatingStrategy rsNone
+
+#define RS_NAMES { "none", "single", "timestamp", "numbers" }
+#define RS_DEFAULT rsTimeStamp
+#define RS_DEFAULT_NAME "timestamp"
+
+static const std::string RotatingStrategyNames[] RS_NAMES;
+
+inline LogRotatingStrategy RSfromString(std::string name) // parameter needs to be passed by value
+{
+	//std::transform(name.begin(), name.end(), name.begin(), mytolower);
+
+	auto it = std::find(std::begin(RotatingStrategyNames), std::end(RotatingStrategyNames), StrToLower(name));
+	if (it != std::end(RotatingStrategyNames))
+		return static_cast<LogRotatingStrategy>(std::distance(std::begin(RotatingStrategyNames), it));
+
+	return RS_DEFAULT; 
+}
+
+#define DefaultMaxLogSize  1024*1024 // 1 mbyte 
+#define DefaultMaxLogSizeStr IntToStr(DefaultMaxLogSize)
+#define DefaultMaxBackupIndex  10u  // max number of backup files for strategy rsNumbers
+#define DefaultMaxBackupIndexStr IntToStr(DefaultMaxBackupIndex)
+#define DefaultRotatingStrategy rsTimeStamp
 #define LogExt    ".log"
 #define BackupExt ".bak"
 
@@ -50,7 +70,11 @@ public:
 	}
 
 	void Flush() override { FStream->Flush(); }
+	ullong GetMaxLogSize() { return FMaxLogSize; }
+	uint GetMaxBackupIndex() { return FMaxBackupIndex; }
+	LogRotatingStrategy GetStrategy() { return FStrategy; }
 
+protected:
 	uint FindFreeBackupIndex(std::string& existingFileName)
 	{
 		std::string s = StripFileExt(existingFileName);
@@ -136,9 +160,6 @@ public:
 		FInitialFileSize = FStream->Length();
 		FBytesWritten = 0;
 	}
-
-	ullong GetMaxLogSize() { return FMaxLogSize; }
-	LogRotatingStrategy GetStrategy() { return FStrategy; }
 
 };
 

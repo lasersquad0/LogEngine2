@@ -24,8 +24,13 @@ typedef unsigned long long ullong;
 #define LOGENGINE_NS_END }
 #define LOGENGINE_NS LogEngine
 
+#ifdef WIN32 
+#define EndLine "\r\n"
+#define EndLineChar '\n'
+#else
 #define EndLine "\n"
 #define EndLineChar '\n'
+#endif
 
 typedef std::lock_guard<std::recursive_mutex> mutexguard;
 typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
@@ -110,5 +115,9 @@ int CompareNCase(const std::string& str1, const std::string& str2);
 bool isUInt(std::string& value);
 
 uint GetThreadID();
+
+std::string StrToLower(std::string str);
+
+std::string DisplaySystemVersion();
 
 #endif //COMMON_H

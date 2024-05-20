@@ -1,3 +1,4 @@
+#include "LogEngine.h"
 #include "Pattern.h"
 
 LOGENGINE_NS_BEGIN
@@ -6,9 +7,9 @@ std::string Pattern::Format(const LogEvent& event)
 {
 	std::string result;
 
-	for (uint i = 0; i < holders.Count(); i++)
+	for (uint i = 0; i < FHolders.Count(); i++)
 	{
-		result.append(holders[i]->format(event));
+		result.append(FHolders[i]->format(event));
 	}
 
 	return result;
@@ -18,6 +19,8 @@ std::string Pattern::Format(const LogEvent& event)
 void Pattern::parsePattern(const std::string& pattern)
 {
 	static THArray<std::string> placeHolders = { "", DateMacro, TimeMacro, DateTimeMacro, MessageMacro, ThreadMacro, AppNameMacro, AppVersionMacro, OSMacro, OSVersionMacro, LogLevelMacro };
+
+	FPattern = pattern;
 
 	clearHolders();
 
@@ -40,38 +43,38 @@ void Pattern::parsePattern(const std::string& pattern)
 			switch (j)
 			{
 			case 1:
-				holders.AddValue(new DateHolder());
+				FHolders.AddValue(new DateHolder());
 				break;
 			case 2:
-				holders.AddValue(new TimeHolder());
+				FHolders.AddValue(new TimeHolder());
 				break;
 			case 3:
-				holders.AddValue(new DateTimeHolder());
+				FHolders.AddValue(new DateTimeHolder());
 				break;
 			case 4:
-				holders.AddValue(new MessageHolder());
+				FHolders.AddValue(new MessageHolder());
 				break;
 			case 5:
-				holders.AddValue(new ThreadHolder());
+				FHolders.AddValue(new ThreadHolder());
 				break;
 			case 6:
-				holders.AddValue(new AppNameHolder(DefaultAppName)); //TODO pass proper value to AppNameHolder
+				FHolders.AddValue(new AppNameHolder(GetProperty(APPNAME_PROPERTY, DefaultAppName)));
 				break;
 			case 7:
-				holders.AddValue(new AppVersionHolder(DefaultAppVersion)); //TODO pass proper value to AppVersionHolder
+				FHolders.AddValue(new AppVersionHolder(GetProperty(APPVERSION_PROPERTY, DefaultAppVersion))); 
 				break;
 			case 8:
-				holders.AddValue(new OSHolder());
+				FHolders.AddValue(new OSHolder());
 				break;
 			case 9:
-				holders.AddValue(new OSVersionHolder());
+				FHolders.AddValue(new OSVersionHolder());
 				break;
 			case 10:
-				holders.AddValue(new LogLevelHolder());
+				FHolders.AddValue(new LogLevelHolder());
 				break;
 
 			default:
-				holders.AddValue(new LiteralHolder(temp));
+				FHolders.AddValue(new LiteralHolder(temp));
 				break;
 			}
 		}
@@ -82,20 +85,20 @@ void Pattern::parsePattern(const std::string& pattern)
 				temp += pattern[i++];
 
 			Holder* a = new LiteralHolder(temp);
-			holders.AddValue(a);
+			FHolders.AddValue(a);
 		}
 	}
 }
 
 void Pattern::clearHolders()
 {
-	for (uint i = 0; i < holders.Count(); i++)
+	for (uint i = 0; i < FHolders.Count(); i++)
 	{
-		Holder* h = holders[i];
+		Holder* h = FHolders[i];
 		delete h;
 	}
 
-	holders.Clear();
+	FHolders.Clear();
 }
 
 

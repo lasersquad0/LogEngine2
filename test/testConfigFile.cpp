@@ -110,154 +110,81 @@ void ConfigFileTest::testConfigFile6()
   
 }
 
+void ConfigFileTest::testConfigFile7()
+{
+    InitFromFile(TEST_FILES_FOLDER "test7.lfg");
+
+    CPPUNIT_ASSERT_EQUAL(1u, GetLoggersCount());
+
+    Logger& logger1 = GetLogger("RLog");
+    CPPUNIT_ASSERT_EQUAL(LL_DEFAULT, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
+    CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+    Sink* sink = logger1.GetSink("SuperSink");
+
+    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    RotatingFileSink* rsink = dynamic_cast<RotatingFileSink*>(sink);
+    CPPUNIT_ASSERT_EQUAL(true, sink == rsink); // check sink type
+    CPPUNIT_ASSERT_EQUAL(std::string("sink.super.log"), rsink->getFileName());
+    CPPUNIT_ASSERT_EQUAL(DefaultMaxBackupIndex, rsink->GetMaxBackupIndex()); 
+    CPPUNIT_ASSERT_EQUAL(20*1024*1024ull, rsink->GetMaxLogSize()); 
+    PatternLayout* lay = dynamic_cast<PatternLayout*>(rsink->GetLayout());
+    CPPUNIT_ASSERT_EQUAL(std::string(DefaultLinePattern), lay->GetAllPatterns());
+    CPPUNIT_ASSERT_EQUAL(std::string("! %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
+    CPPUNIT_ASSERT_EQUAL(std::string("# %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));
+    CPPUNIT_ASSERT_EQUAL(std::string("*!* %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(Levels::llCritical));
+    CPPUNIT_ASSERT_EQUAL(std::string("*!* %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llInfo));
+
+}
+
 void ConfigFileTest::testConfigFile20()
 {
     InitFromFile(TEST_FILES_FOLDER "example2.lfg");
+
+    CPPUNIT_ASSERT_EQUAL(2u, GetLoggersCount());
+
+    Logger& logger1 = GetLogger("MainLogger");
+    CPPUNIT_ASSERT_EQUAL(Levels::llDebug, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
+    CPPUNIT_ASSERT_EQUAL(2u, logger1.SinkCount());
+    Sink* sink = logger1.GetSink("s1");
+    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(true, sink == dynamic_cast<FileSink*>(sink)); // check sink type
+    sink = logger1.GetSink("s2");
+    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(true, sink == dynamic_cast<StdoutSink*>(sink)); // check sink type
+
+    Logger& logger2 = GetLogger("Second");
+    CPPUNIT_ASSERT_EQUAL(Levels::llWarning, logger2.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(true, logger2.GetAsyncMode());
+    CPPUNIT_ASSERT_EQUAL(3u, logger2.SinkCount());
+
+    sink = logger2.GetSink("s3");
+    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(true, sink == dynamic_cast<FileSink*>(sink)); // check sink type
+
+    sink = logger2.GetSink("s2");
+    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(true, sink == dynamic_cast<StdoutSink*>(sink)); // check sink type
+    
+    sink = logger2.GetSink("rotating");
+    RotatingFileSink* rsink = dynamic_cast<RotatingFileSink*>(sink);
+    CPPUNIT_ASSERT_EQUAL(LL_DEFAULT, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(true, sink == rsink); // check sink type
+    CPPUNIT_ASSERT_EQUAL(true, sink == dynamic_cast<FileSink*>(sink)); // check sink type
+    CPPUNIT_ASSERT_EQUAL(6*1024ull, rsink->GetMaxLogSize());
+    CPPUNIT_ASSERT_EQUAL(5u, rsink->GetMaxBackupIndex());
+    CPPUNIT_ASSERT_EQUAL(rsNumbers, rsink->GetStrategy());
+
 }
 
 
-
-
-/*
-#ifdef _WIN32
-#include <windows.h>
-
-BOOL DisplaySystemVersion(const char *filename)
+void ConfigFileTest::testConfigFile21()
 {
-   OSVERSIONINFOEX osvi;
-   BOOL bOsVersionInfoEx;
-
-   // Try calling GetVersionEx using the OSVERSIONINFOEX structure.
-   // If that fails, try using the OSVERSIONINFO structure.
-
-   ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
-   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-   if( !(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi)) )
-   {
-      // If OSVERSIONINFOEX doesn't work, try OSVERSIONINFO.
-      osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
-      if (! GetVersionEx ( (OSVERSIONINFO *) &osvi) ) 
-         return FALSE;
-   }
-
-   switch (osvi.dwPlatformId)
-   {
-      // Tests for Windows NT product family.
-      case VER_PLATFORM_WIN32_NT:
-
-      // Test for the product.
-
-         if ( osvi.dwMajorVersion <= 4 )
-            printf("Microsoft Windows NT ");
-
-         if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0 )
-            printf ("Microsoft Windows 2000 ");
-
-
-         if( bOsVersionInfoEx )  // Use information from GetVersionEx.
-         { 
-         // Test for the workstation type.
-         /*   if ( osvi.wProductType == VER_NT_WORKSTATION )
-            {
-               if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1 )
-                  printf ("Microsoft Windows XP ");
-
-               if( osvi.wSuiteMask & VER_SUITE_PERSONAL )
-                  printf ( "Home Edition " );
-               else
-                  printf ( "Professional " );
-            }
-
-         // Test for the server type.
-            else if ( osvi.wProductType == VER_NT_SERVER )
-            {
-               if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1 )
-                  printf ("Microsoft Windows .NET ");
-
-               if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
-                  printf ( "DataCenter Server " );
-               else if( osvi.wSuiteMask & VER_SUITE_ENTERPRISE )
-                  if( osvi.dwMajorVersion == 4 )
-                     printf ("Advanced Server " );
-                  else
-                     printf ( "Enterprise Server " );
-               else if ( osvi.wSuiteMask == VER_SUITE_BLADE )
-                  printf ( "Web Server " );
-               else
-                  printf ( "Server " );
-            }*/
-  /*       }
-         else   // Use the registry on early versions of Windows NT.
-         {
-            HKEY hKey;
-            char szProductType[80];
-            DWORD dwBufLen;
-
-            RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-               "SYSTEM\\CurrentControlSet\\Control\\ProductOptions",
-               0, KEY_QUERY_VALUE, &hKey );
-            RegQueryValueEx( hKey, "ProductType", NULL, NULL,
-               (LPBYTE) szProductType, &dwBufLen);
-            RegCloseKey( hKey );
-            if ( lstrcmpi( "WINNT", szProductType) == 0 )
-               printf( "Professional " );
-            if ( lstrcmpi( "LANMANNT", szProductType) == 0 )
-               printf( "Server " );
-            if ( lstrcmpi( "SERVERNT", szProductType) == 0 )
-				printf( "Advanced Server " );
-         }
-		 
-		 // Display version, service pack (if any), and build number.
-		 
-         if ( osvi.dwMajorVersion <= 4 )
-         {
-			 printf ("version %d.%d %s (Build %d)\n",
-				 osvi.dwMajorVersion,
-				 osvi.dwMinorVersion,
-				 osvi.szCSDVersion,
-				 osvi.dwBuildNumber & 0xFFFF);
-         }
-         else
-         { 
-			 printf ("%s (Build %d)\n",
-				 osvi.szCSDVersion,
-				 osvi.dwBuildNumber & 0xFFFF);
-         }
-         break;
-		 
-		 // Test for the Windows 95 product family.
-      case VER_PLATFORM_WIN32_WINDOWS:
-		  
-		  if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0)
-		  {
-			  printf ("Microsoft Windows 95 ");
-			  if ( osvi.szCSDVersion[1] == 'C' || osvi.szCSDVersion[1] == 'B' )
-				  printf("OSR2 " );
-		  } 
-		  
-		  if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 10)
-		  {
-			  printf ("Microsoft Windows 98 ");
-			  if ( osvi.szCSDVersion[1] == 'A' )
-				  printf("SE " );
-		  } 
-		  
-		  if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90)
-		  {
-			  printf ("Microsoft Windows Millennium Edition ");
-		  } 
-		  break;
-   }
-   return TRUE; 
+    std::string ver = DisplaySystemVersion();
+    printf("\n");
+    printf(ver.c_str());
 }
-#else
-int DisplaySystemVersion(const char *filename)
-{
-    system("uname -a");
 
-    std::string ldd_cmd("ldd ");
-    ldd_cmd.append(filename);
-    system(ldd_cmd.c_str());
-}
-#endif /* _WIN32 */
+
+

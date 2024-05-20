@@ -22,7 +22,7 @@ protected:
 		Pattern{DefaultWarningPattern}, Pattern{DefaultInfoPattern}, Pattern{DefaultDebugPattern}, Pattern{DefaultTracePattern} };
 	Pattern AppName{ DefaultAppName };
 	Pattern AppVersion{ DefaultAppVersion };
-	Pattern DefaultPattern{ DefaultLinePattern };
+	//Pattern DefaultPattern{ DefaultLinePattern };
 	Pattern StartAppLine{ DefaultStartAppLine };
 	Pattern StopAppLine{ DefaultStopAppLine };
 	//Pattern SeparatorLine{ DefaultSeparatorLine };
@@ -31,6 +31,8 @@ public:
 	PatternLayout() {}
 	~PatternLayout() override {}
 	std::string Format(const LogEvent& lv) override { return MessagePatterns[lv.msgLevel].Format(lv); }
+	std::string GetPattern(Levels::LogLevel level) { return MessagePatterns[level].GetPattern(); }
+	std::string GetAllPatterns() { return MessagePatterns[Levels::llOff].GetPattern(); }
 
 	void SetPattern(const std::string& pattern, Levels::LogLevel level) { MessagePatterns[level].SetPattern(pattern); }
 	void SetCritPattern(const std::string& pattern) { MessagePatterns[Levels::llCritical].SetPattern(pattern); }
@@ -39,6 +41,7 @@ public:
 	void SetInfoPattern(const std::string& pattern) { MessagePatterns[Levels::llInfo].SetPattern(pattern); }
 	void SetDebugPattern(const std::string& pattern) { MessagePatterns[Levels::llDebug].SetPattern(pattern); }
 	void SetTracePattern(const std::string& pattern) { MessagePatterns[Levels::llTrace].SetPattern(pattern); }
+	
 	void SetStartAppLinePattern(const std::string& pattern) { StartAppLine.SetPattern(pattern); }
 	void SetStopAppLinePattern(const std::string& pattern) { StopAppLine.SetPattern(pattern); }
 	void SetAppName(const std::string& aname) { AppName.SetPattern(aname); }
@@ -49,7 +52,7 @@ public:
 		for (uint i = 0; i < Levels::n_LogLevels; i++)
 			MessagePatterns[i].SetPattern(pattern);
 
-		DefaultPattern.SetPattern(pattern);
+		//DefaultPattern.SetPattern(pattern);
 	}
 };
 

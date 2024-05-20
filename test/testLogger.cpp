@@ -334,10 +334,12 @@ void LoggerTest::testLogStrategyNone()
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 	
 	logger.Info("L"); // file will be truncated and re-written from beginning (because BackupType=lbNone)
-	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
 	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	// it will be 13ull and 47ull under Linux because of \r\n and \n
+	CPPUNIT_ASSERT_EQUAL(14ull, rsink->GetBytesWritten()); 
+	CPPUNIT_ASSERT_EQUAL(45ull, rsink->GetMessageCounts()[Levels::llError]);
+
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
 	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
@@ -379,13 +381,13 @@ void LoggerTest::testLogStrategySingle()
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // file will be renamed to .bak and new log file created
-	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(14ull, rsink->GetBytesWritten());
 	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(fileName + BackupExt));
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(fileName));
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(45ull, rsink->GetMessageCounts()[Levels::llError]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
 	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
@@ -425,12 +427,12 @@ void LoggerTest::testLogStrategyTimeStamp()
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
-	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(14ull, rsink->GetBytesWritten());
 	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(fileName));
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(45ull, rsink->GetMessageCounts()[Levels::llError]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
 	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
@@ -469,12 +471,12 @@ void LoggerTest::testLogStrategyBakNumber()
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
-	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(14ull, rsink->GetBytesWritten());
 	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(StripFileExt(fileName) + ".1" + BackupExt));
 
-	CPPUNIT_ASSERT_EQUAL(47ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(45ull, rsink->GetMessageCounts()[Levels::llError]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
 	CPPUNIT_ASSERT_EQUAL(1ull, rsink->GetMessageCounts()[Levels::llInfo]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);
@@ -493,13 +495,13 @@ void LoggerTest::testLogStrategyBakNumber()
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
 	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
-	CPPUNIT_ASSERT_EQUAL(13ull, rsink->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(14ull, rsink->GetBytesWritten());
 	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(StripFileExt(fileName) + ".1" + BackupExt));
 	CPPUNIT_ASSERT_EQUAL(true, std::filesystem::exists(StripFileExt(fileName) + ".2" + BackupExt));
 
-	CPPUNIT_ASSERT_EQUAL(93ull, rsink->GetMessageCounts()[Levels::llError]);
+	CPPUNIT_ASSERT_EQUAL(89ull, rsink->GetMessageCounts()[Levels::llError]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llWarning]);
 	CPPUNIT_ASSERT_EQUAL(2ull, rsink->GetMessageCounts()[Levels::llInfo]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llDebug]);

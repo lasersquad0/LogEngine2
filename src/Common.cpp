@@ -8,7 +8,7 @@
 
 #include <string.h> // need for strstr under Linux
 #include <sstream>
-//#include <thread>
+#include <algorithm>
 #include <sys/timeb.h>
 #include "Common.h"
 
@@ -523,3 +523,15 @@ uint GetThreadID()
 	ss >> thrID;
 	return thrID;
 }
+
+static char mytolower(int c) // to eliminate compile warning "warning C4244: '=': conversion from 'int' to 'char', possible loss of data"
+{
+	return (char)tolower(c);
+}
+std::string StrToLower(std::string str) // needs to be passed by value
+{
+	std::transform(str.begin(), str.end(), str.begin(), mytolower);
+	return str;
+}
+
+

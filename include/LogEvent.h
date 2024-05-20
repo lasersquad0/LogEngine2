@@ -37,16 +37,13 @@ inline const std::string& LLtoCapsString(const Levels::LogLevel ll) { return Log
 
 inline const char* LLtoShortString(const Levels::LogLevel ll) { return LogLevelShortNames[ll]; }
 
-inline char mytolower(int c) // to eliminate compile warning "warning C4244: '=': conversion from 'int' to 'char', possible loss of data"
-{
-	return (char)tolower(c);
-}
+
 
 inline Levels::LogLevel LLfromString(std::string name)
 {
-	std::transform(name.begin(), name.end(), name.begin(), mytolower);
+	//std::transform(name.begin(), name.end(), name.begin(), mytolower);
 
-	auto it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), name);
+	auto it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), StrToLower(name));
 	if (it != std::end(LogLevelNames))
 		return static_cast<Levels::LogLevel>(std::distance(std::begin(LogLevelNames), it));
 
@@ -67,9 +64,9 @@ static const std::string SinkTypeNames[] ST_NAMES;
 
 inline LogSinkType STfromString(std::string name) // parameter needs to be passed by value
 {
-	std::transform(name.begin(), name.end(), name.begin(), mytolower);
+	//std::transform(name.begin(), name.end(), name.begin(), name);
 
-	auto it = std::find(std::begin(SinkTypeNames), std::end(SinkTypeNames), name);
+	auto it = std::find(std::begin(SinkTypeNames), std::end(SinkTypeNames), StrToLower(name));
 	if (it != std::end(SinkTypeNames))
 		return static_cast<LogSinkType>(std::distance(std::begin(SinkTypeNames), it));
 

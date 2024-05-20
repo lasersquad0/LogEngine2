@@ -1,7 +1,7 @@
 /*
 * Properties.cpp
 *
-* Copyright 2003, LogEngine Project. All rights reserved.
+* Copyright 2024, LogEngine Project. All rights reserved.
 *
 * See the COPYING file for the terms of usage and distribution.
 */
@@ -10,19 +10,9 @@
 #include <limits.h>
 #include <istream>
 
-//namespace logengine {
+LOGENGINE_NS_BEGIN
 
-std::string Properties::trim(std::string str)
-{
-	// remove any leading and traling spaces, just in case.
-	size_t strBegin = str.find_first_not_of(' ');
-	size_t strEnd = str.find_last_not_of(' ');
-	str.erase(strEnd + 1, str.size() - strEnd);
-	str.erase(0, strBegin);
-
-	return str;
-}
-
+/*
 void Properties::load(std::istream& in) 
 {
 	Clear();
@@ -37,12 +27,12 @@ void Properties::load(std::istream& in)
 	{
 		fullLine = linebuf;
 		
-		/* if the line contains a # then it is a comment
-		if we find it anywhere other than at the beginning, we assume 
-		there is a command on that line, and if we don't find it at all
-		we assume there is a command on the line (we test for valid 
-		command later) if neither is true, we continue with the next line
-		*/
+		// if the line contains a # then it is a comment
+		// if we find it anywhere other than at the beginning, we assume 
+		// there is a command on that line, and if we don't find it at all
+		// we assume there is a command on the line (we test for valid 
+		// command later) if neither is true, we continue with the next line
+		
 		length = fullLine.find('#');
 		if (length == std::string::npos) 
 		{
@@ -78,7 +68,7 @@ void Properties::load(std::istream& in)
 		{
 			leftSide = command.substr(0, length);
 			rightSide = command.substr(length + 1, command.size() - length);
-			_substituteVariables(rightSide);
+			//_substituteVariables(rightSide);
 		}
 		else
 		{
@@ -98,6 +88,7 @@ void Properties::save(std::ostream& out)
 		out << key << "=" << GetValue(key) << std::endl;
 	}
 }
+*/
 
 int Properties::getInt(const std::string& property, int defaultValue /*=0*/) const
 {
@@ -135,7 +126,7 @@ bool Properties::getBool(const std::string& property, bool defaultValue /*=false
 	return (EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
 }
 
-std::string Properties::getString(const std::string& property, const char* defaultValue /*=""*/) const 
+std::string Properties::getString(const std::string& property, const std::string& defaultValue /*=""*/) const 
 {
 	if(!IfExists(property))
 		return defaultValue;
@@ -143,66 +134,4 @@ std::string Properties::getString(const std::string& property, const char* defau
 	return GetValue(property);
 }
 
-void Properties::_substituteVariables(std::string& value) 
-{
-	std::string result;
-	
-	value = StringReplace(value, "\\n", "\n");
-	
-	std::string::size_type left = 0;
-	std::string::size_type right = value.find("${", left);
-	if (right == std::string::npos) 
-	{
-		// bail out early for 99% of cases
-		return;
-	}
-	
-	while(true) 
-	{
-		result += value.substr(left, right - left);
-		if (right == std::string::npos) 
-		{
-			break;
-		}
-		
-		left = right + 2;
-		right = value.find('}', left);
-		if (right == std::string::npos) 
-		{
-			// no close tag, use string literally
-			result += value.substr(left - 2);
-			break;
-		}
-		else 
-		{
-			const std::string key = value.substr(left, right - left);
-			if (key == "${") 
-			{
-				result += "${";
-			}
-			else 
-			{
-#pragma warning(suppress : 4996)
-				char* val = getenv(key.c_str());
-				if (val)
-				{
-					result += val;
-				}
-				else
-				{
-					if(IfExists(key))
-					{
-						result += GetValue(key);
-					}
-				}
-			}
-			left = right + 1;
-		}
-		
-		right = value.find("${", left);
-	}
-	
-	value = result;
-}
-
-
+LOGENGINE_NS_END

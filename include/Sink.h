@@ -45,6 +45,7 @@ public:
 		SendMsg(e);
 	}
 
+	Layout* GetLayout() { return FLayout; }
 	virtual void SetLayout(Layout* layout)
 	{
 		if (layout == nullptr) return; // layout cannot be null

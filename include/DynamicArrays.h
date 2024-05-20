@@ -143,7 +143,7 @@ class THArrayBase
 public:
 	static const int NPOS = -1;  // return value that usually mean "item is not found", this value returned by functions like IndexOf()
 	virtual ~THArrayBase() {}
-	virtual void Error(const uint Value, const uint vmax) const { if (Value >= vmax) throw THArrayException("Element with index " + IntToStr(Value) + " not found!");	}
+	virtual void Error(const uint Value, const uint vmax) const { if (Value >= vmax) throw THArrayException("Element with index " + std::to_string(Value) + " not found!");	}
 	virtual uint Add(const void*) = 0;
 	//virtual	void	AddMany(const void* Values) = 0; not implememnted
 	virtual void AddFillValues(const uint Num) = 0;
@@ -288,6 +288,7 @@ public:
 	virtual inline void Push(const T& Value) { AddValue(Value); }
 	virtual inline T    Pop();
 	virtual inline T    PopFront();
+	virtual T& Last() const { return GetValue(FCount - 1); };
 	inline void			Swap(const uint Index1, const uint Index2) override;
 	virtual void		Reverse();
 	virtual void		Reverse(uint endIndex); // Reverse till specified element
@@ -401,7 +402,7 @@ public:
 	THash() {}
 	THash(const THash<I, V, Cmp>& a);
 	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); }
-	//~THash();
+	virtual ~THash() {}
 
 	iterator begin() { return iterator(this, 0); }
 	iterator end() { return iterator(this, Count()); }
@@ -472,6 +473,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 typedef THash<std::string, std::string> TStringHash;
+typedef THash<std::string, std::string, CompareStringNCase> TStringHashNCase;
 typedef THArray<std::string> THArrayString;
 typedef THArray<int>* PHArrayInt;
 // Splits string to array of strings using Delim as delimiter
