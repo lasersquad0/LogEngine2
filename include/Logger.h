@@ -82,17 +82,80 @@ public:
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
 	{
-		LogFmt(fmt, Levels::llCritical, std::forward<Args>(args)...);
+		LogFmt(Levels::llCritical, fmt, std::forward<Args>(args)...);
 	}
 
 	template<class... Args>
-	void LogFmt(const std::format_string<Args...> fmt, Levels::LogLevel ll, Args&&... args)
+	void LogFmt(Levels::LogLevel ll, const std::format_string<Args...> fmt, Args&&... args)
 	{
 		if (!shouldLog(ll)) return;
 
 		// TODO think how to pass all args into SendToAllSinks and create final string there 
 		LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
 		InternalLog(ev);
+	}
+#else
+	std::string vformat(const char* format, va_list args) 
+	{
+		size_t size = 1024; // should be enough for format string
+		char* buffer = new char[size];
+
+		while (1) 
+		{
+			va_list args_copy;
+
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+			args_copy = args;
+#else
+			va_copy(args_copy, args);
+#endif
+
+			int n = vsnprintf(buffer, size, format, args_copy);
+
+			va_end(args_copy);
+
+			// If that worked, return a string.
+			if ((n > -1) && (static_cast<size_t>(n) < size)) 
+			{
+				std::string s(buffer);
+				delete[] buffer;
+				return s;
+			}
+
+			// Else try again with more space.
+			size = (n > -1) ?
+				n + 1 :   // ISO/IEC 9899:1999
+				size * 2; // twice the old size
+
+			delete[] buffer;
+			buffer = new char[size];
+		}
+	}
+	
+	void CritFmt(const char* fmt, ...)
+	{
+		if (!shouldLog(Levels::llCritical)) return;
+
+		va_list va;
+		va_start(va, fmt);
+
+		// TODO think how to pass all args into SendToAllSinks and create final string there 
+		LogEvent ev(vformat(fmt, va), Levels::llCritical, GetThreadID(), GetCurrDateTime());
+		InternalLog(ev);
+		va_end(va);
+	}
+
+	void LogFmt(Levels::LogLevel ll, const char* fmt,  ...)
+	{
+		if (!shouldLog(ll)) return;
+
+		va_list va;
+		va_start(va, fmt);
+
+		// TODO think how to pass all args into SendToAllSinks and create final string there 
+		LogEvent ev(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
+		InternalLog(ev);
+		va_end(va);
 	}
 #endif
 

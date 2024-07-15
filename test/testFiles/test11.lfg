@@ -1,0 +1,10 @@
+
+
+
+Version=0
+MaxLogSize = 1000
+
+BackupType =
+
+DebugLevel = 2
+DetailLevel = 7

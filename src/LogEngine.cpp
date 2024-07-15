@@ -1,5 +1,5 @@
 
-#include "Compare.h"
+//#include "Compare.h"
 #include "Properties.h"
 #include "RotatingFileSink.h"
 #include "IniReader.h"

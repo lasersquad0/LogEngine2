@@ -230,6 +230,7 @@
       <OutputFile>$(ProjectDir)\..\..\..\lib\$(TargetName).lib</OutputFile>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalDependencies>Version.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -292,6 +293,7 @@
     <Lib>
       <OutputFile>$(ProjectDir)\..\..\..\lib\$(TargetName).lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalDependencies>Version.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -432,6 +434,7 @@
     <ClCompile Include="..\..\..\src\PatternLayout.cpp" />
     <ClCompile Include="..\..\..\src\Properties.cpp" />
     <ClCompile Include="..\..\..\src\SynchronizedQueue.cpp" />
+    <ClCompile Include="..\..\..\src\VersionInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\Compare.h" />

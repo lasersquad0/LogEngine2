@@ -1,0 +1,20 @@
+#ddddd
+#
+[logger.rlog]
+sink=superSINK
+#!
+[Sink.SUPERSINK]
+FileName  =   sink.super.log
+Type= RotatingFile
+LogLevel= ERROR
+MaxLogFileSize = 20m
+MaxBackupIndex = aaa
+Strategy = none
+ErrorPattern = ! %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG% 
+WarnPattern  = # %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%
+CritPattern  = *!* %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%
+InfoPattern  = *!* %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%
+
+#
+#
+#

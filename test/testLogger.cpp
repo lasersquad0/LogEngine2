@@ -98,24 +98,24 @@ void LoggerTest::testLog1()
 
 void LoggerTest::testLog2()
 {
-#if defined(WIN32) && !defined(__BORLANDC__)
+//#if defined(WIN32) && !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog2");
 	StringSink* sink = new StringSink("strsink");
 	logg.AddSink(sink);
 
 	std::string s;
 
-	logg.LogFmt("", Levels::llWarning);
+	logg.LogFmt(Levels::llWarning, "");
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string("#"), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2warning", Levels::llWarning);
+	logg.LogFmt(Levels::llWarning, "testLog2warning");
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2warning"), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2 {}.", Levels::llError, "error");
+	logg.LogFmt(Levels::llError, "testLog2 {}.", "error");
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2 error."), cutLog(s));
 
@@ -125,16 +125,16 @@ void LoggerTest::testLog2()
 	CPPUNIT_ASSERT_EQUAL(std::string("*testLog2test critical parameter. 3"), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2debug {}.{}.{}.{}.{}", Levels::llDebug, 1,2,3,4,5);
+	logg.LogFmt(Levels::llDebug, "testLog2debug {}.{}.{}.{}.{}", 1,2,3,4,5);
 	s = sink->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(std::string(""), cutLog(s));
 
 	sink->Clear();
-	logg.LogFmt("testLog2info {}.{}.{}.{}.{}", Levels::llInfo, 1, 2, "RT", 4, 5.1);
+	logg.LogFmt(Levels::llInfo, "testLog2info {}.{}.{}.{}.{}", 1, 2, "RT", 4, 5.1);
 	s = sink->GetOutput();
 	std::string ss = cutLog(s);
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s));
-#endif
+//#endif
 }
 
 void LoggerTest::testLog3()
@@ -148,7 +148,7 @@ void LoggerTest::testLog3()
 
 	std::string s1,s2;
 
-	logg.LogFmt("", Levels::llWarning);
+	logg.LogFmt(Levels::llWarning, "");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -157,7 +157,7 @@ void LoggerTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.LogFmt("testLog2warning", Levels::llWarning);
+	logg.LogFmt(Levels::llWarning, "testLog2warning");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -166,7 +166,7 @@ void LoggerTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.LogFmt("testLog2 {}.", Levels::llError, "error");
+	logg.LogFmt(Levels::llError, "testLog2 {}.", "error");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -184,7 +184,7 @@ void LoggerTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.LogFmt("testLog2debug {}.{}.{}.{}.{}", Levels::llDebug, 1, 2, 3, 4, 5);
+	logg.LogFmt(Levels::llDebug, "testLog2debug {}.{}.{}.{}.{}", 1, 2, 3, 4, 5);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -193,7 +193,7 @@ void LoggerTest::testLog3()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.LogFmt("testLog2info {}.{}.{}.{}.{}", Levels::llInfo, 1, 2, "RT", 4, 5.1);
+	logg.LogFmt(Levels::llInfo, "testLog2info {}.{}.{}.{}.{}", 1, 2, "RT", 4, 5.1);
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
