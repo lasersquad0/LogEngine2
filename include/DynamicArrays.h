@@ -28,7 +28,7 @@ public:
 	THArrayException(const char* Message) { Text = Message; whatText = DA_EXCEPTION_PREFIX + std::string(Message); }
 	THArrayException(const std::string& Message) { Text = Message; whatText = DA_EXCEPTION_PREFIX + Message; }
 	THArrayException(const THArrayException& ex) { Text = ex.Text; whatText = ex.whatText; }
-	~THArrayException() noexcept override {} //throw () { };
+	~THArrayException() noexcept override {} //throw () { }
 	THArrayException& operator=(const THArrayException& rhs) { Text = rhs.Text; whatText = rhs.whatText; return *this; }
 	virtual std::string getErrorMessage() const { return whatText; }
 	const char* what() const noexcept override { return whatText.c_str(); } //throw();
@@ -183,7 +183,7 @@ public:
 	std::string GetValue(const uint Index) const { std::string s(GetAddr(Index), data.GetItemSize()); return s; }
 	void	SetValue(const uint Index, const std::string& Value) { data.Update(Index, Value.c_str()); }
 	std::string operator[](const uint Index) const { return GetValue(Index); }
-	inline uint	Count() const { return data.Count(); }
+	inline uint	Count() const override { return data.Count(); }
 	void	Clear()    override { data.Clear(); }
 	void	ClearMem() override { data.ClearMem(); }
 	void	Zero()     override { data.Zero(); }
@@ -274,10 +274,10 @@ public:
 	void		SetValue(const uint Index, const T& Value);
 	T&			GetValue(const uint Index) const;
 	virtual uint InsertValue(const uint Index, const T& Value);
-	virtual uint Insert(const uint Index, const void* Value) { return InsertValue(Index, *static_cast<const T*>(Value)); }
+	uint Insert(const uint Index, const void* Value) override { return InsertValue(Index, *static_cast<const T*>(Value)); }
 	void		DeleteValue(const uint Index) override;
 	virtual uint AddValue(const T& Value) { return InsertValue(FCount, Value); }
-	virtual uint Add(const void* pValue) { return AddValue(*static_cast<const T*>(pValue)); }
+	uint Add(const void* pValue) override { return AddValue(*static_cast<const T*>(pValue)); }
 	inline	 T* GetValuePointer(const uint Index) const;
 	//virtual int IndexOf(const T& Value, const Compare<T>& cmp) const { return IndexOfFrom(Value, 0, cmp); }
 	template<class Cmp> int IndexOf(const T& Value) const { return IndexOfFrom<Cmp>(Value, 0); }
@@ -288,7 +288,7 @@ public:
 	virtual inline void Push(const T& Value) { AddValue(Value); }
 	virtual inline T    Pop();
 	virtual inline T    PopFront();
-	virtual T& Last() const { return GetValue(FCount - 1); };
+	virtual T& Last() const { return GetValue(FCount - 1); }
 	inline void			Swap(const uint Index1, const uint Index2) override;
 	virtual void		Reverse();
 	virtual void		Reverse(uint endIndex); // Reverse till specified element

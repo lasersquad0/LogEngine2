@@ -130,7 +130,7 @@ public:
 				return value;
 			};
 			if (c == -1) return value; // end of file reached
-			value += static_cast<R::value_type>(c);
+			value += static_cast<typename R::value_type>(c);
 		} while (true);
 
 		return value;
