@@ -137,6 +137,31 @@ void ConfigFileTest::testConfigFile7()
 
 }
 
+void ConfigFileTest::testConfigFile8()
+{
+    InitFromFile(TEST_FILES_FOLDER "test8.lfg");
+
+    CPPUNIT_ASSERT_EQUAL(1u, GetLoggersCount());
+
+    Logger& logger1 = GetLogger("FLog");
+    CPPUNIT_ASSERT_EQUAL(LL_DEFAULT, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
+    CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+    Sink* sink = logger1.GetSink("SuperFSink");
+
+    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    FileSink* fsink = dynamic_cast<FileSink*>(sink);
+    CPPUNIT_ASSERT_EQUAL(true, sink == fsink); // check sink type
+    CPPUNIT_ASSERT_EQUAL(std::string("sink super.log"), fsink->getFileName());
+    PatternLayout* lay = dynamic_cast<PatternLayout*>(fsink->GetLayout());
+    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetAllPatterns());
+    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
+    CPPUNIT_ASSERT_EQUAL(std::string("W %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));
+    CPPUNIT_ASSERT_EQUAL(std::string("C %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(Levels::llCritical));
+    CPPUNIT_ASSERT_EQUAL(std::string("I %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llInfo));
+
+}
+
 void ConfigFileTest::testConfigFile20()
 {
     InitFromFile(TEST_FILES_FOLDER "example2.lfg");

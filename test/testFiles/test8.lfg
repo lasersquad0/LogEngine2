@@ -1,29 +1,20 @@
-DetailLevel = 0
+#ddddd
+#
+[logger.flog]
+sink=superFSINK
+#!
+[Sink.SUPERFSINK]
+FileName  =   sink super.log
+Type= File
+LogLevel= ERROR
+MaxLogFileSize = 20m
+MaxBackupIndex = aaa
+Strategy = none
+PatternAll = ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG% 
+WarnPattern  = W %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%
+CritPattern  = C %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%
+InfoPattern  = I %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%
 
-MaxLogSize = 100
-
-BackupType = None
-
-ApplicationName = ExampleApp
-
-Version = E.E.E.E
-
-LogFileName = logs/ExampleApp.log
-
-# This text is written to the file when LogEngine is initializing. 
-StartAppLine  = \n%APPNAME% %APPVERSION% startup.\nLog is started at %DATETIME%.
-
-# This text is written to the file when LogEngine is stopping. 
-StopAppLine   = %APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%.
-
-SeparatorLine = ---------------------------------------------------------------------
-
-# Template for error line.
-ErrorLine     = %TIME% #%THREAD% : %MSG%
-
-# Template for warning line.
-WarningLine   = %TIME% #%THREAD% : %MSG%
-
-# Template for information line.
-InfoLine      = %TIME% #%THREAD% : %MSG%
- 
+#
+#
+#

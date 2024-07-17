@@ -273,8 +273,8 @@ void LoggerTest::testLog4()
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
-	CPPUNIT_ASSERT_EQUAL(std::string("OtestLog4warning test7"), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string("OtestLog4warning test7"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("otestLog4warning test7"), cutLog(s1));
+	CPPUNIT_ASSERT_EQUAL(std::string("otestLog4warning test7"), cutLog(s2));
 }
 
 // test case: when two file sinks try to write into the same file. in this case exception is thrown for the second sink.
