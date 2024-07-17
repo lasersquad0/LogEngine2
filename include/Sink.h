@@ -17,18 +17,18 @@ LOGENGINE_NS_BEGIN
 class Sink
 {
 protected:
-	Levels::LogLevel FLogLevel{LL_DEFAULT};
 	std::string FName;
-	Layout* FLayout{nullptr};
+    Layout* FLayout{nullptr};
 	ullong FMessageCounts[(int)Levels::n_LogLevels]{0,0,0,0,0,0};
 	ullong FBytesWritten = 0;
+    Levels::LogLevel FLogLevel{LL_DEFAULT};
 
 	bool shouldLog(const Levels::LogLevel ll) { return FLogLevel >= ll; }
 
 	virtual void SendMsg(const LogEvent& e) = 0;
 
 public:
-	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FLogLevel{ ll }, FName{ name }/*, FLayout{new FixedLayout()}*/
+	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FName{ name }, FLogLevel{ ll } /*, FLayout{new FixedLayout()}*/
 	{
 		//for (uint i = 0; i < n_LogLevels; i++)
 		//	FMessageCounts[i] = 0;

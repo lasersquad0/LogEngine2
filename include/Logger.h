@@ -36,13 +36,13 @@ private:
 	LoggerQueue FQueue;
 	std::thread FThread;
 	Levels::LogLevel FLogLevel;
-	bool FAsync = false;
 	THArray<Sink*> sinks;
+	bool FAsync = false;
 	bool shouldLog(const Levels::LogLevel ll) const { return FLogLevel >= ll; }
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
-	Logger(const std::string& name, Levels::LogLevel ll = LL_DEFAULT) : FName(name), FLogLevel(ll), FQueue(10) {}
+	Logger(const std::string& name, Levels::LogLevel ll = LL_DEFAULT) : FName(name), FQueue(10), FLogLevel(ll) {}
 
 	virtual ~Logger() 
 	{ 

@@ -77,13 +77,13 @@ inline LogSinkType STfromString(std::string name) // parameter needs to be passe
 class LogEvent
 {
 public:
-	Levels::LogLevel msgLevel;
-	unsigned int threadID; // this is a thread that generated a log message. it may differ from thread that makes actual writing to the file (in case LogEngone.Threaded property is set to true)
 	struct tm tmtime;
 	std::string message;
+	Levels::LogLevel msgLevel;
+	unsigned int threadID; // this is a thread that generated a log message. it may differ from thread that makes actual writing to the file (in case LogEngone.Threaded property is set to true)
 
 	LogEvent(const std::string& msg, Levels::LogLevel msgType, unsigned int thrID, struct tm time)
-		: msgLevel(msgType), threadID(thrID), tmtime(time), message(msg) {}
+		: tmtime(time), message(msg),msgLevel(msgType), threadID(thrID) {}
 
 };
 

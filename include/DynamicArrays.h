@@ -1018,7 +1018,7 @@ V* THash<I, V, Cmp>::GetValuePointer(const I& Key) const
 	int n = FAKeys.IndexOf(Key);
 	if (n < 0)
 		return nullptr;
-	return FAValues.GetValuePointer(n);
+	return FAValues.GetValuePointer((uint)n);
 }
 
 /*template <class I,class V>
@@ -1095,9 +1095,9 @@ void THash2<I1, I2, V, Cmp>::SetValue(const I1& Key1, const I2& Key2, const V& V
 
 	if (InsH != nullptr)
 	{
-		int before = InsH->Count();
+		uint before = InsH->Count();
 		InsH->SetValue(Key2, Value);
-		int after = InsH->Count();
+		uint after = InsH->Count();
 		FCount += after - before;
 	}
 	else

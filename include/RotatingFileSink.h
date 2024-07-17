@@ -78,7 +78,7 @@ protected:
 	uint FindFreeBackupIndex(std::string& existingFileName)
 	{
 		std::string s = StripFileExt(existingFileName);
-		int ind = 1;
+		uint ind = 1;
 		while (true)
 		{
 			std::string ss = s + '.' + IntToStr(ind) + BackupExt;
