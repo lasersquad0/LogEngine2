@@ -93,8 +93,9 @@
         <BCC_DisableFramePtrElimOpt>true</BCC_DisableFramePtrElimOpt>
         <BCC_DisableSpellChecking>true</BCC_DisableSpellChecking>
         <CLANG_UnwindTables>true</CLANG_UnwindTables>
-        <ILINK_LibraryPath>$(BDSLIB)\$(PLATFORM)\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
+        <BCC_SmartPCHCache>false</BCC_SmartPCHCache>
+        <BCC_PCHUsage>None</BCC_PCHUsage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <DynamicRTL>true</DynamicRTL>
@@ -102,6 +103,8 @@
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <Defines>NDEBUG;$(Defines)</Defines>
         <TASM_Debugging>None</TASM_Debugging>
+        <BCC_SmartPCHCache>false</BCC_SmartPCHCache>
+        <BCC_PCHUsage>None</BCC_PCHUsage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <DynamicRTL>true</DynamicRTL>
@@ -156,34 +159,43 @@
             <BuildOrder>23</BuildOrder>
         </None>
         <CppCompile Include="..\..\..\src\Common.cpp">
-            <BuildOrder>6</BuildOrder>
+            <BuildOrder>21</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\Compare.cpp">
-            <BuildOrder>0</BuildOrder>
+            <BuildOrder>22</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\DynamicArrays.cpp">
-            <BuildOrder>1</BuildOrder>
+            <BuildOrder>23</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\FileSink.cpp">
-            <BuildOrder>6</BuildOrder>
+            <BuildOrder>24</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\FileStream.cpp">
-            <BuildOrder>7</BuildOrder>
+            <BuildOrder>25</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\LogEngine.cpp">
+            <BuildOrder>21</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\LogEvent.cpp">
-            <BuildOrder>6</BuildOrder>
+            <BuildOrder>22</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\Logger.cpp">
-            <BuildOrder>8</BuildOrder>
+            <BuildOrder>23</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\Pattern.cpp">
-            <BuildOrder>9</BuildOrder>
+            <BuildOrder>24</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\PatternLayout.cpp">
-            <BuildOrder>10</BuildOrder>
+            <BuildOrder>25</BuildOrder>
         </CppCompile>
         <CppCompile Include="..\..\..\src\Properties.cpp">
-            <BuildOrder>7</BuildOrder>
+            <BuildOrder>26</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\SynchronizedQueue.cpp">
+            <BuildOrder>27</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\src\VersionInfo.cpp">
+            <BuildOrder>28</BuildOrder>
         </CppCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

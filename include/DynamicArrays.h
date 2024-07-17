@@ -100,7 +100,7 @@ protected:
 	void	Grow();
 	void	GrowTo(const uint ToCount);
 	void*	CalcAddr(const uint num) const { return (void*)((unsigned char*)FMemory + static_cast<size_t>(num) * FItemSize); }
-	void	ThrowZeroItemSize() const { throw THArrayException("Error in THArrayRaw: ItemSize cannot be zero!"); }
+	[[noreturn]] void	ThrowZeroItemSize() const { throw THArrayException("Error in THArrayRaw: ItemSize cannot be zero!"); }
 public:
 	THArrayRaw();
 	THArrayRaw(uint ItemSize);
@@ -984,8 +984,8 @@ void THash<I, V, Cmp>::Delete(const I& Key)
 	int n = FAKeys.IndexOf(Key);
 	if (n >= 0)
 	{
-		FAKeys.DeleteValue(n);
-		FAValues.DeleteValue(n);
+		FAKeys.DeleteValue((uint)n);
+		FAValues.DeleteValue((uint)n);
 	}
 }
 
@@ -1009,7 +1009,7 @@ V& THash<I, V, Cmp>::GetValue(const I& Key) const
 	if (n < 0)
 		throw THArrayException("THash<I,V>::GetValue(Key) : Key not found !");
 
-	return FAValues[n];
+	return FAValues[(uint)n];
 }
 
 template <class I, class V, class Cmp>
