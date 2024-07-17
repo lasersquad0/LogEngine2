@@ -22,7 +22,6 @@ protected:
 		Pattern{DefaultWarningPattern}, Pattern{DefaultInfoPattern}, Pattern{DefaultDebugPattern}, Pattern{DefaultTracePattern} };
 	Pattern AppName{ DefaultAppName };
 	Pattern AppVersion{ DefaultAppVersion };
-	//Pattern DefaultPattern{ DefaultLinePattern };
 	Pattern StartAppLine{ DefaultStartAppLine };
 	Pattern StopAppLine{ DefaultStopAppLine };
 	//Pattern SeparatorLine{ DefaultSeparatorLine };
@@ -51,8 +50,6 @@ public:
 	{
 		for (uint i = 0; i < Levels::n_LogLevels; i++)
 			MessagePatterns[i].SetPattern(pattern);
-
-		//DefaultPattern.SetPattern(pattern);
 	}
 };
 

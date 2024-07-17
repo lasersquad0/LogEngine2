@@ -211,13 +211,13 @@ void InitFromFile(const std::string& fileName)
 
 				sink->SetLogLevel(LLfromString(reader.GetValue(sinkSectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
 				PatternLayout* lay = new PatternLayout();
-				lay->SetAllPatterns(reader.GetValue(sinkSectName, PATTERNALL_PARAM, DefaultLinePattern, 0));
-				lay->SetCritPattern(reader.GetValue(sinkSectName, CRITPATTERN_PARAM, DefaultCritPattern, 0));
-				lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM, DefaultErrorPattern, 0));
-				lay->SetWarnPattern(reader.GetValue(sinkSectName, WARNPATTERN_PARAM, DefaultWarningPattern, 0));
-				lay->SetInfoPattern(reader.GetValue(sinkSectName, INFOPATTERN_PARAM, DefaultInfoPattern, 0));
-				lay->SetDebugPattern(reader.GetValue(sinkSectName, DEBUGPATTERN_PARAM, DefaultDebugPattern, 0));
-				lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM, DefaultTracePattern, 0));
+				lay->SetAllPatterns(reader.GetValue(sinkSectName,  PATTERNALL_PARAM,   DefaultLinePattern, 0)); // put DefaultLinePattern into all Crit, Warn, Info, etc patterns 
+				if (reader.HasValue(sinkSectName, CRITPATTERN_PARAM))  lay->SetCritPattern(reader.GetValue(sinkSectName,  CRITPATTERN_PARAM));
+				if (reader.HasValue(sinkSectName, ERRORPATTERN_PARAM)) lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM));
+				if (reader.HasValue(sinkSectName, WARNPATTERN_PARAM))  lay->SetWarnPattern(reader.GetValue(sinkSectName,  WARNPATTERN_PARAM));
+				if (reader.HasValue(sinkSectName, INFOPATTERN_PARAM))  lay->SetInfoPattern(reader.GetValue(sinkSectName,  INFOPATTERN_PARAM));
+				if (reader.HasValue(sinkSectName, DEBUGPATTERN_PARAM)) lay->SetDebugPattern(reader.GetValue(sinkSectName, DEBUGPATTERN_PARAM));
+				if (reader.HasValue(sinkSectName, TRACEPATTERN_PARAM)) lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM));
 
 				sink->SetLayout(lay);
 				logger.AddSink(sink);

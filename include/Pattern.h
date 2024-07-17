@@ -184,7 +184,7 @@ public:
 
 #define DefaultAppName        "nonameapp"
 #define DefaultAppVersion     "0.0.0.0"
-#define DefaultLinePattern    "O" TimeMacro " #" ThreadMacro ": " MessageMacro
+#define DefaultLinePattern    "o" TimeMacro " #" ThreadMacro ": " MessageMacro
 #define DefaultCritPattern    "*!*" DefaultLinePattern
 #define DefaultErrorPattern   "!" DefaultLinePattern
 #define DefaultWarningPattern "#" DefaultLinePattern

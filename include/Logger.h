@@ -78,7 +78,7 @@ public:
 
 	}
 
-#if defined(WIN32) && !defined(__BORLANDC__)
+#if defined(WIN32) && !defined(__BORLANDC__) 
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
 	{
