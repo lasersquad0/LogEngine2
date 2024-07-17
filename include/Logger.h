@@ -32,17 +32,17 @@ struct LoggerThreadInfo
 class Logger
 {
 private:
-	Levels::LogLevel FLogLevel;
 	std::string FName;
 	LoggerQueue FQueue;
 	std::thread FThread;
+	Levels::LogLevel FLogLevel;
 	bool FAsync = false;
 	THArray<Sink*> sinks;
 	bool shouldLog(const Levels::LogLevel ll) const { return FLogLevel >= ll; }
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
-	Logger(const std::string& name, Levels::LogLevel ll = LL_DEFAULT) : FLogLevel(ll), FName(name), FQueue(10) {}
+	Logger(const std::string& name, Levels::LogLevel ll = LL_DEFAULT) : FName(name), FLogLevel(ll), FQueue(10) {}
 
 	virtual ~Logger() 
 	{ 
@@ -124,7 +124,7 @@ public:
 
 			// Else try again with more space.
 			size = (n > -1) ?
-				n + 1 :   // ISO/IEC 9899:1999
+				(size_t)(n + 1) :   // ISO/IEC 9899:1999
 				size * 2; // twice the old size
 
 			delete[] buffer;
