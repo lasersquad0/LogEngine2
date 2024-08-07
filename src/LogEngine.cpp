@@ -149,7 +149,7 @@ void InitFromFile(const std::string& fileName)
 		IniReader::StorageType::ValuesHash& section = reader.GetSection(sectName);
 
 		size_t n = sectName.find('.');
-		if ((n != std::string::npos) && EqualNCase(sectName.substr(0, n + 1), LOGGER_PREFIX) )
+		if ((n != std::string::npos) && EqualNCase<std::string>(sectName.substr(0, n + 1), LOGGER_PREFIX) )
 		{
 			std::string loggerName = sectName.substr(n + 1);
 			if (loggerName.empty()) continue;

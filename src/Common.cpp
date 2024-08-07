@@ -176,7 +176,7 @@ std::string BoolToStr(bool Value)
 }
 bool StrToBool(const std::string& Value)
 {
-	return EqualNCase(Value, "1") || EqualNCase(Value, "yes") || EqualNCase(Value, "true");
+	return EqualNCase<std::string>(Value, "1") || EqualNCase<std::string>(Value, "yes") || EqualNCase<std::string>(Value, "true");
 }
 
 // extracts filename from path with filename
@@ -432,43 +432,6 @@ std::string trimRight(std::string str)
 	str.erase(strEnd + 1, str.size() - strEnd);
 
 	return str;
-}
-
-bool EqualNCase(const std::string& str1, const std::string& str2)
-{
-	//const char* s1, * s2;
-
-	//s1 = str1.c_str();
-	//s2 = str2.c_str();
-	//if ((s1 == nullptr) && (s2 == nullptr))
-	//	return true;
-	//if ((s1 == nullptr) && (s2 != nullptr))
-	//	return false;
-	//if ((s1 != nullptr) && (s2 == nullptr))
-	//	return false;
-
-
-	if (str1.length() == 0 && str2.length() == 0)
-		return true;
-	if ((str1.length() == 0) && (str2.length() > 0))
-		return false;
-	if ((str1.length() > 0) && (str2.length() == 0))
-		return false;
-
-//#ifdef HAVE_STRCASECMP
-//	return strcasecmp(s1, s2) == 0;
-//#else
-
-	//for (; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
-	for (uint i = 0; i < str1.length() && i < str2.length(); i++)
-		if (toupper(static_cast<uchar>(str1[i])) != toupper(static_cast<uchar>(str2[i])))
-			return false;
-
-	if (str1.length() == str2.length())
-		return true;
-	else
-		return false;
-//#endif
 }
 
 int CompareNCase(const std::string& str1, const std::string& str2)

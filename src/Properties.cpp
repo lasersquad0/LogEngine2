@@ -123,7 +123,7 @@ bool Properties::getBool(const std::string& property, bool defaultValue /*=false
 	
 	std::string value = trim(GetValue(property));
 	
-	return (EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
+	return StrToBool(value); //(EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
 }
 
 std::string Properties::getString(const std::string& property, const std::string& defaultValue /*=""*/) const 
