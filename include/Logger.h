@@ -85,6 +85,24 @@ public:
 		LogFmt(Levels::llCritical, fmt, std::forward<Args>(args)...);
 	}
 
+	template<class ... Args>
+	void ErrorFmt(const std::format_string<Args...> fmt, Args&& ...args)
+	{
+		LogFmt(Levels::llError, fmt, std::forward<Args>(args)...);
+	}
+
+	template<class ... Args>
+	void WarnFmt(const std::format_string<Args...> fmt, Args&& ...args)
+	{
+		LogFmt(Levels::llWarning, fmt, std::forward<Args>(args)...);
+	}
+
+	template<class ... Args>
+	void InfoFmt(const std::format_string<Args...> fmt, Args&& ...args)
+	{
+		LogFmt(Levels::llInfo, fmt, std::forward<Args>(args)...);
+	}
+
 	template<class... Args>
 	void LogFmt(Levels::LogLevel ll, const std::format_string<Args...> fmt, Args&&... args)
 	{
