@@ -184,11 +184,11 @@ public:
 
 #define DefaultAppName        "nonameapp"
 #define DefaultAppVersion     "0.0.0.0"
-#define DefaultLinePattern    "o" TimeMacro " #" ThreadMacro ": " MessageMacro
+#define DefaultLinePattern    " " TimeMacro " #" ThreadMacro ": " MessageMacro
 #define DefaultCritPattern    "*!*" DefaultLinePattern
-#define DefaultErrorPattern   "!" DefaultLinePattern
-#define DefaultWarningPattern "#" DefaultLinePattern
-#define DefaultInfoPattern    " " DefaultLinePattern
+#define DefaultErrorPattern   "E!" DefaultLinePattern
+#define DefaultWarningPattern "W#" DefaultLinePattern
+#define DefaultInfoPattern    "I" DefaultLinePattern
 #define DefaultDebugPattern   "D" DefaultLinePattern
 #define DefaultTracePattern   "T" DefaultLinePattern
 #define DefaultStartAppLine   "\n%APPNAME% %APPVERSION% startup\nLog is started at %DATETIME%."

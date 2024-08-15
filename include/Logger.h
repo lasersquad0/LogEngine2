@@ -78,7 +78,7 @@ public:
 
 	}
 
-#if defined(WIN32) && !defined(__BORLANDC__) 
+#if defined(WIN32) && !defined(__BORLANDC__)
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
 	{
@@ -108,17 +108,17 @@ public:
 	{
 		if (!shouldLog(ll)) return;
 
-		// TODO think how to pass all args into SendToAllSinks and create final string there 
+		// TODO think how to pass all args into SendToAllSinks and create final string there
 		LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
 		InternalLog(ev);
 	}
 #else
-	std::string vformat(const char* format, va_list args) 
+	std::string vformat(const char* format, va_list args)
 	{
 		size_t size = 1024; // should be enough for format string
 		char* buffer = new char[size];
 
-		while (1) 
+		while (1)
 		{
 			va_list args_copy;
 
@@ -133,7 +133,7 @@ public:
 			va_end(args_copy);
 
 			// If that worked, return a string.
-			if ((n > -1) && (static_cast<size_t>(n) < size)) 
+			if ((n > -1) && (static_cast<size_t>(n) < size))
 			{
 				std::string s(buffer);
 				delete[] buffer;
