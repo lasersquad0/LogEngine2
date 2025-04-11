@@ -8,7 +8,7 @@
 
 #pragma once
 
-#if defined(WIN32) && !defined(__BORLANDC__)
+#if defined(WIN32) && _HAS_CXX20==1 && !defined(__BORLANDC__)
 #include <format>
 #endif
 
@@ -38,7 +38,6 @@ private:
 	Levels::LogLevel FLogLevel;
 	THArray<Sink*> sinks;
 	bool FAsync = false;
-	bool shouldLog(const Levels::LogLevel ll) const { return FLogLevel >= ll; }
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
@@ -51,6 +50,9 @@ public:
 		sinks.Clear(); 
 	}
 
+	bool ShouldLog(const Levels::LogLevel ll) const { return FLogLevel >= ll; }
+
+	//TODO add parameter "propagate" with this parameter =true SetLogLevel will also set specified log level to all sinks
 	void SetLogLevel(const Levels::LogLevel ll) { FLogLevel = ll; }
 	Levels::LogLevel GetLogLevel() { return FLogLevel; }
 
@@ -78,7 +80,7 @@ public:
 
 	}
 
-#if defined(WIN32) && !defined(__BORLANDC__)
+#if defined(WIN32) && _HAS_CXX20==1 && !defined(__BORLANDC__)
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
 	{
@@ -103,14 +105,34 @@ public:
 		LogFmt(Levels::llInfo, fmt, std::forward<Args>(args)...);
 	}
 
+	template<class ... Args>
+	void DebugFmt(const std::format_string<Args...> fmt, Args&& ...args)
+	{
+		LogFmt(Levels::llDebug, fmt, std::forward<Args>(args)...);
+	}
+
+	template<class ... Args>
+	void TraceFmt(const std::format_string<Args...> fmt, Args&& ...args)
+	{
+		LogFmt(Levels::llTrace, fmt, std::forward<Args>(args)...);
+	}
+
 	template<class... Args>
 	void LogFmt(Levels::LogLevel ll, const std::format_string<Args...> fmt, Args&&... args)
 	{
-		if (!shouldLog(ll)) return;
+		if (!ShouldLog(ll)) return;
 
 		// TODO think how to pass all args into SendToAllSinks and create final string there
-		LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
-		InternalLog(ev);
+		if (FAsync)
+		{
+			LogEvent* event = new LogEvent(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
+			FQueue.PushElement(event);
+		}
+		else
+		{
+			LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
+			InternalLog(ev);
+		}
 	}
 #else
 	std::string vformat(const char* format, va_list args)
@@ -152,50 +174,106 @@ public:
 	
 	void CritFmt(const char* fmt, ...)
 	{
-		if (!shouldLog(Levels::llCritical)) return;
+		if (!ShouldLog(Levels::llCritical)) return;
 
 		va_list va;
 		va_start(va, fmt);
+		LogFmt(Levels::llCritical, fmt, va);
+		va_end(va);
+	}
 
-		// TODO think how to pass all args into SendToAllSinks and create final string there 
-		LogEvent ev(vformat(fmt, va), Levels::llCritical, GetThreadID(), GetCurrDateTime());
-		InternalLog(ev);
+	void ErrorFmt(const char* fmt, ...)
+	{
+		if (!ShouldLog(Levels::llError)) return;
+
+		va_list va;
+		va_start(va, fmt);
+		LogFmt(Levels::llError, fmt, va);
+		va_end(va);
+	}
+
+	void WarnFmt(const char* fmt, ...)
+	{
+		if (!ShouldLog(Levels::llWarning)) return;
+
+		va_list va;
+		va_start(va, fmt);
+		LogFmt(Levels::llWarning, fmt, va);
+		va_end(va);
+	}
+
+	void InfoFmt(const char* fmt, ...)
+	{
+		if (!ShouldLog(Levels::llInfo)) return;
+
+		va_list va;
+		va_start(va, fmt);
+		LogFmt(Levels::llInfo, fmt, va);
+		va_end(va);
+	}
+
+	void DebugFmt(const char* fmt, ...)
+	{ 
+		if (!ShouldLog(Levels::llDebug)) return;
+
+		va_list va;
+		va_start(va, fmt);
+		LogFmt(Levels::llDebug, fmt, va);
+		va_end(va);
+	}
+
+	void TraceFmt(const char* fmt, ...)
+	{
+		if (!ShouldLog(Levels::llTrace)) return;
+
+		va_list va;
+		va_start(va, fmt);
+		LogFmt(Levels::llTrace, fmt, va);
 		va_end(va);
 	}
 
 	void LogFmt(Levels::LogLevel ll, const char* fmt,  ...)
 	{
-		if (!shouldLog(ll)) return;
-
+		if (!ShouldLog(ll)) return;
+		
 		va_list va;
 		va_start(va, fmt);
 
-		// TODO think how to pass all args into SendToAllSinks and create final string there 
-		LogEvent ev(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
-		InternalLog(ev);
-		va_end(va);
-	}
-#endif
-
-	void Crit(const std::string& msg)  { Log(msg, Levels::llCritical); }
-	void Error(const std::string& msg) { Log(msg, Levels::llError); }
-	void Warn(const std::string& msg)  { Log(msg, Levels::llWarning);}
-	void Info(const std::string& msg)  { Log(msg, Levels::llInfo); }
-	void Debug(const std::string& msg) { Log(msg, Levels::llDebug); }
-	void Trace(const std::string& msg) { Log(msg, Levels::llTrace); }
-
-	void Log(const std::string& msg, const Levels::LogLevel lv)
-	{
-		if (!shouldLog(lv)) return;
-
+		// TODO think how to pass all args into SendToAllSinks and create final string there
 		if (FAsync)
 		{
-			LogEvent* event = new LogEvent(msg, lv, GetThreadID(), GetCurrDateTime());
+			LogEvent* event = new LogEvent(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
 			FQueue.PushElement(event);
 		}
 		else
 		{
-			LogEvent ev(msg, lv, GetThreadID(), GetCurrDateTime());
+			LogEvent ev(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
+			InternalLog(ev);
+		}
+		//LogEvent ev(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
+		va_end(va);
+	}
+#endif
+
+	void Crit (const std::string& msg) { Log(msg, Levels::llCritical); }
+	void Error(const std::string& msg) { Log(msg, Levels::llError);    }
+	void Warn (const std::string& msg) { Log(msg, Levels::llWarning);  }
+	void Info (const std::string& msg) { Log(msg, Levels::llInfo);     }
+	void Debug(const std::string& msg) { Log(msg, Levels::llDebug);    }
+	void Trace(const std::string& msg) { Log(msg, Levels::llTrace);    }
+
+	void Log(const std::string& msg, const Levels::LogLevel ll)
+	{
+		if (!ShouldLog(ll)) return;
+
+		if (FAsync)
+		{
+			LogEvent* event = new LogEvent(msg, ll, GetThreadID(), GetCurrDateTime());
+			FQueue.PushElement(event);
+		}
+		else
+		{
+			LogEvent ev(msg, ll, GetThreadID(), GetCurrDateTime());
 			InternalLog(ev);
 		}
 	}
