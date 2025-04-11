@@ -84,10 +84,10 @@ void TStream::operator >>(wstring& Value)
 string TStream::ReadPString()
 {
 	string res;
-	uint i;
-	*this >> i;
-	res.resize(i);
-	Read(res.data(), res.length());
+	uint i; //TODO shall i be size_t type?
+	*this >> i;    // reading string size
+	res.resize(i); // allocating space in string
+	Read(res.data(), i); // res.length());
 	return res;
 }
 
@@ -141,10 +141,11 @@ int TMemoryStream::Write(const void* Buffer, const size_t Size)
 			FMemory = static_cast<uint8_t*>(realloc(FMemory, FWPos + Size));
 			FSize = FWPos + Size;
 		}
-		else   // we do not control the buffer, so we cannot reallocate it
+		else // we do not control the buffer, so we cannot reallocate it
 		{
 		 //	_set_errno(ENOSPC);
-			return -1;
+			string serr = "External buffer size is too small! Cannot write.";
+			throw IOException(serr);
 		}
 	 }
 
@@ -236,16 +237,18 @@ TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 	errno_t res = 0;
 	switch (fMode)
 	{
-	case fmRead:     res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE); break;
-	case fmWrite:    res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
-	case fmReadWrite:res = _sopen_s(&hf, FFileName.c_str(), O_RDWR | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
+	case fmRead:      res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE); break;
+	case fmWrite:     res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
+	case fmReadWrite: res = _sopen_s(&hf, FFileName.c_str(), O_RDWR | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
+	case fmWriteTrunc:res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT |O_TRUNC | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
 	}
 #else
 	switch (fMode)
 	{
-	case fmRead:     hf = open(FFileName.c_str(), O_RDONLY); break;
-	case fmWrite:    hf = open(FFileName.c_str(), O_WRONLY | O_CREAT, S_IREAD | S_IWRITE); break;
-	case fmReadWrite:hf = open(FFileName.c_str(), O_RDWR | O_CREAT, S_IREAD | S_IWRITE); break;
+	case fmRead:       hf = open(FFileName.c_str(), O_RDONLY); break;
+	case fmWrite:      hf = open(FFileName.c_str(), O_WRONLY | O_CREAT, S_IREAD | S_IWRITE); break;
+	case fmReadWrite:  hf = open(FFileName.c_str(), O_RDWR | O_CREAT, S_IREAD | S_IWRITE); break;
+	case fmWriteTrunc: hf = open(FFileName.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE); break;
 	}
 
 	int res = errno;
@@ -253,15 +256,15 @@ TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 
 	if (hf == -1)
 	{
-		string s;
+		string serr;
 		if (res == EINVAL)
-			s = "Wrong file name '" + FileName + "'!";
+			serr = "Wrong file name '" + FileName + "'!";
 		else if (res == EACCES)
-			s = "Can't get access to file '" + FileName + "'!";
+			serr = "Can't get access to file '" + FileName + "'!";
 		else
-			s = "Can't open file '" + FileName + "'!";
+			serr = "Can't open file '" + FileName + "'!";
 
-		throw IOException(s.c_str());
+		throw IOException(serr);
 	}
 }
 
@@ -271,9 +274,11 @@ TFileStream::~TFileStream()
 	hf = 0;
 }
 
+// If successfull Read returns number of read bytes
+// Throws an exception in case of any error during reading
 int TFileStream::Read(void* Buffer, size_t Size)
 {
-	if (FFileMode == fmWrite)
+	if (FFileMode == fmWrite || FFileMode == fmWriteTrunc)
 		throw IOException("File opened in write-only mode. Can't read!");
 
 	int c = myread(hf, Buffer, (uint)Size);
@@ -282,8 +287,8 @@ int TFileStream::Read(void* Buffer, size_t Size)
 
 	if (c == -1)
 	{
-		string s = "Cannot read from file '" + FFileName + "'! May be file closed?";
-		throw IOException(s.c_str());
+		string serr = "Cannot read from file '" + FFileName + "'! May be file closed?";
+		throw IOException(serr);
 	}
 
 	return c;
@@ -299,6 +304,8 @@ int TFileStream::Write(const string& str)
 	return Write(str.data(), str.length());
 }
 
+// If successfull Write returns number of bytes written
+// Throws an exception in case of any error during writing
 int TFileStream::Write(const void* Buffer, const size_t Size)
 {
 	if (FFileMode == fmRead)
@@ -306,10 +313,10 @@ int TFileStream::Write(const void* Buffer, const size_t Size)
 
 	int c = mywrite(hf, Buffer, (uint)Size);
 
-	if (c == -1)
+	if (c == -1 || c != Size)
 	{
-		string s = "Cannot write to file '" + FFileName + "'! May be disk full?";
-		throw IOException(s.c_str());
+		string serr = "Cannot write to file '" + FFileName + "'! May be disk full?";
+		throw IOException(serr);
 	}
 
 	return c;
@@ -356,5 +363,3 @@ void TFileStream::Flush()
 }
 
 LOGENGINE_NS_END
-
-
