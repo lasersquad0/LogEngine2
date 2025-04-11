@@ -86,7 +86,7 @@ public:
 
 /*! \brief Class for storing and manipulating raw data types
  * i.e. data which do not have explicit type or the type can be changed dynamically.
- * All that THArrayRaw need to know is ItemSize of stored data.
+ * All that THArrayRaw need to know is ItemSize of stored data. All items should have the same size = ItemSize
  * Very useful to store fields from database table.
  */
 class THArrayRaw
@@ -99,32 +99,32 @@ protected:
 	void	Error(const uint Value, const uint vmax) const;
 	void	Grow();
 	void	GrowTo(const uint ToCount);
-	void*	CalcAddr(const uint num) const { return (void*)((unsigned char*)FMemory + static_cast<size_t>(num) * FItemSize); }
+	void*	CalcAddr(const uint num) const { return (void*)((uint8_t*)FMemory + static_cast<size_t>(num) * FItemSize); }
 	[[noreturn]] void	ThrowZeroItemSize() const { throw THArrayException("Error in THArrayRaw: ItemSize cannot be zero!"); }
 public:
-	THArrayRaw();
-	THArrayRaw(uint ItemSize);
+	THArrayRaw(); // sets ItemSize to default value 1
+	THArrayRaw(const uint ItemSize);
 	virtual ~THArrayRaw() { ClearMem(); }
 	//	void operator=(const THArrayRaw& a);
-	void		SetItemSize(const uint ItemSize);
-	inline uint	GetItemSize() const { return FItemSize; }
+	void		SetItemSize(const uint ItemSize); 
+	uint		GetItemSize() const { return FItemSize; }
 	virtual void Clear() { FCount = 0; }
 	void		ClearMem();
 	uint		Add(const void* pValue) { return Insert(FCount, pValue); }
-	void		AddMany(const void* pValue, const uint Count);
+	void		AddMany(const void* pValue, const uint Count); // pValue should have at least Count*ItemSize bytes length  
 	uint		Insert(const uint Index, const void* pValue);
-	void		InsertMany(const uint Index, const void* pValue, const uint Count);
+	void		InsertMany(const uint Index, const void* pValue, const uint Count); // pValue should have at least Count*ItemSize bytes length  
 	void		Update(const uint Index, const void* pValue);
-	void		UpdateMany(const uint Index, const void* pValue, const uint Count);
-	inline void* GetAddr(const uint num) const { Error(num, FCount); return CalcAddr(num); }
+	void		UpdateMany(const uint Index, const void* pValue, const uint Count); // pValue should have at least Count*ItemSize bytes length  
+	void*		GetAddr(const uint num) const { Error(num, FCount); return CalcAddr(num); }
 	virtual	void Delete(const uint Index);
 	void		Get(const uint num, void* pValue) const;
-	void* GetPointer(const uint num) const { return GetAddr(num); }
+	void*		GetPointer(const uint num) const { return GetAddr(num); }
 	void		Hold() { SetCapacity(FCount); }
-	void		MoveData(const int FromPos, const int Count, const int Offset);
-	inline uint	Count()    const { return FCount; }
-	inline uint	Capacity() const { return FCapacity; }
-	inline void* Memory()  const { return FMemory; }
+	//void		MoveData(const int FromPos, const int Count, const int Offset);
+	uint		Count()    const { return FCount; }
+	uint		Capacity() const { return FCapacity; }
+	void*		Memory()  const { return FMemory; }
 	void		Zero() { if (FCount > 0) memset(FMemory, 0, static_cast<size_t>(FCount) * FItemSize); }
 	void		SetCapacity(const uint Value);
 	void		AddFillValues(const uint Count);
@@ -168,7 +168,7 @@ public:
 //  THArrayStringFix Class Interface
 //////////////////////////////////////////////////////////////////////
 
-class THArrayStringFix :public THArrayBase
+class THArrayStringFix : public THArrayBase
 {
 private:
 	THArrayRaw data;
@@ -207,9 +207,11 @@ template<class T>
 class THArray : public THArrayBase
 {
 private:
+	// Cont is a type of container for what iterator is created
 	template<class Cont>
 	class THArrayIterator //: public std::iterator<std::input_iterator_tag, T>
-	{
+	{		
+		
 	public:
 		using value_type = typename Cont::item_type;
 		using iterator_category = std::random_access_iterator_tag;
@@ -217,14 +219,26 @@ private:
 		using pointer = typename Cont::pointer;
 		using reference = typename Cont::reference;
 
-		THArrayIterator(const THArrayIterator& it) : FCont(it.FCont), FPtr(it.FPtr) {}
 		THArrayIterator(Cont* cont, pointer ptr) : FCont(cont), FPtr(ptr) {}
+		THArrayIterator(const THArrayIterator& it) : FCont(it.FCont), FPtr(it.FPtr) {}
 
-		bool operator!=(THArrayIterator const& other) const { return FCont != other.FCont || FPtr != other.FPtr; }
-		bool operator==(THArrayIterator const& other) const { return FCont == other.FCont && FPtr == other.FPtr; }
+		bool operator!=(const THArrayIterator& other) const { return FCont != other.FCont || FPtr != other.FPtr; }
+		bool operator==(const THArrayIterator& other) const { return FCont == other.FCont && FPtr == other.FPtr; }
 		reference operator*() const { return *FPtr; }
-		THArrayIterator& operator++() { if (FPtr != FCont->FBegin + FCont->FCount) ++FPtr; return *this; }
-		THArrayIterator& operator--() { if (FPtr != FCont->FBegin) --FPtr; return *this; }
+		pointer operator->() const { return FPtr; }
+
+		THArrayIterator& operator++() { /*if (FPtr != FCont->FBegin + FCont->FCount)*/ ++FPtr; return *this; } // Prefix increment
+		THArrayIterator operator++(int) { THArrayIterator tmp = *this; ++(*this); return tmp; } // Postfix increment. Return value here should NOT be a reference.
+		THArrayIterator& operator+=(const difference_type add) { FPtr += add; return *this; } 
+
+		THArrayIterator& operator--() { /*if (FPtr != FCont->FBegin)*/ --FPtr; return *this; } // prefix decrement
+		THArrayIterator operator--(int) { THArrayIterator tmp = *this; --(*this); return tmp; } // return value here should NOT be a reference.
+		
+		difference_type operator-(const THArrayIterator& right) const { return FPtr - right.FPtr; }
+		THArrayIterator operator-(const difference_type diff) const { return THArrayIterator(FCont, FPtr - diff); /*if (FPtr < FCont->FBegin) FPtr = FCont->FBegin; return *this;*/ }
+		THArrayIterator operator+(const difference_type diff) const { return THArrayIterator(FCont, FPtr + diff); /*if (FPtr > FCont->FBegin + FCont->FCount) FPtr = FCont->FBegin + FCont->FCount; return *this;*/ }
+		
+		bool operator<(const THArrayIterator& other) const { return FPtr < other.FPtr; }
 	private:
 		Cont* FCont{ nullptr };
 		pointer FPtr{ nullptr };
@@ -249,8 +263,8 @@ public:
 
 	iterator begin() { return iterator(this, FBegin); }
 	iterator end() { return iterator(this, FBegin + FCount); }
-	//const_iterator begin() const { return const_iterator(FMemory); }
-	//const_iterator end() const   { return const_iterator(FMemory + FCount); }
+	const_iterator cbegin() const { return const_iterator(this, FMemory); }
+	const_iterator cend() const   { return const_iterator(this, FMemory + FCount); }
 
 	THArray();
 	THArray(std::initializer_list<T> list);
@@ -271,24 +285,25 @@ public:
 	void		Zero() override;
 	void		GrowTo(const uint ToCount);
 	void		SetCapacity(const uint Value) override;
+	void		SetCount(const uint Value);
 	void		SetValue(const uint Index, const T& Value);
 	T&			GetValue(const uint Index) const;
 	virtual uint InsertValue(const uint Index, const T& Value);
-	uint Insert(const uint Index, const void* Value) override { return InsertValue(Index, *static_cast<const T*>(Value)); }
+	uint		Insert(const uint Index, const void* Value) override { return InsertValue(Index, *static_cast<const T*>(Value)); }
 	void		DeleteValue(const uint Index) override;
 	virtual uint AddValue(const T& Value) { return InsertValue(FCount, Value); }
-	uint Add(const void* pValue) override { return AddValue(*static_cast<const T*>(pValue)); }
+	uint		Add(const void* pValue) override { return AddValue(*static_cast<const T*>(pValue)); }
 	inline	 T* GetValuePointer(const uint Index) const;
 	//virtual int IndexOf(const T& Value, const Compare<T>& cmp) const { return IndexOfFrom(Value, 0, cmp); }
 	template<class Cmp> int IndexOf(const T& Value) const { return IndexOfFrom<Cmp>(Value, 0); }
 	template<class Cmp> int	IndexOfFrom(const T& Value, const uint Start) const;
 	virtual int IndexOf(const T& Value) const { return IndexOfFrom(Value, 0); }
-	virtual int	IndexOfFrom(const T& Value, const uint Start) const;
+	virtual int IndexOfFrom(const T& Value, const uint Start) const;
 	void		AddFillValues(const uint Num) override;
 	virtual inline void Push(const T& Value) { AddValue(Value); }
 	virtual inline T    Pop();
 	virtual inline T    PopFront();
-	virtual T& Last() const { return GetValue(FCount - 1); }
+	virtual T&			Last() const { return GetValue(FCount - 1); }
 	inline void			Swap(const uint Index1, const uint Index2) override;
 	virtual void		Reverse();
 	virtual void		Reverse(uint endIndex); // Reverse till specified element
@@ -378,6 +393,10 @@ private:
 		bool operator==(THashIterator const& other) const { return FCont == other.FCont && FCurIndex == other.FCurIndex; }
 		THashIterator& operator++() { if (FCurIndex < FCont->Count()) ++FCurIndex; return *this; }
 		THashIterator& operator--() { if (FCurIndex > 0) --FCurIndex; return *this; }
+		difference_type operator-(const THashIterator& right) const { return FCurIndex - right.FCurIndex; }
+		THashIterator operator-(const difference_type diff) const { return THArrayIterator(FCont, FCurIndex - diff); }
+		THashIterator operator+(const difference_type diff) const { return THArrayIterator(FCont, FCurIndex + diff); }
+
 		value_type operator*() const { return value_type{ FCont->FAKeys[FCurIndex], FCont->FAValues[FCurIndex] }; }
 		//value_type* operator->() const { ??? }
 	private:
@@ -393,7 +412,7 @@ public:
 	using ValuesType = THArray<V>;
 	using iterator = THashIterator<THash>;
 	//using const_iterator = THArrayIterator<const THash>;
-private:
+protected:
 	KeysType FAKeys;
 	ValuesType FAValues;
 	Cmp FACompare;
@@ -462,6 +481,7 @@ public:
 	ValuesHash* GetValuePointer(const I1& Key1) { return hash.GetValuePointer(Key1); }
 	KeysArray& GetAIndexes() { return hash.GetKeys(); }
 	ValuesArray& GetAValues() { return hash.GetValues(); }
+	void SetCapacity(const uint Value) { hash.SetCapacity(Value); }
 
 	//	void Minus(THash2<I1, I2, V>& in);
 
@@ -479,6 +499,7 @@ typedef THArray<int>* PHArrayInt;
 // Splits string to array of strings using Delim as delimiter
 void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n');
 std::string toString(const THArrayString& array);
+
 
 //////////////////////////////////////////////////////////////////////
 //  THArray Class Implementation
@@ -582,6 +603,13 @@ void THArray<T>::SetCapacity(const uint Value)
 	FCapacity = Value;
 	if (FCapacity < FCount)
 		FCount = FCapacity;
+}
+
+template<class T>
+void THArray<T>::SetCount(const uint Value)
+{
+	if (Value > FCapacity) GrowTo(Value);
+	FCount = Value;
 }
 
 template<class T>
