@@ -18,7 +18,7 @@
 
 LOGENGINE_NS_BEGIN
 
-enum TFileMode { fmRead, fmWrite, fmReadWrite };
+enum TFileMode { fmRead, fmWrite, fmReadWrite, fmWriteTrunc };
 enum TSeekMode { smFromBegin, smFromEnd, smFromCurrent };
 
 #define IO_EXCEPTION_PREFIX "LogException : "
@@ -61,38 +61,44 @@ public:
 		//static_assert(std::is_integral<R>::value || std::is_floating_point<R>::value); // template works only for integral types + float types
 		if constexpr (std::is_integral<R>::value || std::is_floating_point<R>::value)
 		{
-			if (Read(&Value, sizeof(Value)) != sizeof(Value))
+			if (Read(&Value, sizeof(Value)) != sizeof(Value)) // integral type needs to be read in full, that is why we throw an exception if not.
 				throw IOException("End of stream reached!");
 		}
 		else if constexpr (std::is_base_of<std::basic_string<typename R::value_type, typename R::traits_type>, R>::value)
 		{
 			Value = ReadString<R>();
-			//auto sizeInBytes = Value.size() * sizeof(R::value_type);
-			//if (Read(Value.data(), sizeInBytes) != sizeInBytes)
-			//	throw IOException("Cannot write to the stream.");
 		}
 
 	}
 
 	template<typename W>
-	void operator <<(const W& Value)
+	TStream& operator <<(const W& Value)
 	{
 		//static_assert(std::is_integral<W>::value || std::is_floating_point<W>::value); // template works only for integral types + float types
+		
 		if constexpr (std::is_integral<W>::value || std::is_floating_point<W>::value)
 		{
-			if (Write(&Value, sizeof(Value)) != sizeof(Value))
+			Write(&Value, sizeof(Value));
+		}
+		/*else if constexpr (std::is_same_v<W, wchar_t*>)
+		{
+			auto len = wcslen(Value) * sizeof(wchar_t);
+			if (Write(Value, len) != len)
 				throw IOException("Cannot write to the stream.");
 		}
+		else if (std::is_integral<std::remove_pointer<W>>::value) // W is a pointer to integral type
+		{
+		}*/
 		else if constexpr (std::is_base_of<std::basic_string<typename W::value_type, typename W::traits_type>, W>::value)
 		{			
-			auto sizeInBytes = Value.size() * sizeof(W::value_type);
-			if (Write(Value.data(), sizeInBytes) != sizeInBytes)
-				throw IOException("Cannot write to the stream.");
+			Write(Value.data(), Value.size() * sizeof(W::value_type));
 			
 			W endL;
 			BUILD_ENDL(endL);
 			Write(endL.data(), endL.size() * sizeof(W::value_type));
 		}
+
+		return *this;
 	}
 
 	template<typename R>
@@ -108,16 +114,17 @@ public:
 	int ReadChar()
 	{
 		char c;
-		if (Read(&c, sizeof(c)) == sizeof(char))
+		if (Read(&c, sizeof(char)) == sizeof(char))
 			return c;
 		else
 			return -1;
 	}
 
+	// reading string char-by-char until EndLineChar ('\n') reached.
 	template<typename R>
 	R ReadString()
 	{
-		// check if class R is instantioation or descendant of std::basic_string
+		// check if class R is instantiation or descendant of std::basic_string
 		static_assert(std::is_base_of<std::basic_string<typename R::value_type, typename R::traits_type>, R>::value);
 	
 		R value;
@@ -137,13 +144,15 @@ public:
 	}
 
 
-	void operator <<(const char* Value)  { Write(Value, strlen(Value)); }
-	void operator <<(char* Value)        { Write(Value, strlen(Value)); }
+	TStream& operator <<(const char* Value)    { Write(Value, strlen(Value)); return *this; }
+	TStream& operator <<(char* Value)          { Write(Value, strlen(Value)); return *this; }
+	TStream& operator <<(const wchar_t* Value) { Write(Value, wcslen(Value) * sizeof(wchar_t)); return *this; }
+	TStream& operator <<(wchar_t* Value)       { Write(Value, wcslen(Value) * sizeof(wchar_t)); return *this; }
+
 	//void operator <<(const std::string& Value) { Write(Value.data(), Value.length()); Write(EndLine, strlen(EndLine)); } // need Endline to determine where string ends
 	//void operator <<(const std::wstring& Value) { Write(Value.data(), Value.length()*sizeof(std::wstring::value_type)); Write(EndLineU, wcslen(EndLineU)*sizeof(std::wstring::value_type)); } // need Endline to determine where string ends
 	//void operator >>(std::string& Value);
 	//void operator >>(std::wstring& Value);
-
 };
 
 #define DEFAULT_BUF_SIZE 1024
