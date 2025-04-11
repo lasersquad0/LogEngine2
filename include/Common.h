@@ -32,11 +32,12 @@ typedef unsigned long long ullong;
 #ifdef WIN32 
 #define EndLine "\r\n"
 #define EndLineChar '\n'
-#define BUILD_ENDL(_) (_) += CRChar; (_) += LFChar;
+// this macro works with both string and wstring, looks like CRChar/LFChar is automatically extended to wchar_t for string
+#define BUILD_ENDL(_) (_) += CRChar; (_) += LFChar
 #else
 #define EndLine "\n"
 #define EndLineChar '\n'
-#define BUILD_ENDL(_) (_) += LFChar;
+#define BUILD_ENDL(_) ((_) += LFChar)
 #endif
 
 typedef std::lock_guard<std::recursive_mutex> mutexguard;

@@ -34,7 +34,7 @@ public:
 		//	FMessageCounts[i] = 0;
 	}
 
-	virtual ~Sink() { delete FLayout; }
+	virtual ~Sink() { delete FLayout; FLayout = nullptr; }
 
 	virtual void Flush() { /* does nothing here*/ }
 	
@@ -48,8 +48,8 @@ public:
 	Layout* GetLayout() { return FLayout; }
 	virtual void SetLayout(Layout* layout)
 	{
-		if (layout == nullptr) return; // layout cannot be null
-		if (FLayout != nullptr) delete FLayout;
+		if (layout == nullptr) return; // if layout is null do nothing
+		if (FLayout != nullptr) delete FLayout; //TODO delete FLayout may work when FLayout=nullptr
 		FLayout = layout;
 	}
 

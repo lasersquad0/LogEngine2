@@ -57,7 +57,9 @@ public:
 };
 
 inline std::string cutLog(std::string str) // cut off time and thread information (which is not same time from time)
-{ 
+{
+    // # is a marker of ThreadID in log line pattern, because ':' can be present in TimeMacro as well (goes before ThreadMacro). 
+    // ':' is a divider before MsgMacro
     size_t pos = str.find_first_of('#', 1);
     pos = str.find_first_of(':', pos +  1);
 
