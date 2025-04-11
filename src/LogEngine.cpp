@@ -39,7 +39,7 @@ void ClearLoggers()
 		delete loggers.GetValues()[i];
 	}
 
-	loggers.Clear();
+	loggers.ClearMem();
 }
 
 uint GetLoggersCount()
@@ -47,6 +47,9 @@ uint GetLoggersCount()
 	return loggers.Count();
 }
 
+// returns reference to the logger with name specified in loggerName parameter
+// creates new "empty" logger in case if logger with specified name does not yet exists
+// "empty" means that the logger does not contain any Sinks.
 Logger& GetLogger(const std::string& loggerName)
 {
 	Logger** loggerPtr = loggers.GetValuePointer(loggerName);
@@ -62,12 +65,14 @@ Logger& GetLogger(const std::string& loggerName)
 	}
 }
 
+// returns reference to the file logger with name specified in loggerName parameter
+// if logger with specified name does not exist new logger is created and ont FileSink is added to thie logger
 Logger& GetFileLogger(const std::string& loggerName, const std::string fileName)
 {
 	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
 
-	Sink* sink = new FileSink(loggerName, fileName);
+	Sink* sink = new FileSink(loggerName, fileName); //TODO may be use file name as Sink name instead of logger name?
 	logger.AddSink(sink);
 
 	return logger;
@@ -75,7 +80,7 @@ Logger& GetFileLogger(const std::string& loggerName, const std::string fileName)
 
 Logger& GetStdoutLogger(const std::string& loggerName)
 {
-	Logger& logger = GetLogger(loggerName);
+	Logger& logger = GetLogger(loggerName); //TODO what to do when logger with the same name but another type (e.g. FileLogger) already exists. 
 	if (logger.SinkCount() > 0) return logger; // this is existed logger
 
 	Sink* sink = new StdoutSink(loggerName);
