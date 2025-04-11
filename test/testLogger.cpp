@@ -63,17 +63,17 @@ void LoggerTest::testLog1()
 	
 	logger.Log(" ", Levels::llInfo);
 	s = sink->GetOutput();
-	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("  "), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("I "), cutLog(s));
 
 	sink->Clear();
 	logger.Log("", Levels::llInfo);
 	s = sink->GetOutput();
-	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" "), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("I"), cutLog(s));
 
 	sink->Clear();
 	logger.Log("testLog1info", Levels::llInfo);
 	s = sink->GetOutput();
-	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog1info"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("ItestLog1info"), cutLog(s));
 
 	sink->Clear();
 	logger.Crit("testLog1critical");
@@ -83,7 +83,7 @@ void LoggerTest::testLog1()
 	sink->Clear();
 	logger.Error("testLog1error");
 	s = sink->GetOutput();
-	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("!testLog1error"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("EtestLog1error"), cutLog(s));
 	
 	sink->Clear();
 	logger.Trace("testLog1trace"); // does not send anything here because log level=llInfo
@@ -107,17 +107,18 @@ void LoggerTest::testLog2()
 
 	logg.LogFmt(Levels::llWarning, "");
 	s = sink->GetOutput();
-	CPPUNIT_ASSERT_EQUAL(std::string("#"), cutLog(s));
+	// Warn pattern contains # in the beginning which breaks cutLog(), removing it before passing to cutLog()
+	CPPUNIT_ASSERT_EQUAL(std::string("W"), cutLog(s.erase(1, 1)));
 
 	sink->Clear();
 	logg.LogFmt(Levels::llWarning, "testLog2warning");
 	s = sink->GetOutput();
-	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2warning"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL(std::string("WtestLog2warning"), cutLog(s.erase(1, 1)));
 
 	sink->Clear();
 	logg.LogFmt(Levels::llError, "testLog2 {}.", "error");
 	s = sink->GetOutput();
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2 error."), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL(std::string("EtestLog2 error."), cutLog(s));
 
 	sink->Clear();
 	logg.CritFmt("testLog2test {0}. {1}", "critical parameter", 3);
@@ -133,7 +134,7 @@ void LoggerTest::testLog2()
 	logg.LogFmt(Levels::llInfo, "testLog2info {}.{}.{}.{}.{}", 1, 2, "RT", 4, 5.1);
 	s = sink->GetOutput();
 	std::string ss = cutLog(s);
-	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("ItestLog2info 1.2.RT.4.5.1"), cutLog(s));
 //#endif
 }
 
@@ -152,8 +153,8 @@ void LoggerTest::testLog3()
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
-	CPPUNIT_ASSERT_EQUAL(std::string("#"), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string("#"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("W"), cutLog(s1.erase(1, 1)));
+	CPPUNIT_ASSERT_EQUAL(std::string("W"), cutLog(s2.erase(1, 1)));
 
 	sink1->Clear();
 	sink2->Clear();
@@ -161,8 +162,8 @@ void LoggerTest::testLog3()
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
-	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2warning"), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2warning"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("WtestLog2warning"), cutLog(s1.erase(1, 1)));
+	CPPUNIT_ASSERT_EQUAL(std::string("WtestLog2warning"), cutLog(s2.erase(1, 1)));
 
 	sink1->Clear();
 	sink2->Clear();
@@ -170,8 +171,8 @@ void LoggerTest::testLog3()
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2 error."), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2 error."), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("EtestLog2 error."), cutLog(s1));
+	CPPUNIT_ASSERT_EQUAL(std::string("EtestLog2 error."), cutLog(s2));
 
 	sink1->Clear();
 	sink2->Clear();
@@ -197,8 +198,8 @@ void LoggerTest::testLog3()
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
-	CPPUNIT_ASSERT_EQUAL(std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string(" testLog2info 1.2.RT.4.5.1"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("ItestLog2info 1.2.RT.4.5.1"), cutLog(s1));
+	CPPUNIT_ASSERT_EQUAL(std::string("ItestLog2info 1.2.RT.4.5.1"), cutLog(s2));
 #endif
 }
 
@@ -215,7 +216,7 @@ void LoggerTest::testLog4()
 
 	std::string s1, s2;
 
-	logg.Log("testLog4crit {}.{}", Levels::llCritical);
+	logg.Crit("testLog4crit {}.{}");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -224,34 +225,34 @@ void LoggerTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4error 1234", Levels::llError);
+	logg.Error("testLog4error 1234");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog4error 1234"), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog4error 1234"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("EtestLog4error 1234"), cutLog(s1));
+	CPPUNIT_ASSERT_EQUAL(std::string("EtestLog4error 1234"), cutLog(s2));
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4warning test3", Levels::llWarning);
+	logg.Warn("testLog4warning test3");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	//CPPUNIT_ASSERT_EQUAL(s1, s2);
 	CPPUNIT_ASSERT_EQUAL(std::string(""), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string("#testLog4warning test3"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("WtestLog4warning test3"), cutLog(s2.erase(1, 1)));
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4info test4", Levels::llInfo);
+	logg.Info("testLog4info test4");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	//CPPUNIT_ASSERT_EQUAL(s1, s2);
 	CPPUNIT_ASSERT_EQUAL(std::string(""), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string(" testLog4info test4"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string("ItestLog4info test4"), cutLog(s2));
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4warning test5", Levels::llDebug);
+	logg.Debug("testLog4warning test5");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	//CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -260,7 +261,7 @@ void LoggerTest::testLog4()
 
 	sink1->Clear();
 	sink2->Clear();
-	logg.Log("testLog4warning test6", Levels::llDebug);
+	logg.Debug("testLog4warning test6");
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
@@ -273,8 +274,8 @@ void LoggerTest::testLog4()
 	s1 = sink1->GetOutput();
 	s2 = sink2->GetOutput();
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
-	CPPUNIT_ASSERT_EQUAL(std::string("otestLog4warning test7"), cutLog(s1));
-	CPPUNIT_ASSERT_EQUAL(std::string("otestLog4warning test7"), cutLog(s2));
+	CPPUNIT_ASSERT_EQUAL(std::string(" testLog4warning test7"), cutLog(s1));
+	CPPUNIT_ASSERT_EQUAL(std::string(" testLog4warning test7"), cutLog(s2));
 }
 
 // test case: when two file sinks try to write into the same file. in this case exception is thrown for the second sink.

@@ -395,25 +395,27 @@ void TStreamTest::testMemoryStream11()
 	CPPUNIT_ASSERT_THROW(stream2 >> ll, IOException);
 }
 
-// check ovnership of buffer. for external buffer it should not try to free it. 
-// in case of need of reallocate error (-1) is returned and errono is set to EINVAL.
+// check ownership of buffer. for external buffer it should not try to free it. 
+// in case of need of reallocate, exception is thrown and errono is set to EINVAL.
 void TStreamTest::testMemoryStream12()
 {
 	TMemoryStream stream1;
 	const char* str = "abcdefghijklmnopqrstuvwxyz"; // 26 symbols
 	stream1.SetBuffer((uint8_t*)str, strlen(str));
 
-	CPPUNIT_ASSERT_NO_THROW(stream1 << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+	// attempt to write into stream more than 26 symbols will generate an exception
+	// because mem stream does not own this buffer and cannot relocate it
+	CPPUNIT_ASSERT_THROW(stream1 << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM", IOException);
 
 }
 
-// check ovnership of buffer. for external buffer it should not try to free it. 
-// in case of need of reallocate error (-1) is returned and errono is set to EINVAL.
+// check ownership of buffer. for external buffer it should not try to free it. 
+// in case of need of reallocate, error (-1) is returned and errono is set to EINVAL.
 void TStreamTest::testMemoryStream13()
 {
 	TMemoryStream stream1(0); // allocate buffer zero bytes size
 	stream1 << 'F';
-	stream1 << 42;
+	stream1 << 42; // sinze mem stream owns the buffer, it will be atomatically relocated
 
 	TMemoryStream stream2(1); // allocate buffer 1 byte size
 	stream2 << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM";
