@@ -22,7 +22,7 @@ THArrayRaw::THArrayRaw()
     FMemory   = nullptr;
 }
 
-THArrayRaw::THArrayRaw(uint ItemSize):THArrayRaw()
+THArrayRaw::THArrayRaw(const uint ItemSize): THArrayRaw()
 {
 	if (ItemSize > 0)
 		FItemSize = ItemSize;
@@ -54,12 +54,13 @@ void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const uint vmax) c
 
 void THArrayRaw::SetItemSize(const uint Size)
 {
- 	if (Size > 0)
+	if (Size > 0)
+	{
+		if (FItemSize != Size) ClearMem();
 		FItemSize = Size;
+	}
 	else
 		ThrowZeroItemSize();
-	
-	ClearMem();
 }
 
 void THArrayRaw::Delete(const uint num)
@@ -109,7 +110,7 @@ uint THArrayRaw::Insert(const uint Index, const void *pValue)
 	if (FCount >= FCapacity) Grow();
 
 	FCount++;
-	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - static_cast<size_t>(Index) - 1) * FItemSize);
+	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - static_cast<size_t>(Index) - 1) * FItemSize); // make free space
 	Update(Index, pValue);
     
 	return Index;
@@ -122,7 +123,7 @@ void THArrayRaw::InsertMany(const uint num, const void *pValue, const uint Count
 		GrowTo(FCount + Count);
 
 	FCount = FCount + Count;
-	memmove(CalcAddr(num + Count), CalcAddr(num), (FCount - static_cast<size_t>(num) - Count) * FItemSize);
+	memmove(CalcAddr(num + Count), CalcAddr(num), (FCount - static_cast<size_t>(num) - Count) * FItemSize); // make free space
   	UpdateMany(num, pValue, Count);
 }
 
@@ -374,8 +375,39 @@ bool AVariant::HaveData()
 #endif //_USE_AVARIANT_
 
 
+// split string into array of strings using Delim as delimiter
+template<class STRING>
+void StringToArray(const STRING& str, THArray<STRING>& arr, const typename STRING::value_type Delim = '\n')
+{
+	// make sure that STRING is one of instantiations of std::string
+	static_assert(std::is_base_of<std::basic_string<typename STRING::value_type, typename STRING::traits_type>, STRING>::value);
+
+	size_t i = 0;
+	size_t len = str.length();
+	STRING s;
+	s.reserve(len);
+
+	while (i < len)
+	{
+		s.clear();
+		while (i < len)
+		{
+			if (str[i] == Delim)
+			{
+				i++;
+				break;
+			}
+			s += str[i++];
+		}
+
+		if (s.length() > 0)
+			arr.AddValue(s);
+	}
+}
+
+
 // splits string to array of strings using Delim as delimiter
-void StringToArray(const std::string& str, THArrayString& arr, const char Delim /*= '\n'*/)
+/*void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n')
 {
 	std::string s;
 	uint i = 0;
@@ -396,7 +428,7 @@ void StringToArray(const std::string& str, THArrayString& arr, const char Delim 
 		if (s.length() > 0)
 			arr.AddValue(s);
 	}
-}
+}*/
 
 //
 std::string toString(const THArrayString& array)

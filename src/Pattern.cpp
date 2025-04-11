@@ -18,7 +18,7 @@ std::string Pattern::Format(const LogEvent& event)
 
 void Pattern::parsePattern(const std::string& pattern)
 {
-	static THArray<std::string> placeHolders = { "", DateMacro, TimeMacro, DateTimeMacro, MessageMacro, ThreadMacro, AppNameMacro, AppVersionMacro, OSMacro, OSVersionMacro, LogLevelMacro };
+	static const THArray<std::string> placeHolders = { "", DateMacro, TimeMacro, DateTimeMacro, MessageMacro, ThreadMacro, AppNameMacro, AppVersionMacro, OSMacro, OSVersionMacro, LogLevelMacro };
 
 	FPattern = pattern;
 
