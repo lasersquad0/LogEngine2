@@ -12,7 +12,7 @@ Main advantages are:
  * platform independent 
  * small amount of source code.
 
-See testXXX.cpp files from ```test/``` directory as an examples of using logengine library in addition to examples below.
+See ```testXXX.cpp``` files from ```test/``` directory as an examples of using logengine library in addition to examples below.
 See ```test/testFiles/example.lfg``` - for full description of LogEngine parameters file.
 
 Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2. 
@@ -21,12 +21,12 @@ Current maintainer: lasersquad@gmail.com.
 
 ## Install
 #### Microsoft Windows
-Use MSVC project from ```prj/msvc/LogEngine/``` folder to build LogEngine2_64.lib (or LogEngine2d_64.lib for Debug configuration).
+Use MSVC project from ```prj/msvc/LogEngine/``` folder to build ```LogEngine2_64.lib``` (or ```LogEngine2d_64.lib``` for Debug configuration).
 
 See ```prj/msvc/testLogEngine``` (or ```prj/Builder6/testLogEngine```) for examples how to use LogEngine2.
 
 #### Other systems
-For other systems see INSTALL txt file for details.
+For other systems see ```INSTALL``` txt file for details.
 
 ## Platforms
 * Windows (Visual Studio 2022)
@@ -48,14 +48,13 @@ For other systems see INSTALL txt file for details.
   * [][]Windows debugger (```OutputDebugString(..)```).
 * Customizable log line patterns which may include info: 
  	* Date and/or Time 
- 	* Thread ID, 
+ 	* Thread ID 
  	* Log level mark or full/short level name 
  	* Application name and app version
  	* OS name and OS version
 * Log filtering - log levels can be modified at runtime as well as compile time.
 * Log statistics
 * Includes convenient Dynamic Arrays classes that can be used separately from LogEngine2 library.
-* [][][]Support for loading log levels from argv or environment var.
 
 ## Usage samples
 
@@ -75,11 +74,13 @@ int main()
    logger.InfoFmt("Positional args are {1} {0}..", "too", "supported");
    logger.InfoFmt("{:>8} aligned, {:<8} aligned", "right", "left");
 
-   // Runtime log levels
-   logger.SetLogLevel(LogEngine::Levels::llInfo);  // set log level for all logger sinks to llInfo
-   logger.Debug("This message should not be displayed!");
-   logger.SetLogLevel(LogEngine::Levels::llTrace);  // set specific logger's log level (for all sinks)
-   logger.Debug("This message should be displayed..");
+    // Runtime log levels
+    logger.SetLogLevel(LogEngine::Levels::llInfo);  // set log level for logger and for all its sinks 
+    logger.Debug("This message should not be displayed!");
+    logger.SetLogLevel(LogEngine::Levels::llTrace, false);  // set log level for logger only
+    logger.Debug("This message should not be displayed because sink will not print it due to log level!");
+    logger.SetLogLevel(LogEngine::Levels::llTrace);  // set log level for logger and for all its sinks 
+    logger.Debug("This message should be displayed..");
 
    logger.SetPattern("%LOGLEVE% %LOGLEVEL% %DATETIME% %LOGLEVEL% [%THREAD%] %MSG%");
    logger.Info("This an info message with custom log line format");
@@ -92,7 +93,9 @@ int main()
 ---
 #### Create stdout/stderr and file logger objects
 ```c++
-void stdout_example()
+#include "LogEngine.h"
+
+void stdout_file_example()
 {
     auto& stdout_logger = LogEngine::GetStdoutLogger("stdoutlogger");
     stdout_logger.Info("Console stdout logger has created.");
@@ -114,6 +117,10 @@ void stdout_example()
 ---
 #### Rotating files
 ```c++
+#include "LogEngine.h"
+
+void rotating_file_example()
+{
     // Create a file rotating logger with 1kb size max and 10 rotated files.
     LogEngine::Logger& rotLogger = LogEngine::GetRotatingFileLogger("some_logger_name", LOG_FILES_DIR "rotating.txt", 1024,     LogEngine::rsTimeStamp, 10);
 
@@ -123,9 +130,10 @@ void stdout_example()
     {
         rotLogger.InfoFmt("Rotating file message #{}", i);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }```
-
+    }
+}```
 ---
+
 #### Stopwatch
 ```c++
 // Stopwatch support for spdlog
@@ -142,6 +150,7 @@ void stopwatch_example()
 ---
 #### Logger with multi sinks - each with a different format and log level
 ```c++
+#include "LogEngine.h"
 
 // create a logger with 2 targets, with different log levels and formats.
 // The console will show only warnings or errors, while the file will log all.
@@ -164,6 +173,7 @@ void multi_sink_example()
 ---
 #### User-defined logger config file (*.lfg)
 ```c++
+#include "LogEngine.h"
 
 // loads and constructs loggers and sinks from .lfg file.
 // once loggers are initialized you can use GetLogger() function to get needed logger by its name
@@ -189,6 +199,10 @@ second.Warn("This message will be sent into two targets file(s3) and rotating fi
 ---
 #### Asynchronous logging
 ```c++
+#include "LogEngine.h"
+
+void async_example()
+{
     // in Async mode all log messages are added into queue in memory and written to file (or sent to other targets) by a separate thread.
     // it means that main thread does not wait untill log message written to the file, that minimizes effect from log calls 
     auto& async_logger = LogEngine::GetFileLogger("async_file_logger", LOG_FILES_DIR "async_log.txt");
@@ -198,6 +212,7 @@ second.Warn("This message will be sent into two targets file(s3) and rotating fi
     {
         async_logger.InfoFmt("Async message #{}", i);
     }
+}    
 ```
  
 ---
