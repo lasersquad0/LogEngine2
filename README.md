@@ -64,15 +64,15 @@ For other systems see ```INSTALL``` txt file for details.
 
 int main() 
 {
-   LogEngine::Logger& logger = LogEngine::GetStdoutLogger("consolelogger");
+    LogEngine::Logger& logger = LogEngine::GetStdoutLogger("consolelogger");
    
-   logger.InfoFmt("Welcome to LogEngine version {}.{}.{}  !", LOGENGINE_VER_MAJOR, LOGENGINE_VER_MINOR, LOGENGINE_VER_PATCH);
+    logger.InfoFmt("Welcome to LogEngine version {}.{}.{}  !", LOGENGINE_VER_MAJOR, LOGENGINE_VER_MINOR, LOGENGINE_VER_PATCH);
    
-   logger.InfoFmt("Padding in numbers:  {:08d}", 12);
-   logger.CritFmt("Support for int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
-   logger.InfoFmt("Support for floats {:03.2f}", 1.23456);
-   logger.InfoFmt("Positional args are {1} {0}..", "too", "supported");
-   logger.InfoFmt("{:>8} aligned, {:<8} aligned", "right", "left");
+    logger.InfoFmt("Padding in numbers:  {:08d}", 12);
+    logger.CritFmt("Support for int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
+    logger.InfoFmt("Support for floats {:03.2f}", 1.23456);
+    logger.InfoFmt("Positional args are {1} {0}..", "too", "supported");
+    logger.InfoFmt("{:>8} aligned, {:<8} aligned", "right", "left");
 
     // Runtime log levels
     logger.SetLogLevel(LogEngine::Levels::llInfo);  // set log level for logger and for all its sinks 
@@ -82,11 +82,10 @@ int main()
     logger.SetLogLevel(LogEngine::Levels::llTrace);  // set log level for logger and for all its sinks 
     logger.Debug("This message should be displayed..");
 
-   logger.SetPattern("%LOGLEVE% %LOGLEVEL% %DATETIME% %LOGLEVEL% [%THREAD%] %MSG%");
-   logger.Info("This an info message with custom log line format");
-   logger.SetDefaultPattern(); // returning back default log line pattern
-   logger.Info("This an info message with default log line format");
-   
+    logger.SetPattern("%LOGLEVE% %LOGLEVEL% %DATETIME% %LOGLEVEL% [%THREAD%] %MSG%");
+    logger.Info("This an info message with custom log line format");
+    logger.SetDefaultPattern(); // returning back default log line pattern
+    logger.Info("This an info message with default log line format");
 }
 
 ```
@@ -104,7 +103,7 @@ void stdout_file_example()
     stderr_logger.Info("Console stderr logger has created.");
 
     // Create file logger (not rotated). 
-    auto& file_logger = LogEngine::GetFileLogger("file_logger", LOG_FILES_DIR "basic_file_log.txt");
+    auto& file_logger = LogEngine::GetFileLogger("file_logger",  "logs/file_log.log");
     file_logger.Info("My file_logger has created.");
  
     //later you can get existing file logger using its name
@@ -121,9 +120,9 @@ void stdout_file_example()
 
 void rotating_file_example()
 {
-    // Create a file rotating logger with 1kb size max and 10 rotated files.
-    LogEngine::Logger& rotLogger = LogEngine::GetRotatingFileLogger("some_logger_name", LOG_FILES_DIR "rotating.txt", 1024,     LogEngine::rsTimeStamp, 10);
-
+    // Create a file rotating logger with 1kb size max and timestampts in file names.    // Create a file rotating logger with 1kb size max and time stampts in file names.
+    auto& rotLogger = LogEngine::GetRotatingFileLogger("some_logger_name", LOG_FILES_DIR "rotating.txt", 1024, LogEngine::rsTimeStamp);
+    
     // five rotating files will be generated during this for loop
     // each file will be around 1Kb size, depending on size of the last message that exceeds the 1kb threshold
     for (int i = 1; i < 100; ++i)
@@ -131,9 +130,13 @@ void rotating_file_example()
         rotLogger.InfoFmt("Rotating file message #{}", i);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-}```
----
 
+    // Create a file rotating logger with 1kb size max and 10 backup files.
+    auto& rotLogger2 = LogEngine::GetRotatingFileLogger("rot_logger_name", LOG_FILES_DIR "rotating2.txt", 1024, LogEngine::rsNumbers, 10);
+    rotLogger2.Info("Rotating file message");
+}
+```
+---
 #### Stopwatch
 ```c++
 // Stopwatch support for spdlog
@@ -144,7 +147,6 @@ void stopwatch_example()
     spdlog::debug("Elapsed {}", sw);
     spdlog::debug("Elapsed {:.3}", sw);       
 }
-
 ```
 
 ---
@@ -171,20 +173,23 @@ void multi_sink_example()
 ```
 
 ---
-#### User-defined logger config file (*.lfg)
+#### Loading loggers from config file (*.lfg)
 ```c++
 #include "LogEngine.h"
 
 // loads and constructs loggers and sinks from .lfg file.
 // once loggers are initialized you can use GetLogger() function to get needed logger by its name
-void callback_example()
+void lfg_example()
 {
+     // load and construct loggers and sinks from .lfg file.
+    // once loggers are initialised you can use GetLogger() function to get needed logger by its name
     LogEngine::InitFromFile(LFG_FILE_DIR "LogExample.lfg");
 
+    
     // this logger contains two sinks of File and Stdout types.
     // when we log into this logger messages will be sent into two targets.
     // logger name is case INsensitive here, so these names are considered as names of one logger: 'MainLogger', 'mainlogger', 'MAINLOGGER'
-    auto& mainlogger = LogEngine::GetLogger("MainLogger"); 
+    auto& mainlogger = LogEngine::GetLogger("MainLogger");
     mainlogger.Error("This message will be sent into two targets: file(s1) and console (s2 stdout).");
     mainlogger.Info("This message will be sent into file(s1) only because console sink has Loglevel=Error");
 
@@ -192,7 +197,7 @@ void callback_example()
     // stdout with name 's2' sink is shared with Mainlogger above
     auto& second = LogEngine::GetLogger("SECOND");
     second.Error("This message will be sent into three targets: file(s3), console (s2 stdout) and rotating file(rotating).");
-second.Warn("This message will be sent into two targets file(s3) and rotating file(rotating) because console sink has Loglevel=Error");
+    second.Warn("This message will be sent into two targets file(s3) and rotating file(rotating) because console sink has Loglevel=Error");
 }
 ```
 
@@ -208,7 +213,7 @@ void async_example()
     auto& async_logger = LogEngine::GetFileLogger("async_file_logger", LOG_FILES_DIR "async_log.txt");
     async_logger.SetAsyncMode(true);
 
-     for (int i = 1; i < 101; ++i) 
+    for (int i = 1; i < 101; ++i) 
     {
         async_logger.InfoFmt("Async message #{}", i);
     }
