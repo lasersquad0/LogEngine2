@@ -284,12 +284,3 @@ Below are some [benchmarks](bench/bench.cpp) done in Ubuntu 64 bit, Intel i7-477
 [info] Elapsed: 0.373532 secs    2,677,147/sec
 
 ```
-
-## Documentation
-
-Documentation can be found in the [wiki](https://github.com/gabime/spdlog/wiki) pages.
-
----
-
-Thanks to [JetBrains](https://www.jetbrains.com/?from=spdlog) for donating product licenses to help develop **spdlog** <a href="https://www.jetbrains.com/?from=spdlog"><img src="logos/jetbrains-variant-4.svg" width="94" align="center" /></a>
-
