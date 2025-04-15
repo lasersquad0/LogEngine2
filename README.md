@@ -121,7 +121,7 @@ void stdout_file_example()
 void rotating_file_example()
 {
     // Create a file rotating logger with 1kb size max and timestampts in file names.    // Create a file rotating logger with 1kb size max and time stampts in file names.
-    auto& rotLogger = LogEngine::GetRotatingFileLogger("some_logger_name", LOG_FILES_DIR "rotating.txt", 1024, LogEngine::rsTimeStamp);
+    auto& rotLogger = LogEngine::GetRotatingFileLogger("some_logger_name", "logs/rotating.txt", 1024, LogEngine::rsTimeStamp);
     
     // five rotating files will be generated during this for loop
     // each file will be around 1Kb size, depending on size of the last message that exceeds the 1kb threshold
@@ -132,7 +132,7 @@ void rotating_file_example()
     }
 
     // Create a file rotating logger with 1kb size max and 10 backup files.
-    auto& rotLogger2 = LogEngine::GetRotatingFileLogger("rot_logger_name", LOG_FILES_DIR "rotating2.txt", 1024, LogEngine::rsNumbers, 10);
+    auto& rotLogger2 = LogEngine::GetRotatingFileLogger("rot_logger_name", "logs/rotating2.txt", 1024, LogEngine::rsNumbers, 10);
     rotLogger2.Info("Rotating file message");
 }
 ```
@@ -183,7 +183,7 @@ void lfg_example()
 {
      // load and construct loggers and sinks from .lfg file.
     // once loggers are initialised you can use GetLogger() function to get needed logger by its name
-    LogEngine::InitFromFile(LFG_FILE_DIR "LogExample.lfg");
+    LogEngine::InitFromFile("LogExample.lfg");
 
     
     // this logger contains two sinks of File and Stdout types.
@@ -210,7 +210,7 @@ void async_example()
 {
     // in Async mode all log messages are added into queue in memory and written to file (or sent to other targets) by a separate thread.
     // it means that main thread does not wait untill log message written to the file, that minimizes effect from log calls 
-    auto& async_logger = LogEngine::GetFileLogger("async_file_logger", LOG_FILES_DIR "async_log.txt");
+    auto& async_logger = LogEngine::GetFileLogger("async_file_logger", "logs/async_log.txt");
     async_logger.SetAsyncMode(true);
 
     for (int i = 1; i < 101; ++i) 
