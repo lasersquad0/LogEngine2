@@ -1,23 +1,27 @@
 # LogEngine2
 
-LogEngine2 C++ logging library
+C++ logging library
 
 ## Overview
-LogEngine2 is the C++ library for easy and flexible logging to files.
-This is second and completely redesigned from scratch version of old LogEngine library.
+LogEngine2 is the C++ library for easy and flexible logging.
+This is second and completely redesigned from scratch version of previous LogEngine library.
 
-The main advantages are: simple, easy to use, platform independent, small amount of source code.
+Main advantages are: 
+ * simple
+ * easy to use
+ * platform independent 
+ *small amount of source code.
 
 Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2. 
 
-See testXXX.cpp files from test/ directory as an examples of using logengine library.
-See test/testFiles/example.lfg - for full description of logengine parameters file.
+See testXXX.cpp files from test/ directory as an examples of using logengine library in addition to examples below.
+See test/testFiles/example.lfg - for full description of LogEngine parameters file.
 
-Email to the current maintainer at lasersquad@gmail.com.
+Current maintainer: lasersquad@gmail.com.
 
 ## Install
 #### Microsoft Windows
-Use MSVC project from folder prj/msvc/LogEngine/ to build LogEngine.lib (or LogEngined.lib for Debug configuration).
+Use MSVC project from prj/msvc/LogEngine/ folder to build LogEngine2_64.lib (or LogEngine2d_64.lib for Debug configuration).
 
 See prj/msvc/testLogEngine (or prj/Builder6/testLogEngine) for examples how to use LogEngine2.
 
@@ -30,7 +34,6 @@ For other systems see INSTALL txt file for details.
 
 ## Features
 * [][][][]Very fast (see [benchmarks](#benchmarks) below).
-* [][][][]Headers only or compiled
 * Feature-rich formatting, using the std::format available in C++20.
 * Load loggers configuration from .lfg file
 * Asynchronous mode (can be turned on and off)
@@ -43,13 +46,12 @@ For other systems see INSTALL txt file for details.
   * [][]syslog.
   * [][]Windows event log.
   * [][]Windows debugger (```OutputDebugString(..)```).
-  * Easily [extendable](https://github.com/gabime/spdlog/wiki/4.-Sinks#implementing-your-own-sink) with custom log targets.
-* Configurable log line patterns which may include info: 
- * Date and/or Time 
- * Thread ID, 
- * Log level mark or full/short level name 
- * Application name and app version
- * OS name and OS version
+* Customizable log line patterns which may include info: 
+ 	* Date and/or Time 
+ 	* Thread ID, 
+ 	* Log level mark or full/short level name 
+ 	* Application name and app version
+ 	* OS name and OS version
 * Log filtering - log levels can be modified at runtime as well as compile time.
 * Log statistics
 * Includes convenient Dynamic Arrays classes that can be used separately from LogEngine2 library.
