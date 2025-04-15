@@ -4,26 +4,26 @@ C++ logging library
 
 ## Overview
 LogEngine2 is the C++ library for easy and flexible logging.
-This is second and completely redesigned from scratch version of previous LogEngine library.
+This is completely redesigned from scratch version of previous LogEngine library.
 
 Main advantages are: 
  * simple
  * easy to use
  * platform independent 
- *small amount of source code.
+ * small amount of source code.
+
+See testXXX.cpp files from ```test/``` directory as an examples of using logengine library in addition to examples below.
+See ```test/testFiles/example.lfg``` - for full description of LogEngine parameters file.
 
 Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2. 
-
-See testXXX.cpp files from test/ directory as an examples of using logengine library in addition to examples below.
-See test/testFiles/example.lfg - for full description of LogEngine parameters file.
 
 Current maintainer: lasersquad@gmail.com.
 
 ## Install
 #### Microsoft Windows
-Use MSVC project from prj/msvc/LogEngine/ folder to build LogEngine2_64.lib (or LogEngine2d_64.lib for Debug configuration).
+Use MSVC project from ```prj/msvc/LogEngine/``` folder to build LogEngine2_64.lib (or LogEngine2d_64.lib for Debug configuration).
 
-See prj/msvc/testLogEngine (or prj/Builder6/testLogEngine) for examples how to use LogEngine2.
+See ```prj/msvc/testLogEngine``` (or ```prj/Builder6/testLogEngine```) for examples how to use LogEngine2.
 
 #### Other systems
 For other systems see INSTALL txt file for details.
