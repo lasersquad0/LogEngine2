@@ -76,11 +76,11 @@ int main()
     logger.InfoFmt("{:>8} aligned, {:<8} aligned", "right", "left");
 
     // Runtime log levels
-    logger.SetLogLevel(LogEngine::Levels::llInfo);  // set log level for logger and for all its sinks 
+    logger.SetLogLevel(LogEngine::Levels::llInfo); // set log level for logger and for all its sinks 
     logger.Debug("This message should not be displayed!");
-    logger.SetLogLevel(LogEngine::Levels::llTrace, false);  // set log level for logger only
-    logger.Debug("This message should not be displayed because sink will not print it due to log level!");
-    logger.SetLogLevel(LogEngine::Levels::llTrace);  // set log level for logger and for all its sinks 
+    logger.SetLogLevel(LogEngine::Levels::llTrace, false); // set log level for logger only
+    logger.Debug("This message should not be displayed due to log level in sink!");
+    logger.SetLogLevel(LogEngine::Levels::llTrace); // set log level for logger and for all its sinks 
     logger.Debug("This message should be displayed..");
 
     logger.SetPattern("%LOGLEVE% %LOGLEVEL% %DATETIME% %LOGLEVEL% [%THREAD%] %MSG%");
@@ -135,8 +135,8 @@ void rotating_file_example()
     }
 
     // Create a file rotating logger with 1kb size max and 10 backup files.
-    auto& rotLogger2 = 
-        LogEngine::GetRotatingFileLogger("logger_name2", "logs/rot2.txt", 1024, LogEngine::rsNumbers, 10);
+    auto& rotLogger2 =  LogEngine::GetRotatingFileLogger("logger_name2", "logs/rot2.txt", 
+        1024, LogEngine::rsNumbers, 10);
     rotLogger2.Info("Rotating file message");
 }
 ```
@@ -192,11 +192,11 @@ void lfg_example()
     
     // this logger contains two sinks of File and Stdout types.
     // when we log into this logger messages will be sent into two targets.
-    // logger name is case INSensitive here, so the following names will  considered as one logger: 
-    // 'MainLogger', 'mainlogger', 'MAINLOGGER'
+// logger name is case INSensitive here, so names below will considered as one logger: 
+        // 'MainLogger', 'mainlogger', 'MAINLOGGER'
     auto& mainlogger = LogEngine::GetLogger("MainLogger");
     mainlogger.Error("This message will be sent into two targets: file and console (stdout).");
-    mainlogger.Info("This message will be sent to file only because console sink has Loglevel=Error");
+    mainlogger.Info("This message will be sent to file only since console sink has Loglevel=Error");
 
     // this logger contains two sinks of File and Stdout types.
     // stdout with name 's2' sink is shared with Mainlogger above
