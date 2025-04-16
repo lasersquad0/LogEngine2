@@ -76,11 +76,14 @@ int main()
     logger.InfoFmt("{:>8} aligned, {:<8} aligned", "right", "left");
 
     // Runtime log levels
-    logger.SetLogLevel(LogEngine::Levels::llInfo); // set log level for logger and for all its sinks 
+    
+    // set log level for logger and for all its sinks
+    logger.SetLogLevel(LogEngine::Levels::llInfo);  
     logger.Debug("This message should not be displayed!");
     logger.SetLogLevel(LogEngine::Levels::llTrace, false); // set log level for logger only
     logger.Debug("This message should not be displayed due to log level in sink!");
-    logger.SetLogLevel(LogEngine::Levels::llTrace); // set log level for logger and for all its sinks 
+     // set log level for logger and for all its sinks
+    logger.SetLogLevel(LogEngine::Levels::llTrace); 
     logger.Debug("This message should be displayed..");
 
     logger.SetPattern("%LOGLEVE% %LOGLEVEL% %DATETIME% %LOGLEVEL% [%THREAD%] %MSG%");
@@ -122,8 +125,8 @@ void stdout_file_example()
 void rotating_file_example()
 {
     // Create a file rotating logger with 1kb size max and time stamps in file names.
-    auto& rotLogger = 
-        LogEngine::GetRotatingFileLogger("logger_name", "logs/rot.txt", 1024, LogEngine::rsTimeStamp);
+    auto& rotLogger = LogEngine::GetRotatingFileLogger("logger_name", "logs/rot.txt", 
+        1024, LogEngine::rsTimeStamp);
     
     // five rotating files will be generated during this loop
     // each file will be around 1Kb size, depending on size of the last message that 
@@ -182,11 +185,9 @@ void multi_sink_example()
 #include "LogEngine.h"
 
 // loads and constructs loggers and sinks from .lfg file.
-// once loggers are initialized you can use GetLogger() function to get needed logger by its name
 void lfg_example()
 {
-    // load and construct loggers and sinks from .lfg file.
-    // once loggers are initialized you can use GetLogger() function to get needed logger by its name
+    // once loggers are initialized you can use GetLogger() to get needed logger by its name
     LogEngine::InitFromFile("LogExample.lfg");
 
     
