@@ -66,7 +66,8 @@ int main()
 {
     LogEngine::Logger& logger = LogEngine::GetStdoutLogger("consolelogger");
    
-    logger.InfoFmt("Welcome to LogEngine version {}.{}.{}  !", LOGENGINE_VER_MAJOR, LOGENGINE_VER_MINOR, LOGENGINE_VER_PATCH);
+    logger.InfoFmt("Welcome to LogEngine version {}.{}.{}  !",
+         LOGENGINE_VER_MAJOR, LOGENGINE_VER_MINOR, LOGENGINE_VER_PATCH);
    
     logger.InfoFmt("Padding in numbers:  {:08d}", 12);
     logger.CritFmt("Support for int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
@@ -122,7 +123,7 @@ void rotating_file_example()
 {
     // Create a file rotating logger with 1kb size max and time stamps in file names.
     auto& rotLogger = 
-        LogEngine::GetRotatingFileLogger("some_logger_name", "logs/rotating.txt", 1024, LogEngine::rsTimeStamp);
+        LogEngine::GetRotatingFileLogger("logger_name", "logs/rot.txt", 1024, LogEngine::rsTimeStamp);
     
     // five rotating files will be generated during this loop
     // each file will be around 1Kb size, depending on size of the last message that 
@@ -135,7 +136,7 @@ void rotating_file_example()
 
     // Create a file rotating logger with 1kb size max and 10 backup files.
     auto& rotLogger2 = 
-        LogEngine::GetRotatingFileLogger("rot_logger_name", "logs/rotating2.txt", 1024, LogEngine::rsNumbers, 10);
+        LogEngine::GetRotatingFileLogger("logger_name2", "logs/rot2.txt", 1024, LogEngine::rsNumbers, 10);
     rotLogger2.Info("Rotating file message");
 }
 ```
@@ -185,7 +186,7 @@ void multi_sink_example()
 void lfg_example()
 {
     // load and construct loggers and sinks from .lfg file.
-    // once loggers are initialised you can use GetLogger() function to get needed logger by its name
+    // once loggers are initialized you can use GetLogger() function to get needed logger by its name
     LogEngine::InitFromFile("LogExample.lfg");
 
     
@@ -200,8 +201,8 @@ void lfg_example()
     // this logger contains two sinks of File and Stdout types.
     // stdout with name 's2' sink is shared with Mainlogger above
     auto& second = LogEngine::GetLogger("SECOND");
-    second.Error("This message will be sent into three targets: file, console (stdout) and rotating file.");
-    second.Warn("This message will be sent into two targets file and rotating file because console sink has Loglevel=Error");
+    second.Error("This message will be sent into three targets: file, console and rotating file.");
+    second.Warn("This message will be sent into two targets file and rotating file");
 }
 ```
 
@@ -212,9 +213,11 @@ void lfg_example()
 
 void async_example()
 {
-    // in Async mode all log messages are added into queue in memory and written to file (or sent to other targets) by a separate thread.
-    // it means that main thread does not wait untill log message written to the file, that minimizes effect from log calls 
-    auto& async_logger = LogEngine::GetFileLogger("async_file_logger", "logs/async_log.txt");
+    // in Async mode all log messages are added into queue in memory and written to 
+    // file (or sent to other targets) by a separate thread. 
+    // it means that main thread does not wait until log messages written to the file
+    // that minimizes effect from log calls 
+    auto& async_logger = LogEngine::GetFileLogger("async_logger", "logs/async_log.txt");
     async_logger.SetAsyncMode(true);
 
     for (int i = 1; i < 101; ++i) 
