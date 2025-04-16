@@ -120,11 +120,13 @@ void stdout_file_example()
 
 void rotating_file_example()
 {
-    // Create a file rotating logger with 1kb size max and timestampts in file names.    // Create a file rotating logger with 1kb size max and time stampts in file names.
-    auto& rotLogger = LogEngine::GetRotatingFileLogger("some_logger_name", "logs/rotating.txt", 1024, LogEngine::rsTimeStamp);
+    // Create a file rotating logger with 1kb size max and time stamps in file names.
+    auto& rotLogger = 
+        LogEngine::GetRotatingFileLogger("some_logger_name", "logs/rotating.txt", 1024, LogEngine::rsTimeStamp);
     
-    // five rotating files will be generated during this for loop
-    // each file will be around 1Kb size, depending on size of the last message that exceeds the 1kb threshold
+    // five rotating files will be generated during this loop
+    // each file will be around 1Kb size, depending on size of the last message that 
+    // exceeds the 1kb threshold
     for (int i = 1; i < 100; ++i)
     {
         rotLogger.InfoFmt("Rotating file message #{}", i);
@@ -132,7 +134,8 @@ void rotating_file_example()
     }
 
     // Create a file rotating logger with 1kb size max and 10 backup files.
-    auto& rotLogger2 = LogEngine::GetRotatingFileLogger("rot_logger_name", "logs/rotating2.txt", 1024, LogEngine::rsNumbers, 10);
+    auto& rotLogger2 = 
+        LogEngine::GetRotatingFileLogger("rot_logger_name", "logs/rotating2.txt", 1024, LogEngine::rsNumbers, 10);
     rotLogger2.Info("Rotating file message");
 }
 ```
@@ -181,23 +184,24 @@ void multi_sink_example()
 // once loggers are initialized you can use GetLogger() function to get needed logger by its name
 void lfg_example()
 {
-     // load and construct loggers and sinks from .lfg file.
+    // load and construct loggers and sinks from .lfg file.
     // once loggers are initialised you can use GetLogger() function to get needed logger by its name
     LogEngine::InitFromFile("LogExample.lfg");
 
     
     // this logger contains two sinks of File and Stdout types.
     // when we log into this logger messages will be sent into two targets.
-    // logger name is case INsensitive here, so these names are considered as names of one logger: 'MainLogger', 'mainlogger', 'MAINLOGGER'
+    // logger name is case INSensitive here, so the following names will  considered as one logger: 
+    // 'MainLogger', 'mainlogger', 'MAINLOGGER'
     auto& mainlogger = LogEngine::GetLogger("MainLogger");
-    mainlogger.Error("This message will be sent into two targets: file(s1) and console (s2 stdout).");
-    mainlogger.Info("This message will be sent into file(s1) only because console sink has Loglevel=Error");
+    mainlogger.Error("This message will be sent into two targets: file and console (stdout).");
+    mainlogger.Info("This message will be sent to file only because console sink has Loglevel=Error");
 
     // this logger contains two sinks of File and Stdout types.
     // stdout with name 's2' sink is shared with Mainlogger above
     auto& second = LogEngine::GetLogger("SECOND");
-    second.Error("This message will be sent into three targets: file(s3), console (s2 stdout) and rotating file(rotating).");
-    second.Warn("This message will be sent into two targets file(s3) and rotating file(rotating) because console sink has Loglevel=Error");
+    second.Error("This message will be sent into three targets: file, console (stdout) and rotating file.");
+    second.Warn("This message will be sent into two targets file and rotating file because console sink has Loglevel=Error");
 }
 ```
 
@@ -284,3 +288,4 @@ Below are some [benchmarks](bench/bench.cpp) done in Ubuntu 64 bit, Intel i7-477
 [info] Elapsed: 0.373532 secs    2,677,147/sec
 
 ```
+	
