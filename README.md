@@ -33,20 +33,15 @@ For other systems see ```INSTALL``` txt file for details.
 * Linux and similar
 
 ## Features
-* [][][][]Very fast (see [benchmarks](#benchmarks) below).
 * Feature-rich formatting, using the std::format available in C++20.
 * Load loggers configuration from .lfg file
 * Asynchronous mode (can be turned on and off)
-* [][][]Multi/Single threaded loggers.
 * Various log targets:
   * Regular log files
-  * Rotating log files.
-  * Console logging (stdio and stderr) [][][](colors supported).
+  * Rotating log files
+  * Console logging (stdio and stderr)
   * String stream
-  * [][]syslog.
-  * [][]Windows event log.
-  * [][]Windows debugger (```OutputDebugString(..)```).
-* Customizable log line patterns which may include info: 
+ * Customizable log line patterns which may include info: 
  	* Date and/or Time 
  	* Thread ID 
  	* Log level mark or full/short level name 
@@ -249,24 +244,12 @@ Below are some [benchmarks](bench/bench.cpp) done in Ubuntu 64 bit, Intel i7-477
 [info] **************************************************************
 [info] Single thread, 1,000,000 iterations
 [info] **************************************************************
-[info] basic_st         Elapsed: 0.17 secs        5,777,626/sec
-[info] rotating_st      Elapsed: 0.18 secs        5,475,894/sec
-[info] daily_st         Elapsed: 0.20 secs        5,062,659/sec
-[info] empty_logger     Elapsed: 0.07 secs       14,127,300/sec
 [info] **************************************************************
 [info] C-string (400 bytes). Single thread, 1,000,000 iterations
 [info] **************************************************************
-[info] basic_st         Elapsed: 0.41 secs        2,412,483/sec
-[info] rotating_st      Elapsed: 0.72 secs        1,389,196/sec
-[info] daily_st         Elapsed: 0.42 secs        2,393,298/sec
-[info] null_st          Elapsed: 0.04 secs       27,446,957/sec
 [info] **************************************************************
 [info] 10 threads, competing over the same logger object, 1,000,000 iterations
 [info] **************************************************************
-[info] basic_mt         Elapsed: 0.60 secs        1,659,613/sec
-[info] rotating_mt      Elapsed: 0.62 secs        1,612,493/sec
-[info] daily_mt         Elapsed: 0.61 secs        1,638,305/sec
-[info] null_mt          Elapsed: 0.16 secs        6,272,758/sec
 ```
 #### Asynchronous mode
 ```
@@ -280,16 +263,10 @@ Below are some [benchmarks](bench/bench.cpp) done in Ubuntu 64 bit, Intel i7-477
 [info] *********************************
 [info] Queue Overflow Policy: block
 [info] *********************************
-[info] Elapsed: 1.70784 secs     585,535/sec
-[info] Elapsed: 1.69805 secs     588,910/sec
-[info] Elapsed: 1.7026 secs      587,337/sec
 [info] 
 [info] *********************************
 [info] Queue Overflow Policy: overrun
 [info] *********************************
-[info] Elapsed: 0.372816 secs    2,682,285/sec
-[info] Elapsed: 0.379758 secs    2,633,255/sec
-[info] Elapsed: 0.373532 secs    2,677,147/sec
 
 ```
 	
