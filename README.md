@@ -159,24 +159,25 @@ void stopwatch_example()
 
 void multi_sink_example() 
 {
-    // shared_ptr here is for proper destroying Sink objects 
-    // when they are shared between several loggers. 
-    std::shared_ptr<LogEngine::Sink> consoleSink(new LogEngine::StdoutSink("console_sink"));
-    consoleSink->SetLogLevel(LogEngine::Levels::llWarning);
+    using namespace LogEngine;
+    
+    // we need shared_ptr for Sinks here for proper freeing Sink objects when they shared between several loggers. 
+    std::shared_ptr<Sink> consoleSink(new StdoutSink("console_sink"));
+    consoleSink->SetLogLevel(Levels::llWarning);
     consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
 
-    std::shared_ptr<LogEngine::Sink> fileSink(new LogEngine::FileSink("file_sink", "multisink.txt"));
-    fileSink->SetLogLevel(LogEngine::Levels::llTrace);
+    std::shared_ptr<Sink> fileSink(new FileSink("file_sink", LOG_FILES_DIR "multisink.txt"));
+    fileSink->SetLogLevel(Levels::llTrace);
 
-    LogEngine::Logger logger("multi_sink", {consoleSink, fileSink});
-    logger.SetLogLevel(LogEngine::Levels::llDebug, false); // change log level for logger only.
+    Logger logger("multi_sink", { consoleSink, fileSink });
+    logger.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
     logger.Warn("This should appear in both console and file");
     logger.Info("This message should not appear in the console, only in the file");
 
     // two sinks are shared between two loggers
     // logger2 contains two sinks because duplicates
-    LogEngine::Logger logger2("multi_sink2", { consoleSink, fileSink, consoleSink, fileSink });
-    logger2.SetLogLevel(LogEngine::Levels::llDebug, false); // change log level for logger only.
+    Logger logger2("multi_sink2", { consoleSink, fileSink, consoleSink, fileSink });
+    logger2.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
     logger2.Warn("This should appear two times in both console and file");
     logger2.Info("This message should not appear in the console, only in the file two times");
 }
