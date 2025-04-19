@@ -159,12 +159,13 @@ void stopwatch_example()
 
 void multi_sink_example() 
 {
-    // we need shared_ptr here for proper freeing Sink objects when they are shared between several loggers. 
+    // shared_ptr here is for proper destroying Sink objects 
+    // when they are shared between several loggers. 
     std::shared_ptr<LogEngine::Sink> consoleSink(new LogEngine::StdoutSink("console_sink"));
     consoleSink->SetLogLevel(LogEngine::Levels::llWarning);
     consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
 
-    std::shared_ptr<LogEngine::Sink> fileSink(new LogEngine::FileSink("file_sink", LOG_FILES_DIR "multisink.txt"));
+    std::shared_ptr<LogEngine::Sink> fileSink(new LogEngine::FileSink("file_sink", "multisink.txt"));
     fileSink->SetLogLevel(LogEngine::Levels::llTrace);
 
     LogEngine::Logger logger("multi_sink", {consoleSink, fileSink});
