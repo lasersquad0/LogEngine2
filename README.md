@@ -152,25 +152,32 @@ void stopwatch_example()
 ```
 
 ---
-#### Logger with multi sinks - each with a different format and log level
+#### Two loggers with multiple shared sinks, each with a different format and log level.
+
 ```c++
 #include "LogEngine.h"
 
-// create a logger with 2 targets, with different log levels and formats.
-// The console will show only warnings or errors, while the file will log all.
-void multi_sink_example()
+void multi_sink_example() 
 {
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_level(spdlog::level::warn);
-    console_sink->set_pattern("[multi_sink_example] [%^%l%$] %v");
+    // we need shared_ptr here for proper freeing Sink objects when they are shared between several loggers. 
+    std::shared_ptr<LogEngine::Sink> consoleSink(new LogEngine::StdoutSink("console_sink"));
+    consoleSink->SetLogLevel(LogEngine::Levels::llWarning);
+    consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
 
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/multisink.txt", true);
-    file_sink->set_level(spdlog::level::trace);
+    std::shared_ptr<LogEngine::Sink> fileSink(new LogEngine::FileSink("file_sink", LOG_FILES_DIR "multisink.txt"));
+    fileSink->SetLogLevel(LogEngine::Levels::llTrace);
 
-    spdlog::logger logger("multi_sink", {console_sink, file_sink});
-    logger.set_level(spdlog::level::debug);
-    logger.warn("this should appear in both console and file");
-    logger.info("this message should not appear in the console, only in the file");
+    LogEngine::Logger logger("multi_sink", {consoleSink, fileSink});
+    logger.SetLogLevel(LogEngine::Levels::llDebug, false); // change log level for logger only.
+    logger.Warn("This should appear in both console and file");
+    logger.Info("This message should not appear in the console, only in the file");
+
+    // two sinks are shared between two loggers
+    // logger2 contains two sinks because duplicates
+    LogEngine::Logger logger2("multi_sink2", { consoleSink, fileSink, consoleSink, fileSink });
+    logger2.SetLogLevel(LogEngine::Levels::llDebug, false); // change log level for logger only.
+    logger2.Warn("This should appear two times in both console and file");
+    logger2.Info("This message should not appear in the console, only in the file two times");
 }
 ```
 
