@@ -161,7 +161,8 @@ void multi_sink_example()
 {
     using namespace LogEngine;
     
-    // we need shared_ptr for Sinks here for proper freeing Sink objects when they shared between several loggers. 
+    // we need shared_ptr for Sinks here for proper freeing Sink objects 
+    // when they shared between several loggers. 
     std::shared_ptr<Sink> consoleSink(new StdoutSink("console_sink"));
     consoleSink->SetLogLevel(Levels::llWarning);
     consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
