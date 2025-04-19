@@ -91,8 +91,6 @@ int main()
 ---
 #### Create stdout/stderr and file logger objects
 ```c++
-#include "LogEngine.h"
-
 void stdout_file_example()
 {
     auto& stdout_logger = LogEngine::GetStdoutLogger("stdoutlogger");
@@ -115,8 +113,6 @@ void stdout_file_example()
 ---
 #### Rotating files
 ```c++
-#include "LogEngine.h"
-
 void rotating_file_example()
 {
     // Create a file rotating logger with 1kb size max and time stamps in file names.
@@ -155,8 +151,6 @@ void stopwatch_example()
 #### Two loggers with multiple shared sinks, each with a different format and log level.
 
 ```c++
-#include "LogEngine.h"
-
 void multi_sink_example() 
 {
     using namespace LogEngine;
@@ -187,8 +181,6 @@ void multi_sink_example()
 ---
 #### Loading loggers from config file (*.lfg)
 ```c++
-#include "LogEngine.h"
-
 // loads and constructs loggers and sinks from .lfg file.
 void lfg_example()
 {
@@ -198,8 +190,8 @@ void lfg_example()
     
     // this logger contains two sinks of File and Stdout types.
     // when we log into this logger messages will be sent into two targets.
-// logger name is case INSensitive here, so names below will considered as one logger: 
-        // 'MainLogger', 'mainlogger', 'MAINLOGGER'
+    // logger name is case INSensitive here, so names below will considered as one logger: 
+    // 'MainLogger', 'mainlogger', 'MAINLOGGER'
     auto& mainlogger = LogEngine::GetLogger("MainLogger");
     mainlogger.Error("This message will be sent into two targets: file and console (stdout).");
     mainlogger.Info("This message will be sent to file only since console sink has Loglevel=Error");
@@ -215,8 +207,6 @@ void lfg_example()
 ---
 #### Asynchronous logging
 ```c++
-#include "LogEngine.h"
-
 void async_example()
 {
     // in Async mode all log messages are added into queue in memory and written to 
