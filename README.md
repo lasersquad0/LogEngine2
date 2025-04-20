@@ -224,13 +224,18 @@ void async_example()
 ```
  
 ---
-#### Custom error handler
+#### Custom callback logger
 ```c++
-void err_handler_example()
+void callback_example() 
 {
-    // can be set globally or per logger(logger->set_error_handler(..))
-    spdlog::set_error_handler([](const std::string &msg) { spdlog::get("console")->error("*** LOGGER ERROR ***: {}", msg); });
-    spdlog::get("console")->info("some invalid message to trigger an error {}{}{}{}", 3);
+    auto& logger = LogEngine::GetCallbackLogger("custom_callback_logger",
+        [](const LogEngine::LogEvent& /*msg*/) 
+        {
+            std::cout << "Lambdadada " << std::endl;
+            // do what you need to do with msg
+        });
+
+    logger.Info("Origial message for callback logger");
 }
 
 ```
