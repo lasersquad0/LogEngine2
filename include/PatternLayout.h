@@ -9,17 +9,19 @@
 #if !defined(PATTERNLAYOUT_H)
 #define PATTERNLAYOUT_H
 
-#include <vector>
-#include "Layout.h"
+//#include <vector>
+//#include "Layout.h"
 #include "Pattern.h"
 
 LOGENGINE_NS_BEGIN
 
-class PatternLayout : public Layout
+class PatternLayout// : public Layout
 {
 protected:
+	const std::string Patterns[Levels::n_LogLevels]{ DefaultLinePattern, DefaultCritPattern, DefaultErrorPattern,
+				             DefaultWarningPattern, DefaultInfoPattern, DefaultDebugPattern, DefaultTracePattern };
 	Pattern MessagePatterns[Levels::n_LogLevels]{ Pattern{DefaultLinePattern}, Pattern{DefaultCritPattern}, Pattern{DefaultErrorPattern},
-		Pattern{DefaultWarningPattern}, Pattern{DefaultInfoPattern}, Pattern{DefaultDebugPattern}, Pattern{DefaultTracePattern} };
+		          Pattern{DefaultWarningPattern}, Pattern{DefaultInfoPattern}, Pattern{DefaultDebugPattern}, Pattern{DefaultTracePattern} };
 	Pattern AppName{ DefaultAppName };
 	Pattern AppVersion{ DefaultAppVersion };
 	Pattern StartAppLine{ DefaultStartAppLine };
@@ -28,29 +30,38 @@ protected:
 
 public:
 	PatternLayout() {}
-	~PatternLayout() override {}
-	std::string Format(const LogEvent& lv) override { return MessagePatterns[lv.msgLevel].Format(lv); }
-	std::string GetPattern(Levels::LogLevel level) { return MessagePatterns[level].GetPattern(); }
-	std::string GetAllPatterns() { return MessagePatterns[Levels::llOff].GetPattern(); }
+	virtual ~PatternLayout() {}
+	virtual std::string Format(const LogEvent& lv) { return MessagePatterns[lv.msgLevel].Format(lv); }
+	virtual std::string GetPattern(Levels::LogLevel level) { return MessagePatterns[level].GetPattern(); }
+	virtual std::string GetAllPatterns() { return MessagePatterns[Levels::llOff].GetPattern(); }
 
-	void SetPattern(const std::string& pattern, Levels::LogLevel level) { MessagePatterns[level].SetPattern(pattern); }
-	void SetCritPattern(const std::string& pattern) { MessagePatterns[Levels::llCritical].SetPattern(pattern); }
-	void SetErrorPattern(const std::string& pattern) { MessagePatterns[Levels::llError].SetPattern(pattern); }
-	void SetWarnPattern(const std::string& pattern) { MessagePatterns[Levels::llWarning].SetPattern(pattern); }
-	void SetInfoPattern(const std::string& pattern) { MessagePatterns[Levels::llInfo].SetPattern(pattern); }
-	void SetDebugPattern(const std::string& pattern) { MessagePatterns[Levels::llDebug].SetPattern(pattern); }
-	void SetTracePattern(const std::string& pattern) { MessagePatterns[Levels::llTrace].SetPattern(pattern); }
+	virtual void SetDefaultPattern(Levels::LogLevel level) { MessagePatterns[level].SetPattern(Patterns[level]); }
+
+	virtual void SetPattern(const std::string& pattern, Levels::LogLevel level) { MessagePatterns[level].SetPattern(pattern); }
+	virtual void SetCritPattern (const std::string& pattern) { MessagePatterns[Levels::llCritical].SetPattern(pattern);}
+	virtual void SetErrorPattern(const std::string& pattern) { MessagePatterns[Levels::llError].SetPattern(pattern);   }
+	virtual void SetWarnPattern (const std::string& pattern) { MessagePatterns[Levels::llWarning].SetPattern(pattern); }
+	virtual void SetInfoPattern (const std::string& pattern) { MessagePatterns[Levels::llInfo].SetPattern(pattern);    }
+	virtual void SetDebugPattern(const std::string& pattern) { MessagePatterns[Levels::llDebug].SetPattern(pattern);   }
+	virtual void SetTracePattern(const std::string& pattern) { MessagePatterns[Levels::llTrace].SetPattern(pattern);   }
 	
-	void SetStartAppLinePattern(const std::string& pattern) { StartAppLine.SetPattern(pattern); }
-	void SetStopAppLinePattern(const std::string& pattern) { StopAppLine.SetPattern(pattern); }
-	void SetAppName(const std::string& aname) { AppName.SetPattern(aname); }
+	virtual void SetStartAppLinePattern(const std::string& pattern) { StartAppLine.SetPattern(pattern); }
+	virtual void SetStopAppLinePattern(const std::string& pattern) { StopAppLine.SetPattern(pattern); }
+	virtual void SetAppName(const std::string& aname) { AppName.SetPattern(aname); }
 
 	// set the same pattern for all lines: Crit, Error, Warn, Info, Debug, Trace
-	void SetAllPatterns(const std::string& pattern)
+	virtual void SetAllPatterns(const std::string& pattern)
 	{
 		for (uint i = 0; i < Levels::n_LogLevels; i++)
 			MessagePatterns[i].SetPattern(pattern);
 	}
+
+	virtual void SetAllDefaultPatterns()
+	{
+		for (uint i = 0; i < Levels::n_LogLevels; i++)
+			MessagePatterns[i].SetPattern(Patterns[i]);
+	}
+
 };
 
 LOGENGINE_NS_END

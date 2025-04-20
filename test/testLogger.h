@@ -19,6 +19,9 @@ class LoggerTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testLog3);
   CPPUNIT_TEST( testLog4 );
   CPPUNIT_TEST( testLog5 );
+  CPPUNIT_TEST( testLogMultiSink1 );
+  CPPUNIT_TEST( testLogMultiSink2 );
+  CPPUNIT_TEST( testLogMultiSink3 );
   CPPUNIT_TEST( testLogStrategyNone );
   CPPUNIT_TEST(testLogStrategySingle);
   CPPUNIT_TEST(testLogStrategyTimeStamp);
@@ -42,6 +45,9 @@ public:
     void testLog3();
     void testLog4();
     void testLog5();
+    void testLogMultiSink1();
+    void testLogMultiSink2(); 
+    void testLogMultiSink3(); 
     void testLogStrategyNone();
     void testLogStrategySingle();
     void testLogStrategyTimeStamp();

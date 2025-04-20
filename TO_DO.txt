@@ -2,28 +2,58 @@ TODO
 ----
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
 
-* add possibility to configure loggers from config (.lfg) file
+* add possibility to define my own line macros
 
-* add configuration to write logs into stdout and stderr - DONE
+* get values for macro placeholders from Properties and subst in log line
+
+* make benchmarks and publish them in users guide
+
+* two types of loggers: single threaded and multithreaded
+
+* make it header only???
+
+* think of error_hanler for specific logger. what error we should track?
+
+* think of file_event_handlers BeforeOpen AfterOpen BeforeClose AfterClose
+
+* what about callback logger? like the following
+    auto logger = spdlog::callback_logger_mt("custom_callback_logger",
+                                             [](const spdlog::details::log_msg & /*msg*/) {
+                                                 // do what you need to do with msg });
+
+* Default logger?? like LogEngine::Warn() LogEngine::ErrorFmt(), etc.
+
+* [DONE] .h file with LogEngine version defines LOGENGINE_VER_MAJOR, LOGENGINE_VER_MINOR, LOGENGINE_VER_PATCH.
+
+* collect statistics from Sinks. interface for that + method whether Sink collects statistic or not.
+
+* add color logging to console.
+
+* configurable Date and/or Time format in log line
+
+* Add support to different log destinations: file, syslog, Windows event log, OutputDebugString, probably pipes.
+
+* Rename msvc project LogEngine to LogEngine2?
+
+* [DONE] add possibility to configure loggers from config (.lfg) file
+
+* [DONE] add configuration to write logs into stdout and stderr
 
 * Add possibility to write logs with << operator LOG(INFO) << "logstr1" << "logstr2"
 
-* add Async mode for writing logs. where logs are put into memory container and another thread performs actual routing and writing to file(s).
+* [DONE] add Async mode for writing logs. where logs are put into memory container and another thread performs actual routing and writing to file(s).
 
-* Add possibility to write logs into multiple files - DONE
+* [DONE] Add possibility to write logs into multiple files 
 
 * Get the version number from current module (for Windows only)
 
-* Add a set of help functions FormatError, FormatInfo which returns formatted 
-  string for InternalWrite. They helps us to write tests more comfortable. - DONE
+* [DONE] Add a set of help functions FormatError, FormatInfo which returns formatted 
+  string for InternalWrite. They helps us to write tests more comfortable.
 
 * Add separator line ??????
 
-* Add support to different log destinations: file, OutputDebugString, probably pipes.
+* [DONE] Synchronization logs in separate thread.
 
-* Synchronization logs in separate thread. - DONE
+* [DONE] Add log file rotation. 1->2, 2->3 .... 
 
-* Add log file rotation. 1->2, 2->3 .... - DONE
-
-* DateTimeMacro works wrong (as TimeMacro) - DONE
-
+* [DONE] DateTimeMacro works wrong (as TimeMacro)
