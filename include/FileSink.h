@@ -10,10 +10,11 @@
 
 #include <string>
 #include <iostream>
+#include <functional>
 #include "Sink.h"
 #include "LogEvent.h"
 #include "FileStream.h"
-#include "PatternLayout.h"
+//#include "PatternLayout.h"
 //#include "Exceptions.h"
 
 LOGENGINE_NS_BEGIN
@@ -28,10 +29,14 @@ public:
 	{
 		FStream = new TFileStream(fileName);
 		FStream->Seek(0, smFromEnd); // move to the end of file 
-		SetLayout(new PatternLayout());
+		//SetLayout(new PatternLayout());
 	}
 
-	~FileSink() override { FStream->Flush(); delete FStream; }
+	~FileSink() override 
+	{ 
+		FStream->Flush(); 
+		delete FStream; 
+	}
 
 	void SendMsg(const LogEvent& e) override
 	{
@@ -53,7 +58,7 @@ public:
 class StdoutSink : public Sink
 {
 public:
-	StdoutSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
+	StdoutSink(const std::string& name) : Sink(name) { /*SetLayout(new PatternLayout());*/ }
 
 	void SendMsg(const LogEvent& e) override
 	{
@@ -62,11 +67,10 @@ public:
 	}
 };
 
-
 class StderrSink : public Sink
 {
 public:
-	StderrSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
+	StderrSink(const std::string& name) : Sink(name) { /*SetLayout(new PatternLayout());*/ }
 
 	void SendMsg(const LogEvent& e) override
 	{
@@ -80,7 +84,7 @@ class StringSink : public Sink
 private:
 	std::ostringstream output;
 public:
-	StringSink(const std::string& name) : Sink(name) { SetLayout(new PatternLayout()); }
+	StringSink(const std::string& name) : Sink(name) { /*SetLayout(new PatternLayout());*/ }
 
 	void SendMsg(const LogEvent& e) override
 	{
@@ -92,6 +96,21 @@ public:
 	void Clear() { output.str(""); }
 };
 
+// callbacks type
+typedef std::function<void(const LogEngine::LogEvent& lv)> CustomLogCallback;
+
+class CallbackSink : public Sink
+{
+private:
+	CustomLogCallback FCallback;
+public:
+	CallbackSink(const std::string& name, const CustomLogCallback& callback) : Sink(name), FCallback(callback) { }
+
+	void SendMsg(const LogEvent& e) override
+	{
+		FCallback(e);
+	}
+};
 
 LOGENGINE_NS_END
 
