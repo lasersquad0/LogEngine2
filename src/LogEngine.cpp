@@ -10,12 +10,10 @@ LOGENGINE_NS_BEGIN
 class Destructor
 {
 public:
-	~Destructor() { ShutdownLoggers(); }
+	~Destructor() { ClearLoggers(); }
 };
 
-// logger names are case INsensitive
 static THash<std::string, Logger*, CompareStringNCase> loggers;
-
 static Properties properties;
 static Destructor destructor; // variable destructor must be located BELOW variable loggers because loggers should exist when destructor is being destroyed.
 
@@ -34,7 +32,7 @@ bool PropertyExist(const std::string& name)
 	return properties.IfExists(name);
 }
 
-void ShutdownLoggers()
+void ClearLoggers()
 {
 	for (uint i = 0; i < loggers.Count(); i++)
 	{
@@ -44,14 +42,9 @@ void ShutdownLoggers()
 	loggers.ClearMem();
 }
 
-uint LoggersCount()
+uint GetLoggersCount()
 {
 	return loggers.Count();
-}
-
-bool LoggerExist(const std::string& name)
-{
-	return loggers.IfExists(name);
 }
 
 // returns reference to the logger with name specified in loggerName parameter
@@ -73,24 +66,13 @@ Logger& GetLogger(const std::string& loggerName)
 }
 
 // returns reference to the file logger with name specified in loggerName parameter
-// if logger with specified name does not exist new logger is created and one FileSink is added to thie logger
-Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName)
+// if logger with specified name does not exist new logger is created and ont FileSink is added to thie logger
+Logger& GetFileLogger(const std::string& loggerName, const std::string fileName)
 {
 	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
 
-	auto sink = std::make_shared<FileSink>(loggerName, fileName); //TODO may be use file name as Sink name instead of logger name?
-	logger.AddSink(sink);
-
-	return logger;
-}
-
-Logger& GetRotatingFileLogger(const std::string& loggerName, const std::string& fileName, ullong maxLogSize, LogRotatingStrategy strategy, uint maxBackupIndex)
-{
-	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
-	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
-
-	auto sink = std::make_shared<RotatingFileSink>(loggerName, fileName, maxLogSize, strategy, maxBackupIndex); //TODO may be use file name as Sink name instead of logger name?
+	Sink* sink = new FileSink(loggerName, fileName); //TODO may be use file name as Sink name instead of logger name?
 	logger.AddSink(sink);
 
 	return logger;
@@ -101,7 +83,7 @@ Logger& GetStdoutLogger(const std::string& loggerName)
 	Logger& logger = GetLogger(loggerName); //TODO what to do when logger with the same name but another type (e.g. FileLogger) already exists. 
 	if (logger.SinkCount() > 0) return logger; // this is existed logger
 
-	auto sink = std::make_shared<StdoutSink>(loggerName);
+	Sink* sink = new StdoutSink(loggerName);
 	logger.AddSink(sink);
 	return logger;
 }
@@ -111,40 +93,21 @@ Logger& GetStderrLogger(const std::string& loggerName)
 	Logger& logger = GetLogger(loggerName);
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
 
-	auto sink = std::make_shared<StderrSink>(loggerName);
+	Sink* sink = new StderrSink(loggerName);
 	logger.AddSink(sink);
 	return logger;
 }
 
-Logger& GetMultiLogger(const std::string& loggerName, SinkList& sinks)
+Logger& GetMultiLogger(const std::string& loggerName, THArray<Sink*> sinks)
 {
-	Logger& logger = GetLogger(loggerName);
-	logger.ClearSinks();
+	Logger& logger = GetLogger(loggerName); // TODO what is pre-existed logger with sinks has returned???
+
 	for (uint i = 0; i < sinks.Count(); i++)
 		logger.AddSink(sinks[i]);
 
 	return logger;
 }
 
-Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std::shared_ptr<Sink>> list)
-{
-	Logger& logger = GetLogger(loggerName); // TODO what is pre-existed logger with sinks has returned???
-	logger.ClearSinks();
-	for (auto sink: list)
-		logger.AddSink(sink);
-
-	return logger;
-}
-
-Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback& callback)
-{
-	Logger& logger = GetLogger(loggerName);
-	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
-
-	auto sink = std::make_shared<CallbackSink>(loggerName, callback);
-	logger.AddSink(sink);
-	return logger;
-}
 
 static uint ParseInt(std::string s, uint defaultValue = 0)
 {
@@ -253,7 +216,7 @@ void InitFromFile(const std::string& fileName)
 
 				sink->SetLogLevel(LLfromString(reader.GetValue(sinkSectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
 				PatternLayout* lay = new PatternLayout();
-				lay->SetAllPatterns(reader.GetValue(sinkSectName, PATTERNALL_PARAM, DefaultLinePattern, 0));  
+				lay->SetAllPatterns(reader.GetValue(sinkSectName,  PATTERNALL_PARAM,   DefaultLinePattern, 0)); // put DefaultLinePattern into all Crit, Warn, Info, etc patterns 
 				if (reader.HasValue(sinkSectName, CRITPATTERN_PARAM))  lay->SetCritPattern(reader.GetValue(sinkSectName,  CRITPATTERN_PARAM));
 				if (reader.HasValue(sinkSectName, ERRORPATTERN_PARAM)) lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM));
 				if (reader.HasValue(sinkSectName, WARNPATTERN_PARAM))  lay->SetWarnPattern(reader.GetValue(sinkSectName,  WARNPATTERN_PARAM));
@@ -262,7 +225,7 @@ void InitFromFile(const std::string& fileName)
 				if (reader.HasValue(sinkSectName, TRACEPATTERN_PARAM)) lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM));
 
 				sink->SetLayout(lay);
-				logger.AddSink(std::shared_ptr<Sink>(sink));
+				logger.AddSink(sink);
 			}
 
 		}

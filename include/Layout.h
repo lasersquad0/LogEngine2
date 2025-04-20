@@ -15,28 +15,18 @@
 
 LOGENGINE_NS_BEGIN
 
-/*
 class Layout
 {
 public:
 	virtual ~Layout() { }
 	virtual std::string Format(const LogEvent& event) = 0;
-
-	virtual void SetPattern(const std::string& , Levels::LogLevel ) { }
-	virtual void SetCritPattern (const std::string& ) { }
-	virtual void SetErrorPattern(const std::string& ) { }
-	virtual void SetWarnPattern (const std::string& ) { }
-	virtual void SetInfoPattern (const std::string& ) { }
-	virtual void SetDebugPattern(const std::string& ) { }
-	virtual void SetTracePattern(const std::string& ) { }
-
 };
 
 
 class FixedLayout : public Layout
 {
 public:
-	std::string Format(const LogEvent& lv) override
+	virtual std::string Format(const LogEvent& lv)
 	{
 		std::string msgTypeName = LLtoString(lv.msgLevel);
 
@@ -46,6 +36,5 @@ public:
 		return o.str();
 	}
 };
-*/
 
 LOGENGINE_NS_END

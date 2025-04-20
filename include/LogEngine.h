@@ -10,38 +10,29 @@
 #define LOG_ENGINE_H
 
 #include <string>
-#include <functional>
 #include "Logger.h"
-#include "RotatingFileSink.h"
 
 LOGENGINE_NS_BEGIN
 
 #define APPNAME_PROPERTY  "AppName"
 #define APPVERSION_PROPERTY "AppVersion"
 
-
 void SetProperty(const std::string& name, const std::string& value);
 std::string GetProperty(const std::string& name, const std::string& defaultValue = "");
 bool PropertyExist(const std::string& name);
 
-void ShutdownLoggers();
-uint LoggersCount();
+void ClearLoggers();
+uint GetLoggersCount();
 
 Logger& GetLogger(const std::string& loggerName);
 
-Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName);
-
-Logger& GetRotatingFileLogger(const std::string& loggerName, const std::string& fileName, ullong maxLogSize = DefaultMaxLogSize,
-                        	LogRotatingStrategy strategy = DefaultRotatingStrategy, uint maxBackupIndex = DefaultMaxBackupIndex);
+Logger& GetFileLogger(const std::string& loggerName, const std::string fileName);
 
 Logger& GetStdoutLogger(const std::string& loggerName);
 
 Logger& GetStderrLogger(const std::string& loggerName);
 
-Logger& GetMultiLogger(const std::string& loggerName, SinkList& sinks);
-Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std::shared_ptr<Sink>> list);
-
-Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback& callback);
+Logger& GetMultiLogger(const std::string& loggerName, THArray<Sink*> sinks);
 
 // parameters for loggers
 #define LOGGER_PREFIX  "logger."

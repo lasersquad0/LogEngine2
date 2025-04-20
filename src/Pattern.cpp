@@ -9,7 +9,7 @@ std::string Pattern::Format(const LogEvent& event)
 
 	for (uint i = 0; i < FHolders.Count(); i++)
 	{
-		result.append(FHolders[i]->Format(event));
+		result.append(FHolders[i]->format(event));
 	}
 
 	return result;
@@ -92,16 +92,11 @@ void Pattern::parsePattern(const std::string& pattern)
 
 void Pattern::clearHolders()
 {
-	for (auto hld: FHolders)
-	{
-		delete hld;
-	}
-
-	/*for (uint i = 0; i < FHolders.Count(); i++)
+	for (uint i = 0; i < FHolders.Count(); i++)
 	{
 		Holder* h = FHolders[i];
 		delete h;
-	}*/
+	}
 
 	FHolders.Clear();
 }

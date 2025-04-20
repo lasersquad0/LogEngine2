@@ -128,7 +128,7 @@ void ConfigFileTest::testConfigFile7()
     CPPUNIT_ASSERT_EQUAL(std::string("sink.super.log"), rsink->getFileName());
     CPPUNIT_ASSERT_EQUAL(DefaultMaxBackupIndex, rsink->GetMaxBackupIndex()); 
     CPPUNIT_ASSERT_EQUAL(20*1024*1024ull, rsink->GetMaxLogSize()); 
-    PatternLayout* lay = /*dynamic_cast<PatternLayout*>*/(rsink->GetLayout());
+    PatternLayout* lay = dynamic_cast<PatternLayout*>(rsink->GetLayout());
     CPPUNIT_ASSERT_EQUAL(std::string(DefaultLinePattern), lay->GetAllPatterns());
     CPPUNIT_ASSERT_EQUAL(std::string("! %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
     CPPUNIT_ASSERT_EQUAL(std::string("# %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));
@@ -153,7 +153,7 @@ void ConfigFileTest::testConfigFile8()
     FileSink* fsink = dynamic_cast<FileSink*>(sink);
     CPPUNIT_ASSERT_EQUAL(true, sink == fsink); // check sink type
     CPPUNIT_ASSERT_EQUAL(std::string("sink super.log"), fsink->getFileName());
-    PatternLayout* lay = /*dynamic_cast<PatternLayout*>*/(fsink->GetLayout());
+    PatternLayout* lay = dynamic_cast<PatternLayout*>(fsink->GetLayout());
     CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetAllPatterns());
     CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
     CPPUNIT_ASSERT_EQUAL(std::string("W %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));

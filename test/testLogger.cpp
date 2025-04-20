@@ -287,61 +287,17 @@ void LoggerTest::testLog5()
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5.log"), IOException);
 
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
-	//line below does NOT throw an exception because existing logger will be returned
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
 
 	delete fs1;
 }
 
-void LoggerTest::testLogMultiSink1()
-{
-	auto consoleSink = new LogEngine::StdoutSink("consolesink");
-	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
-
-	auto fileSink = new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt");
-	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
-	
-	LogEngine::Logger logger("multisink", { fileSink, consoleSink, consoleSink, fileSink });
-	logger.SetLogLevel(LogEngine::Levels::llDebug, false); // this log level propagates to all logger sinks
-	logger.Warn("MSG#1: should appear in both console and file one time each");
-}
-
-void LoggerTest::testLogMultiSink2()
-{
-	auto consoleSink = new LogEngine::StdoutSink("consolesink");
-	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
-
-	auto fileSink = new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt");
-	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
-
-	auto& logger = LogEngine::GetMultiLogger("multisink", { fileSink, consoleSink, consoleSink, fileSink });
-	logger.SetLogLevel(LogEngine::Levels::llDebug, false); // this log level propagates to all logger sinks
-	logger.Warn("MSG#2: should appear in both console and file one time each");
-}
-
-void LoggerTest::testLogMultiSink3()
-{
-	auto consoleSink = new LogEngine::StdoutSink("consolesink");
-	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
-
-	auto fileSink = new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt");
-	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
-
-	SinkList slist;
-	slist.AddValue(consoleSink);
-	slist.AddValue(fileSink);
-	slist.AddValue(consoleSink);
-	slist.AddValue(fileSink);
-	auto& logger = LogEngine::GetMultiLogger("multisink", slist);
-	logger.SetLogLevel(LogEngine::Levels::llDebug, false); // this log level propagates to all logger sinks
-	logger.Warn("MSG#3: should appear in both console and file one time each");
-}
 void LoggerTest::testLogStrategyNone()
 {
 	std::string fileName = LOG_FILES_FOLDER "testStrategyNone.log";
 
 	// preparing parameters
-	/*Properties prop;
+	Properties prop;
 	prop.SetValue("ApplicationName", "testLogBackupTypeNone()");
 	prop.SetValue("version", "3.3.3");
 	prop.SetValue("backuptype", "None");
@@ -349,7 +305,7 @@ void LoggerTest::testLogStrategyNone()
 	prop.SetValue("logfilename", fileName);
 	prop.SetValue("InfoLine",  "%TIME% : %MSG%"); // fixed length pattern needed for this test to run properly on Win and Linux
 	prop.SetValue("ErrorLine", "%TIME% : %MSG%"); // fixed length pattern needed for this test to run properly on Win and Linux
-	*/
+
 	
 	remove(fileName.c_str());
 	

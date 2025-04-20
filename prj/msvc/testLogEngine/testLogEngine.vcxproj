@@ -115,8 +115,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
-    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -144,8 +142,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <EnableASAN>
     </EnableASAN>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
-    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

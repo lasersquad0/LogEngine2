@@ -12,7 +12,6 @@
 #include <format>
 #endif
 
-#include <stdarg.h>
 #include <string>
 #include "Common.h"
 #include "FileSink.h"
@@ -30,23 +29,6 @@ struct LoggerThreadInfo
 	Logger* logger;
 };
 
-typedef Sink* SinkPtr;
-typedef THArray<std::shared_ptr<Sink>> SinkList;
-
-// this class avoids having two equal pointers in the list of Sinks
-/*class SinkList : public THArray<SinkPtr>
-{
-public:
-	uint InsertValue(const uint Index, const SinkPtr& Value) override
-	{
-		int res = this->IndexOf(Value);
-		if (res == -1)
-			return THArray<Sink*>::InsertValue(Index, Value);
-		else 
-			return res;
-	}
-};*/
-
 class Logger
 {
 private:
@@ -54,44 +36,30 @@ private:
 	LoggerQueue FQueue;
 	std::thread FThread;
 	Levels::LogLevel FLogLevel;
-	SinkList FSinks;
+	THArray<Sink*> sinks;
 	bool FAsync = false;
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
 	Logger(const std::string& name, Levels::LogLevel ll = LL_DEFAULT) : FName(name), FQueue(10), FLogLevel(ll) {}
-	
-	Logger(const std::string& name, std::initializer_list<std::shared_ptr<Sink>> list, Levels::LogLevel ll = LL_DEFAULT) : Logger(name, ll) //FName(name), FQueue(10), FLogLevel(ll) 
-	{
-		for (auto& item : list) FSinks.AddValue(item);
-	}
 
 	virtual ~Logger() 
 	{ 
 		SetAsyncMode(false); // send stop to async thread and wait till it finishes.  
-		ClearSinks();
-	}
-
-	void ClearSinks()
-	{
-		//for (uint i = 0; i < FSinks.Count(); i++) delete FSinks[i].get();
-		FSinks.Clear();
+		for (uint i = 0; i < sinks.Count(); i++) delete sinks[i]; 
+		sinks.Clear(); 
 	}
 
 	bool ShouldLog(const Levels::LogLevel ll) const { return FLogLevel >= ll; }
 
+	//TODO add parameter "propagate" with this parameter =true SetLogLevel will also set specified log level to all sinks
+	void SetLogLevel(const Levels::LogLevel ll) { FLogLevel = ll; }
 	Levels::LogLevel GetLogLevel() { return FLogLevel; }
-	void SetLogLevel(const Levels::LogLevel ll, bool propagate = true)
-	{ 
-		FLogLevel = ll;
-		if (propagate)
-			for (auto& sk : FSinks) sk->SetLogLevel(ll);
-	}
 
 	bool GetAsyncMode() { return FAsync; }
 	void SetAsyncMode(bool amode)
 	{
-		if (FAsync == amode) return; // mode hasn't changed
+		if (FAsync == amode) return; //mode hasn't changed
 
 		if (amode == true)
 		{
@@ -109,41 +77,7 @@ public:
 			FQueue.PushElement(nullptr);
 			FThread.join(); // waiting till thread finishes
 		}
-	}
 
-	// sets log line pattern for the specified by parameter 'll' log line
-	void SetPattern(const std::string& pattern, Levels::LogLevel ll)
-	{
-		for (auto& sk: FSinks)
-		{
-			sk->SetPattern(pattern, ll);
-		}
-	}
-
-	// sets log line pattern for all log lines
-	void SetPattern(const std::string& pattern)
-	{
-		for (auto& sk : FSinks)
-		{
-			sk->SetPattern(pattern);
-		}
-	}
-
-	// sets log line pattern for all log lines
-	void SetDefaultPattern(Levels::LogLevel ll)
-	{
-		for (auto& sk : FSinks)
-		{
-			sk->SetDefaultPattern(ll);
-		}
-	}
-	// sets log line pattern for all log lines
-	void SetDefaultPattern()
-	{
-		for (auto& sk : FSinks)
-		{
-			sk->SetDefaultPattern();
-		}
 	}
 
 #if defined(WIN32) && _HAS_CXX20==1 && !defined(__BORLANDC__)
@@ -346,7 +280,7 @@ public:
 
 	void SendToAllSinks(const LogEvent& le)
 	{
-		for (auto si : FSinks)
+		for (Sink* si : sinks)
 		{
 			si->PubSendMsg(le);
 		}
@@ -357,28 +291,28 @@ public:
 		//}
 	}
 
-	void AddSink(const std::shared_ptr<Sink>& sink)
+	void AddSink(Sink* sink)
 	{
-		if (FSinks.IndexOf(sink) >= 0) return; // already added
-		FSinks.AddValue(sink);
+		if (sinks.IndexOf(sink) >= 0) return; // already added
+		sinks.AddValue(sink);
 	}
 
 	void RemoveSink(std::string& sinkName)
 	{
-		for (uint i = 0; i < FSinks.Count(); i++)
+		for (uint i = 0; i < sinks.Count(); i++)
 		{
-			if (EqualNCase(FSinks[i]->GetName(), sinkName)) FSinks.DeleteValue(i);
+			if (EqualNCase(sinks[i]->GetName(), sinkName)) sinks.DeleteValue(i);
 		}
 	}
 
 	uint SinkCount()
 	{
-		return FSinks.Count();
+		return sinks.Count();
 	}
 
-	std::shared_ptr<Sink> GetSink(const std::string& sinkName)
+	Sink* GetSink(const std::string& sinkName)
 	{
-		for(auto& si : FSinks)
+		for(Sink* si : sinks)
 		{
 			if (EqualNCase(si->GetName(), sinkName)) return si;
 		}

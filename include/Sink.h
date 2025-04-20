@@ -10,7 +10,7 @@
 
 #include <string>
 #include "LogEvent.h"
-#include "PatternLayout.h"
+#include "Layout.h"
 
 LOGENGINE_NS_BEGIN
 
@@ -18,7 +18,7 @@ class Sink
 {
 protected:
 	std::string FName;
-    PatternLayout* FLayout{nullptr};
+    Layout* FLayout{nullptr};
 	ullong FMessageCounts[(int)Levels::n_LogLevels]{0,0,0,0,0,0};
 	ullong FBytesWritten = 0;
     Levels::LogLevel FLogLevel{LL_DEFAULT};
@@ -28,17 +28,13 @@ protected:
 	virtual void SendMsg(const LogEvent& e) = 0;
 
 public:
-	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FName{ name }, FLogLevel{ ll }, FLayout{new PatternLayout()}
+	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FName{ name }, FLogLevel{ ll } /*, FLayout{new FixedLayout()}*/
 	{
 		//for (uint i = 0; i < n_LogLevels; i++)
 		//	FMessageCounts[i] = 0;
 	}
 
-	virtual ~Sink() 
-	{ 
-		delete FLayout; 
-		FLayout = nullptr; 
-	}
+	virtual ~Sink() { delete FLayout; FLayout = nullptr; }
 
 	virtual void Flush() { /* does nothing here*/ }
 	
@@ -49,24 +45,12 @@ public:
 		SendMsg(e);
 	}
 
-	PatternLayout* GetLayout() { return FLayout; }
-	virtual void SetLayout(PatternLayout* layout)
+	Layout* GetLayout() { return FLayout; }
+	virtual void SetLayout(Layout* layout)
 	{
 		if (layout == nullptr) return; // if layout is null do nothing
 		if (FLayout != nullptr) delete FLayout; //TODO delete FLayout may work when FLayout=nullptr
 		FLayout = layout;
-	}
-
-	// sets log line pattern for the specified by parameter 'll' log line
-	void SetPattern(const std::string& pattern, Levels::LogLevel ll)
-	{
-		FLayout->SetPattern(pattern, ll);
-	}
-
-	// sets log line pattern for all log lines
-	void SetPattern(const std::string& pattern)
-	{
-		FLayout->SetAllPatterns(pattern);
 	}
 
 	virtual std::string FormatString(const LogEvent& e)
@@ -75,18 +59,6 @@ public:
 		FMessageCounts[e.msgLevel]++;
 	
 		return str;
-	}
-
-	// sets log line pattern for the specified by parameter 'll' log line
-	void SetDefaultPattern(Levels::LogLevel ll)
-	{
-		FLayout->SetDefaultPattern(ll);
-	}
-
-	// sets log line pattern for all log lines
-	void SetDefaultPattern()
-	{
-		FLayout->SetAllDefaultPatterns();
 	}
 
 	/**

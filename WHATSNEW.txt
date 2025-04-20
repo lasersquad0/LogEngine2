@@ -1,9 +1,10 @@
 **************************************************************************
-Project name:                           LogEngine2
+Project name:                           LogEngine
 
 Resources: 
     Programmers     Andrey Romanchenko <lasersquad@tut.by>
-               
+                    Artiom Morozov     <cyanne@users.sourceforge.net>
+
 Description: 
   A list of changes, additionals and fixes sorted by the date. See ChangeLog file
   for a list of main changes grouped by version.
