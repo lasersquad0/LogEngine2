@@ -21,7 +21,7 @@ LOGENGINE_NS_BEGIN
 enum TFileMode { fmRead, fmWrite, fmReadWrite, fmWriteTrunc };
 enum TSeekMode { smFromBegin, smFromEnd, smFromCurrent };
 
-#define IO_EXCEPTION_PREFIX "LogException : "
+#define IO_EXCEPTION_PREFIX "IOException : "
 
 class IOException : public std::exception
 {
