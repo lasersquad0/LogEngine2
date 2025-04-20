@@ -113,7 +113,7 @@ public:
 		while (!std::getline(fin, line).fail())
 		{
 			/* if the beginning of line contains a # or ; then it is a comment
-			if we don't find = int the line we assume that entire line is a parameter name with empty value
+			if we don't find = in the line we assume that entire line is a parameter name with empty value
 			lines containing spaces and tabs only are bypassed (empty lines)
 			*/
 
@@ -128,7 +128,7 @@ public:
 					FInidata.SetValue(section);
 
 				length = line.find(']');
-				section = line.substr(1, length - 1); // name of the section
+				section = trimSPCRLF(line.substr(1, length - 1)); // name of the section
 				paramCount = 0; // reset parameters counter for the section
 				continue;
 			}
@@ -147,7 +147,7 @@ public:
 				rightSide = line.substr(length + 1, line.size() - length);
 			}
 
-			SetValue(trimSPCRLF(section), trimSPCRLF(leftSide), trimSPCRLF(rightSide)); // trimSPCRLF is required here for Linux since its \n and \r differ from Windows.
+			SetValue(section, trimSPCRLF(leftSide), trimSPCRLF(rightSide)); // trimSPCRLF is required here for Linux since its \n and \r differ from Windows.
 			paramCount++;
 		}
 

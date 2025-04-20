@@ -24,7 +24,7 @@ LOGENGINE_NS_BEGIN
 class Holder
 {
 public:
-	virtual std::string format(const LogEvent& event) = 0;
+	virtual std::string Format(const LogEvent& event) = 0;
 	virtual ~Holder() {}
 };
 
@@ -33,7 +33,7 @@ public:
 class DateHolder : public Holder
 {
 public:
-	std::string format(const LogEvent& event) override
+	std::string Format(const LogEvent& event) override
 	{
 		char ss[STRFTIME_SIZE];
 		std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y", &event.tmtime);
@@ -44,7 +44,7 @@ public:
 class TimeHolder : public Holder
 {
 public:
-	std::string format(const LogEvent& event) override
+	std::string Format(const LogEvent& event) override
 	{
 		char ss[STRFTIME_SIZE];
 		std::strftime(ss, STRFTIME_SIZE, "%X", &event.tmtime);
@@ -55,7 +55,7 @@ public:
 class DateTimeHolder : public Holder
 {
 public:
-	std::string format(const LogEvent& event) override
+	std::string Format(const LogEvent& event) override
 	{
 		char ss[STRFTIME_SIZE];
 		std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y %X", &event.tmtime);
@@ -66,13 +66,13 @@ public:
 class MessageHolder : public Holder
 {
 public:
-	std::string format(const LogEvent& event) override { return event.message; }
+	std::string Format(const LogEvent& event) override { return event.message; }
 };
 
 class ThreadHolder : public Holder
 {
 public:
-	std::string format(const LogEvent& event) override { return IntToStr(event.threadID/*, 4*/); }
+	std::string Format(const LogEvent& event) override { return IntToStr(event.threadID/*, 4*/); }
 };
 
 class AppNameHolder : public Holder
@@ -81,7 +81,7 @@ private:
 	std::string appName;
 public:
 	AppNameHolder(const std::string& aname) { this->appName = aname; }
-	std::string format(const LogEvent&) override { return appName; }
+	std::string Format(const LogEvent&) override { return appName; }
 };
 
 class AppVersionHolder : public Holder
@@ -91,7 +91,7 @@ private:
 public:
 	AppVersionHolder(const std::string& ver) { this->version = ver; }
 
-	std::string format(const LogEvent&) override { return version; }
+	std::string Format(const LogEvent&) override { return version; }
 };
 
 class LiteralHolder : public Holder
@@ -100,20 +100,19 @@ private:
 	std::string value;
 public:
 	LiteralHolder(std::string& val) { this->value = val; }
-	std::string format(const LogEvent&) { return value; }
+	std::string Format(const LogEvent&) override { return value; }
 };
 
 class LogLevelHolder : public Holder
 {
 public:
-	std::string format(const LogEvent& event) { return LLtoCapsString(event.msgLevel); }
+	std::string Format(const LogEvent& event) override { return LLtoCapsString(event.msgLevel); }
 };
-
 
 class OSHolder : public Holder
 {
 public:
-	std::string format(const LogEvent&)
+	std::string Format(const LogEvent&) override
 	{
 #ifdef WIN32
 		DWORD OSMajorVer = 6, OSMinorVer = 3, SPMajorVer = 0, SPMinorVer = 0;
@@ -132,7 +131,7 @@ public:
 class OSVersionHolder : public Holder
 {
 public:
-	std::string format(const LogEvent&) //TODO may be cache OSVersion info??? to void calling GetProjectInfo() too offten
+	std::string Format(const LogEvent&) override //TODO may be cache OSVersion info??? to void calling GetProjectInfo() too offten
 	{
 #ifdef WIN32
 		const auto system = L"kernel32.dll";
@@ -199,7 +198,7 @@ public:
 class Pattern
 {
 protected:
-	THArray<Holder*> FHolders; // container of pointers is required here to support proper virtual "->format()" calls 
+	THArray<Holder*> FHolders; // container of pointers is required here to support proper virtual "->Format()" calls 
 	std::string FPattern;
 	void parsePattern(const std::string& pattern);
 	void clearHolders();
