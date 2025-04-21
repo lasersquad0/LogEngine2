@@ -28,7 +28,7 @@ void LoggerTest::setUp()
 
 void LoggerTest::tearDown()
 {
-	ClearLoggers();
+	ShutdownLoggers();
 	// free memory allocated in setUp, do other things
 }
 
@@ -56,7 +56,7 @@ void LoggerTest::testLog0()
 void LoggerTest::testLog1()
 {
 	Logger& logger = GetLogger("def");
-	StringSink* sink = new StringSink("strsink");
+	std::shared_ptr<StringSink> sink(new StringSink("strsink"));
 	logger.AddSink(sink);
 
 	std::string s;
@@ -100,7 +100,7 @@ void LoggerTest::testLog2()
 {
 //#if defined(WIN32) && !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog2");
-	StringSink* sink = new StringSink("strsink");
+	std::shared_ptr<StringSink> sink(new StringSink("strsink"));
 	logg.AddSink(sink);
 
 	std::string s;
@@ -142,8 +142,8 @@ void LoggerTest::testLog3()
 {
 #if defined(WIN32) && !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog3");
-	StringSink* sink1 = new StringSink("strsink1");
-	StringSink* sink2 = new StringSink("strsink2");
+	std::shared_ptr<StringSink>sink1(new StringSink("strsink1"));
+	std::shared_ptr<StringSink>sink2(new StringSink("strsink2"));
 	logg.AddSink(sink1);
 	logg.AddSink(sink2);
 
@@ -207,9 +207,9 @@ void LoggerTest::testLog4()
 {
 	Logger& logg = GetLogger("testLog4");
 	logg.SetLogLevel(Levels::llInfo);
-	StringSink* sink1 = new StringSink("strsink1");
+	std::shared_ptr<StringSink> sink1(new StringSink("strsink1"));
 	sink1->SetLogLevel(Levels::llError);
-	StringSink* sink2 = new StringSink("strsink2");
+	std::shared_ptr<StringSink> sink2(new StringSink("strsink2"));
 	sink2->SetLogLevel(Levels::llDebug);
 	logg.AddSink(sink1);
 	logg.AddSink(sink2);
@@ -295,10 +295,10 @@ void LoggerTest::testLog5()
 
 void LoggerTest::testLogMultiSink1()
 {
-	auto consoleSink = new LogEngine::StdoutSink("consolesink");
+	std::shared_ptr<Sink> consoleSink(new LogEngine::StdoutSink("consolesink"));
 	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
 
-	auto fileSink = new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt");
+	std::shared_ptr<Sink> fileSink(new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt"));
 	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
 	
 	LogEngine::Logger logger("multisink", { fileSink, consoleSink, consoleSink, fileSink });
@@ -308,10 +308,10 @@ void LoggerTest::testLogMultiSink1()
 
 void LoggerTest::testLogMultiSink2()
 {
-	auto consoleSink = new LogEngine::StdoutSink("consolesink");
+	std::shared_ptr<Sink> consoleSink(new LogEngine::StdoutSink("consolesink"));
 	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
 
-	auto fileSink = new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt");
+	std::shared_ptr<Sink> fileSink(new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt"));
 	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
 
 	auto& logger = LogEngine::GetMultiLogger("multisink", { fileSink, consoleSink, consoleSink, fileSink });
@@ -321,10 +321,10 @@ void LoggerTest::testLogMultiSink2()
 
 void LoggerTest::testLogMultiSink3()
 {
-	auto consoleSink = new LogEngine::StdoutSink("consolesink");
+	std::shared_ptr<Sink>consoleSink(new LogEngine::StdoutSink("consolesink"));
 	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
 
-	auto fileSink = new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt");
+	std::shared_ptr<Sink> fileSink(new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt"));
 	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
 
 	SinkList slist;
@@ -354,7 +354,7 @@ void LoggerTest::testLogStrategyNone()
 	remove(fileName.c_str());
 	
 	Logger& logger = GetLogger("StrategyNone");
-	auto rsink = new RotatingFileSink("rsNone", fileName, 1024, rsNone);
+	std::shared_ptr<RotatingFileSink> rsink(new RotatingFileSink("rsNone", fileName, 1024, rsNone));
 	auto layout = new PatternLayout();
 	layout->SetAllPatterns("%TIME% : %MSG%");
 	rsink->SetLayout(layout);
@@ -400,7 +400,7 @@ void LoggerTest::testLogStrategySingle()
 	remove((fileName + BackupExt).c_str());
 
 	Logger& logger = GetLogger("StrategySingle");
-	auto rsink = new RotatingFileSink("rsSingle", fileName, 1024, rsSingle);
+	std::shared_ptr<RotatingFileSink> rsink(new RotatingFileSink("rsSingle", fileName, 1024, rsSingle));
 	auto layout = new PatternLayout();
 	layout->SetAllPatterns("%TIME% : %MSG%");
 	rsink->SetLayout(layout);
@@ -447,7 +447,7 @@ void LoggerTest::testLogStrategyTimeStamp()
 	remove(fileName.c_str());
 	
 	Logger& logger = GetLogger("StrategyTimeStamp");
-	auto rsink = new RotatingFileSink("rsTimeStamp", fileName, 1024, rsTimeStamp);
+	std::shared_ptr<RotatingFileSink> rsink(new RotatingFileSink("rsTimeStamp", fileName, 1024, rsTimeStamp));
 	auto layout = new PatternLayout();
 	layout->SetAllPatterns("%TIME% : %MSG%");
 	rsink->SetLayout(layout);
@@ -491,7 +491,7 @@ void LoggerTest::testLogStrategyBakNumber()
 	remove(fileName.c_str());
 
 	Logger& logger = GetLogger("StrategyBakNumber");
-	auto rsink = new RotatingFileSink("rsNumbers", fileName, 1024, rsNumbers);
+	std::shared_ptr<RotatingFileSink> rsink(new RotatingFileSink("rsNumbers", fileName, 1024, rsNumbers));
 	auto layout = new PatternLayout();
 	layout->SetAllPatterns("%TIME% : %MSG%");
 	rsink->SetLayout(layout);
@@ -557,7 +557,7 @@ void LoggerTest::testLogStatistic()
 {
 	Logger& log = GetLogger("testLogStatistic");
 	log.SetLogLevel(Levels::llTrace);
-	auto fsink = new FileSink("fsink", "testLogStatistic.log");
+	std::shared_ptr<FileSink> fsink(new FileSink("fsink", "testLogStatistic.log"));
 	fsink->SetLogLevel(Levels::llTrace);
 	log.AddSink(fsink);
 
