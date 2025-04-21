@@ -32,6 +32,11 @@ class UtilsTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testExtractFileDir2);
   CPPUNIT_TEST(testExtractFileDir3);
   CPPUNIT_TEST(testExtractFileDir4);
+  CPPUNIT_TEST(testExtractFileExt1);
+  CPPUNIT_TEST(testExtractFileExt2);
+  CPPUNIT_TEST(testExtractFileExt3);
+  CPPUNIT_TEST(testExtractFileExt4);
+
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();
@@ -58,6 +63,10 @@ public:
     void testExtractFileDir2();
     void testExtractFileDir3();
     void testExtractFileDir4();
+    void testExtractFileExt1();
+    void testExtractFileExt2();
+    void testExtractFileExt3();
+    void testExtractFileExt4();
 };
 
 #endif // UTIL_TESTS_HEADER

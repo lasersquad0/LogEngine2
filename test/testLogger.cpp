@@ -34,28 +34,29 @@ void LoggerTest::tearDown()
 
 void LoggerTest::testLog0()
 {
-	Logger& logger1 = GetStdoutLogger("stdout");
+	Logger& logger1 = GetStdoutLogger("mystdout");
 
 	logger1.Error("int:" + IntToStr((int)sizeof(int)));
 	logger1.Warn("long:" + IntToStr((int)sizeof(long)));
 	logger1.Info("long int:" + IntToStr((int)sizeof(long int)));
 
-	Logger& logger2 = GetStderrLogger("stderr");
+	Logger& logger2 = GetStderrLogger("mystderr");
 
 	logger2.Error("long long:" + IntToStr((int)sizeof(long long)));
 	logger2.Warn("int long:" + IntToStr((int)sizeof(int long)));
 	logger2.Info("long long int:" + IntToStr((int)sizeof(long long int)));
 
-	Logger& logger3 = GetFileLogger("filelogger", LOG_FILES_FOLDER "testLog0.log");
+	Logger& logger3 = GetFileLogger("myfilelogger", LOG_FILES_FOLDER "testLog0.log");
 
 	logger3.Error("error logger msg");
 	logger3.Warn("warn logger msg");
 	logger3.Info("info logger msg");
 }
 
+// testing logger with StringSink 
 void LoggerTest::testLog1()
 {
-	Logger& logger = GetLogger("def");
+	Logger& logger = GetLogger("def"); // get "empty" logger (logger without any sinks)
 	std::shared_ptr<StringSink> sink(new StringSink("strsink"));
 	logger.AddSink(sink);
 
@@ -96,6 +97,7 @@ void LoggerTest::testLog1()
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(""), cutLog(s));
 }
 
+// testing logger with StringSink 
 void LoggerTest::testLog2()
 {
 //#if defined(WIN32) && !defined(__BORLANDC__)
@@ -138,6 +140,7 @@ void LoggerTest::testLog2()
 //#endif
 }
 
+// testing logger with StringSink 
 void LoggerTest::testLog3()
 {
 #if defined(WIN32) && !defined(__BORLANDC__)
@@ -203,6 +206,7 @@ void LoggerTest::testLog3()
 #endif
 }
 
+// testing logger with StringSink 
 void LoggerTest::testLog4()
 {
 	Logger& logg = GetLogger("testLog4");
@@ -293,15 +297,17 @@ void LoggerTest::testLog5()
 	delete fs1;
 }
 
+// various scenarios when one logger contains different sinks including duplicates
 void LoggerTest::testLogMultiSink1()
 {
 	std::shared_ptr<Sink> consoleSink(new LogEngine::StdoutSink("consolesink"));
-	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
+	consoleSink->SetPattern("[testLogMultiSink][consolesink] %loglevel% %Msg%");
 
 	std::shared_ptr<Sink> fileSink(new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt"));
-	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
+	fileSink->SetPattern("[testLogMultiSink][filesink] [%loglevel%] [%Msg%]");
 	
-	LogEngine::Logger logger("multisink", { fileSink, consoleSink, consoleSink, fileSink });
+	LogEngine::Logger logger("multisink", { fileSink, consoleSink, consoleSink, fileSink }); // actually two sinks are added to the logger instead to four
+	CPPUNIT_ASSERT_EQUAL(uint(2), logger.SinkCount());
 	logger.SetLogLevel(LogEngine::Levels::llDebug, false); // this log level propagates to all logger sinks
 	logger.Warn("MSG#1: should appear in both console and file one time each");
 }
@@ -309,23 +315,27 @@ void LoggerTest::testLogMultiSink1()
 void LoggerTest::testLogMultiSink2()
 {
 	std::shared_ptr<Sink> consoleSink(new LogEngine::StdoutSink("consolesink"));
-	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
+	consoleSink->SetPattern("[testLogMultiSink][consolesink] %loglevel% %Msg%");
 
-	std::shared_ptr<Sink> fileSink(new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt"));
-	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
+	std::shared_ptr<Sink> stdoutSink(new LogEngine::StdoutSink("stdoutsink"));
+	stdoutSink->SetPattern("[testLogMultiSink][stdoutsink] [%loglevel%] [%Msg%]");
 
-	auto& logger = LogEngine::GetMultiLogger("multisink", { fileSink, consoleSink, consoleSink, fileSink });
+	std::shared_ptr<Sink> errSink(new LogEngine::StderrSink("ERRsink"));
+	errSink->SetPattern("[testLogMultiSink][ERRsink] (%loglevel%) [%Msg%]");
+
+	auto& logger = LogEngine::GetMultiLogger("multisink", { stdoutSink, errSink, consoleSink, consoleSink, errSink, stdoutSink });
+	CPPUNIT_ASSERT_EQUAL(uint(3), logger.SinkCount());
 	logger.SetLogLevel(LogEngine::Levels::llDebug, false); // this log level propagates to all logger sinks
-	logger.Warn("MSG#2: should appear in both console and file one time each");
+	logger.Warn("MSG#2: should appear in all three sinks: console, stdout and stderr by one time each.");
 }
 
 void LoggerTest::testLogMultiSink3()
 {
 	std::shared_ptr<Sink>consoleSink(new LogEngine::StdoutSink("consolesink"));
-	consoleSink->SetPattern("[testLogMultiSink] %loglevel% %Msg%");
+	consoleSink->SetPattern("[testLogMultiSink][consolesink] %loglevel% %Msg%");
 
 	std::shared_ptr<Sink> fileSink(new LogEngine::FileSink("filesink", LOG_FILES_FOLDER "multisink.txt"));
-	fileSink->SetPattern("[testLogMultiSink] [%loglevel%] [%Msg%]");
+	fileSink->SetPattern("[testLogMultiSink][filesink] [%loglevel%] [%Msg%]");
 
 	SinkList slist;
 	slist.AddValue(consoleSink);
@@ -333,6 +343,7 @@ void LoggerTest::testLogMultiSink3()
 	slist.AddValue(consoleSink);
 	slist.AddValue(fileSink);
 	auto& logger = LogEngine::GetMultiLogger("multisink", slist);
+	CPPUNIT_ASSERT_EQUAL(uint(2), logger.SinkCount());
 	logger.SetLogLevel(LogEngine::Levels::llDebug, false); // this log level propagates to all logger sinks
 	logger.Warn("MSG#3: should appear in both console and file one time each");
 }
@@ -409,7 +420,7 @@ void LoggerTest::testLogStrategySingle()
 	CPPUNIT_ASSERT_EQUAL(1024ull, rsink->GetMaxLogSize());
 	CPPUNIT_ASSERT_EQUAL(rsSingle, rsink->GetStrategy());
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetBytesWritten());
-	//CPPUNIT_ASSERT_EQUAL(79ul, log->GetTotalBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL(0ull, logger->GetTotalBytesWritten());
 	CPPUNIT_ASSERT_EQUAL(false , std::filesystem::exists(fileName + BackupExt));
 	
 	while (true)
@@ -442,7 +453,7 @@ void LoggerTest::testLogStrategySingle()
 
 void LoggerTest::testLogStrategyTimeStamp()
 {
-	std::string fileName = LOG_FILES_FOLDER "testStrategyTimeStamp.log";
+	std::string fileName = LOG_FILES_FOLDER "testStrategyTimeStamp.txt"; //nonstandard file extension, should be preserved in timestamp files
 
 	remove(fileName.c_str());
 	

@@ -232,3 +232,76 @@ void UtilsTest::testExtractFileDir4()
 	s = ExtractFileDir("\\");
 	CPPUNIT_ASSERT_EQUAL(std::string("\\"), s);
 }
+
+void UtilsTest::testExtractFileExt1()
+{
+	std::string s = ExtractFileExt("");
+	CPPUNIT_ASSERT_EQUAL(std::string{ "" }, s);
+
+	s = ExtractFileExt("a");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = ExtractFileExt("/");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = ExtractFileExt("\\");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+}
+
+void UtilsTest::testExtractFileExt2()
+{
+	std::string s = ExtractFileExt("\\sssss.ss\\dsd\\ffffff");
+	CPPUNIT_ASSERT_EQUAL(std::string{ "" }, s);
+
+	s = ExtractFileExt("\\ffffff.");
+	CPPUNIT_ASSERT_EQUAL(std::string{ "." }, s);
+
+	s = ExtractFileExt("\\sssss.ss\\dsd\\ffffff.a");
+	CPPUNIT_ASSERT_EQUAL(std::string{ ".a" }, s);
+
+	s = ExtractFileExt("\\sssss.ss\\dsd\\a. rrffffff ");
+	CPPUNIT_ASSERT_EQUAL(std::string{ ". rrffffff " }, s);
+}
+
+void UtilsTest::testExtractFileExt3()
+{
+	std::string s = ExtractFileExt("/gfg/dffff/");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = ExtractFileExt("/gfg/dffff\\");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = ExtractFileExt("/gfg/dffff");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = ExtractFileExt("/gfg\\dffff");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = ExtractFileExt(".dffff");
+	CPPUNIT_ASSERT_EQUAL(std::string(".dffff"), s);
+
+	s = ExtractFileExt("c:/gfg/d4444.rrr.ttt.y");
+	CPPUNIT_ASSERT_EQUAL(std::string(".y"), s);
+
+	s = ExtractFileExt("c:/gfg/d4444.rrr.Ttt");
+	CPPUNIT_ASSERT_EQUAL(std::string(".Ttt"), s);
+
+	s = ExtractFileExt("c:/gfg/d4444.rrr.ttt..");
+	CPPUNIT_ASSERT_EQUAL(std::string("."), s);
+}
+
+void UtilsTest::testExtractFileExt4()
+{
+	std::string s = ExtractFileExt("app.log.fgh");
+	CPPUNIT_ASSERT_EQUAL(std::string(".fgh"), s);
+
+	s = ExtractFileExt("/app.log.fgh..f");
+	CPPUNIT_ASSERT_EQUAL(std::string(".f"), s);
+
+	s = ExtractFileExt("a.b/");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+
+	s = ExtractFileExt("1234");
+	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
+}
+

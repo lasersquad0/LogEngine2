@@ -11,7 +11,7 @@
 class ThreadLogTest : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( ThreadLogTest );
- // CPPUNIT_TEST( testCallLogFromManyThreads );
+  CPPUNIT_TEST( testCallLogFromManyThreads );
   CPPUNIT_TEST(testAsyncLog1);
   CPPUNIT_TEST(testThreadLogMeasureTime1);
   CPPUNIT_TEST(testNONThreadLogMeasureTime1);
@@ -20,7 +20,7 @@ public:
 	void setUp();
     void tearDown();
 
-    //void testCallLogFromManyThreads();
+    void testCallLogFromManyThreads();
     void testAsyncLog1();
     void testThreadLogMeasureTime1();
     void testNONThreadLogMeasureTime1();

@@ -9,6 +9,8 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( ThreadLogTest );
 
+using namespace LogEngine;
+
 void ThreadLogTest::setUp ()
 {
 
@@ -16,10 +18,8 @@ void ThreadLogTest::setUp ()
 
 void ThreadLogTest::tearDown ()
 {
-    // free memory allocated in setUp, do other things
+	ShutdownLoggers();
 }
-
-using namespace LogEngine;
 
 struct ThreadInfoStruct
 {
@@ -35,7 +35,7 @@ int testThreadProc(void* param)
 	if(!log)
 	    return 0; // <<< unused, so 0. (void*) 1 looks silly =)
 
-	while (!info->begin)
+	while (!info->begin) // waiting for begin
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	
 	std::string s = IntToStr(GetThreadID());
@@ -46,25 +46,20 @@ int testThreadProc(void* param)
 	log->Debug(s + " is executing 5.");
 	log->Trace(s + " is executing 6.");
 
-	log->LogFmt("{} is executing {}.", Levels::llCritical, GetThreadID(), "11");
-	log->LogFmt("{} is executing {}.", Levels::llError, GetThreadID(), "22");
-	log->LogFmt("{} is executing {}.", Levels::llWarning, GetThreadID(), "33");
-	log->LogFmt("{} is executing {}.", Levels::llInfo,GetThreadID(), "44");
-	log->LogFmt("{} is executing {}.", Levels::llDebug, GetThreadID(), "55");
-	log->LogFmt("{} is executing {}.", Levels::llTrace, GetThreadID(), "66");
+	log->CritFmt("{} is executing {}.", GetThreadID(), "11");
+	log->ErrorFmt("{} is executing {}.", GetThreadID(), "22");
+	log->WarnFmt("{} is executing {}.", GetThreadID(), "33");
+	log->LogFmt(Levels::llInfo, "{} is executing {}.", GetThreadID(), "44");
+	log->LogFmt(Levels::llDebug, "{} is executing {}.", GetThreadID(), "55");
+	log->LogFmt(Levels::llTrace, "{} is executing {}.", GetThreadID(), "66");
 
 	return 0;
 }
 
 #define nthreads 10
-/*
+
 void ThreadLogTest::testCallLogFromManyThreads()
 {
-	//Properties prop;
-	//prop.SetValue("LogFileName", LOG_FILES_FOLDER "ThreadsLog.log");
-	//prop.SetValue("ApplicationName", "testCallLogFromManyThreads");
-	//InitLogEngine(prop);
-
 	Logger& logger = GetFileLogger("testCallLogFromManyThreads", LOG_FILES_FOLDER "testCallLogFromManyThreads.log");
 	
 	logger.Info("begin creating threads");
@@ -79,15 +74,15 @@ void ThreadLogTest::testCallLogFromManyThreads()
 	//THREAD_TYPE hThread;
 
 	ThreadInfoStruct info = { &logger, false };
-
+	
+	logger.Info("Creating threads");
+	
 	for(uint i = 0; i < nthreads; i++)
 	{
-		logger.Info("Creating threads");
-
 		std::thread* thr = new std::thread(testThreadProc, &info);
 		threads.AddValue(thr);
 
-		logger.LogFmt("Created thread #{}", Levels::llInfo, thr->get_id());
+		logger.InfoFmt("Created thread #{}", GetThreadID(thr->get_id()));
 	}
 
 	logger.Info("all threads created");
@@ -110,15 +105,10 @@ void ThreadLogTest::testCallLogFromManyThreads()
 		delete threads[i];
 	}
 }
-*/
+
 
 void ThreadLogTest::testAsyncLog1()
 {
-	//Properties prop;
-	//prop.SetValue("LogFileName", LOG_FILES_FOLDER "ThreadedLog.log");
-	//prop.SetValue("Threaded", "trUe");
-	//InitLogEngine(prop);
-
 	Logger& log = GetFileLogger("testAsyncLog1", LOG_FILES_FOLDER "testAsyncLog1.log");
 	
 	std::string str("main thread ID: "); 
