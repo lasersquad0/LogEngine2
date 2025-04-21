@@ -63,11 +63,11 @@ public:
 	
 	Logger(const std::string& name, std::initializer_list<std::shared_ptr<Sink>> list, Levels::LogLevel ll = LL_DEFAULT) : Logger(name, ll) //FName(name), FQueue(10), FLogLevel(ll) 
 	{
-		for (auto& item : list) FSinks.AddValue(item);
+		for (auto& item : list) AddSink(item);
 	}
 
-	virtual ~Logger() 
-	{ 
+	virtual ~Logger()
+	{
 		SetAsyncMode(false); // send stop to async thread and wait till it finishes.  
 		ClearSinks();
 	}
