@@ -28,7 +28,7 @@ Each configuration generates .lib file with unique names (like ```LogEngine2_64.
 You can also look at folders [prj/msvc/testLogEngine](prj/msvc/testLogEngine) (or [prj/Builder/testLogEngine2](prj/Builder/testLogEngine2)) for the projects with examples how to use LogEngine2 library.
 
 #### Other systems
-For other systems see ```INSTALL``` txt file for details.
+For other systems see [INSTALL](INSTALL) text file for details.
 
 ## Platforms
 * Windows (Visual Studio 2022)
