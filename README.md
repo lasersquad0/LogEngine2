@@ -25,7 +25,7 @@ Open this MSVC project [LogEngine.vcproj](prj/msvc/LogEngine/LogEngine.vcproj) i
 It has several predefined configurations like Debug, Release and others. You can build either one you need. 
 Each configuration generates .lib file with unique names (like ```LogEngine2_64.lib``` for Release or ```LogEngine2d_64.lib``` for Debug).
 
-You can also look at folders [prj/msvc/testLogEngine](prj/msvc/testLogEngine) (or [prj/Builder6/testLogEngine](prj/Builder6/testLogEngine)) for the projects with examples how to use LogEngine2 library.
+You can also look at folders [prj/msvc/testLogEngine](prj/msvc/testLogEngine) (or [prj/Builder/testLogEngine](prj/Builder/testLogEngine)) for the projects with examples how to use LogEngine2 library.
 
 #### Other systems
 For other systems see ```INSTALL``` txt file for details.
