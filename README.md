@@ -21,9 +21,11 @@ Current maintainer: lasersquad@gmail.com.
 
 ## Install
 #### Microsoft Windows
-Use MSVC project from ```prj/msvc/LogEngine/``` folder to build ```LogEngine2_64.lib``` (or ```LogEngine2d_64.lib``` for Debug configuration).
+Use MSVC project from here ```prj/msvc/LogEngine/LogEngine.vcproj```.
+There are several predefined configurations like Debug, Release and others. You can build either one you need. 
+Each configuration generates .lib file with unique names (like ```LogEngine2_64.lib``` for Release or ```LogEngine2d_64.lib``` for Debug).
 
-See ```prj/msvc/testLogEngine``` (or ```prj/Builder6/testLogEngine```) for examples how to use LogEngine2.
+Also see ```prj/msvc/testLogEngine``` (or ```prj/Builder6/testLogEngine```) projects for examples how to use LogEngine2 library.
 
 #### Other systems
 For other systems see ```INSTALL``` txt file for details.
