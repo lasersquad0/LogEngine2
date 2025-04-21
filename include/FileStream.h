@@ -75,7 +75,7 @@ public:
 	TStream& operator <<(const W& Value)
 	{
 		//static_assert(std::is_integral<W>::value || std::is_floating_point<W>::value); // template works only for integral types + float types
-		
+
 		if constexpr (std::is_integral<W>::value || std::is_floating_point<W>::value)
 		{
 			Write(&Value, sizeof(Value));
@@ -90,9 +90,9 @@ public:
 		{
 		}*/
 		else if constexpr (std::is_base_of<std::basic_string<typename W::value_type, typename W::traits_type>, W>::value)
-		{			
+		{
 			Write(Value.data(), Value.size() * sizeof(W::value_type));
-			
+
 			W endL;
 			BUILD_ENDL(endL);
 			Write(endL.data(), endL.size() * sizeof(W::value_type));
@@ -126,7 +126,7 @@ public:
 	{
 		// check if class R is instantiation or descendant of std::basic_string
 		static_assert(std::is_base_of<std::basic_string<typename R::value_type, typename R::traits_type>, R>::value);
-	
+
 		R value;
 		do
 		{
@@ -160,10 +160,11 @@ public:
 class TMemoryStream : public TStream
 {
 private:
+	using pos_type = size_t;
 	uint8_t* FMemory = nullptr;
-	size_t FSize = 0;
-	size_t FRPos = 0;
-	size_t FWPos = 0;
+	pos_type FSize = 0;
+	pos_type FRPos = 0;
+	pos_type FWPos = 0;
 	bool FNeedFree = true;
 
 	void ResetPos();
@@ -174,8 +175,8 @@ public:
 	int Read(void* Buffer, size_t Size) override;
 	size_t Write(const void* Buffer, const size_t Size) override;
 	size_t Length() override { return FSize; }
-	off_t SeekR(const off_t Offset, const TSeekMode sMode);
-	off_t SeekW(const off_t Offset, const TSeekMode sMode);
+	pos_type SeekR(const off_t Offset, const TSeekMode sMode);
+	pos_type SeekW(const off_t Offset, const TSeekMode sMode);
 
 	void SetBuffer(uint8_t* Buffer, size_t Size);
 	void UnsetBuffer();

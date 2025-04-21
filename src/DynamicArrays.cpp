@@ -249,15 +249,15 @@ uint THArrayStringFix::AddChars(const void *pValue, const uint len)
 	uint i;
 	char* b;
 
-	b = (char*)malloc(data.GetItemSize());
+	b = static_cast<char*>(malloc(data.GetItemSize()));
 	memset(b, 0, data.GetItemSize());
 
 	i = valuemin(len, data.GetItemSize());
 
 #ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400  // less than VS2005
-    strncpy_s(b, i, (const char*)pValue, i);
+	strncpy_s(b, i, static_cast<const char*>(pValue), i);
 #else
-    strncpy(b, (char *)pValue, i);    
+	strncpy(b, static_cast<char*>(pValue), i);
 #endif
 
 	i = data.Add(b);

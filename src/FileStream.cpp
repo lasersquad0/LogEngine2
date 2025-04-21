@@ -34,7 +34,7 @@ int TStream::ReadChar()
 	char c;
 	if (Read(&c, sizeof(c)) == sizeof(char)) // in case of error Read() throws an exception
 		return c;
-	else 
+	else
 		return -1; // EOF reached
 }
 
@@ -51,7 +51,7 @@ int TStream::ReadWChar()
 void TStream::operator >>(string& Value)
 {
 	Value.clear();
-	do 
+	do
 	{
 		int c = ReadChar();
 		if (c == EndLineChar)
@@ -160,32 +160,36 @@ T check_range(const T& start, const T& end, const T& offset)
 	return (start + offset < 0) ? 0 : (start + offset > end) ? end : (start + offset);
 }
 
-#define CHECK_RANGE(start, end, offset) check_range((start), (end), (offset)) 
-#define CHECK_RANGE_OFF_T(start, end, offset) check_range(static_cast<off_t>(start), static_cast<off_t>(end), (offset)) 
+//#define CHECK_RANGE(start, end, offset) check_range((start), (end), (offset))
+#define CHECK_RANGE_OFF_T(start, end, offset) static_cast<pos_type>(check_range(static_cast<off_t>(start), static_cast<off_t>(end), (offset)))
 
 
-off_t TMemoryStream::SeekR(const off_t Offset, const TSeekMode sMode)
+TMemoryStream::pos_type TMemoryStream::SeekR(const off_t Offset, const TSeekMode sMode)
 {
 	switch (sMode)
 	{
-	case smFromBegin:  FRPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return static_cast<off_t>(FRPos);  //(Offset < 0) ? 0 : (Offset > FSize) ? FSize : Offset; return static_cast<off_t>(FRPos);
-	case smFromEnd:    FRPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return static_cast<off_t>(FRPos); //(Offset > FSize) ? 0 : FSize - Offset; return static_cast<off_t>(FRPos);
-	case smFromCurrent:FRPos = CHECK_RANGE_OFF_T(FRPos, FSize,  Offset); return static_cast<off_t>(FRPos);   //(static_cast<off_t>(FRPos) + Offset < 0) ? 0 : (FRPos + Offset > FSize) ? FSize : FRPos + Offset; return static_cast<off_t>(FRPos);
-	default:
-		return -1l;
+	case smFromBegin:  FRPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return FRPos;  //(Offset < 0) ? 0 : (Offset > FSize) ? FSize : Offset; return static_cast<off_t>(FRPos);
+	case smFromEnd:    FRPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return FRPos; //(Offset > FSize) ? 0 : FSize - Offset; return static_cast<off_t>(FRPos);
+	case smFromCurrent:FRPos = CHECK_RANGE_OFF_T(FRPos, FSize,  Offset); return FRPos;   //(static_cast<off_t>(FRPos) + Offset < 0) ? 0 : (FRPos + Offset > FSize) ? FSize : FRPos + Offset; return static_cast<off_t>(FRPos);
+	//default:
+	//	return -1l;
 	}
+
+	throw IOException("Invalid TMemoryStream::SeekR() mode.");
 }
 
-off_t TMemoryStream::SeekW(const off_t Offset, const TSeekMode sMode)
+TMemoryStream::pos_type TMemoryStream::SeekW(const off_t Offset, const TSeekMode sMode)
 {
 	switch (sMode)
 	{
-	case smFromBegin:  FWPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return static_cast<off_t>(FWPos);
-	case smFromEnd:    FWPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return static_cast<off_t>(FWPos);
-	case smFromCurrent:FWPos = CHECK_RANGE_OFF_T(FWPos, FSize,  Offset); return static_cast<off_t>(FWPos);
-	default:
-		return -1l;
+	case smFromBegin:  FWPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return FWPos;
+	case smFromEnd:    FWPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return FWPos;
+	case smFromCurrent:FWPos = CHECK_RANGE_OFF_T(FWPos, FSize,  Offset); return FWPos;
+	//default:
+	//	return -1l;
 	}
+
+	throw IOException("Invalid TMemoryStream::SeekW() mode.");
 }
 
 void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
@@ -201,7 +205,7 @@ void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
 void TMemoryStream::UnsetBuffer()
 {
 	if (FNeedFree) return; // if we have internal buffer - do nothing
-	
+
 	// otherwise reset all positions and allocate buffer of default size
 	ResetPos();
 	FNeedFree = true;
@@ -281,9 +285,9 @@ int TFileStream::Read(void* Buffer, size_t Size)
 	if (FFileMode == fmWrite || FFileMode == fmWriteTrunc)
 		throw IOException("File opened in write-only mode. Can't read!");
 
-	int c = myread(hf, Buffer, (uint)Size);
-	
-	FEOF = (c != Size);
+	int c = myread(hf, Buffer, static_cast<uint>(Size));
+
+	FEOF = (static_cast<size_t>(c) != Size);
 
 	if (c == -1)
 	{
@@ -309,13 +313,14 @@ size_t TFileStream::Write(const string& str)
 size_t TFileStream::Write(const void* Buffer, const size_t Size)
 {
 	if (Buffer == nullptr) return 0; // nothing to write
+	if (Size == 0) return 0;
 
 	if (FFileMode == fmRead)
 		throw IOException("File opened in read-only mode. Can't write!");
 
 	// mywrite returns -1 in case of an error
 	// it returns -1 even when it cannot write entire buffer to disk
-	int c = mywrite(hf, Buffer, (uint)Size);
+	int c = mywrite(hf, Buffer, static_cast<uint>(Size));
 
 	if (c == -1 /*|| c != Size*/)
 	{
@@ -323,13 +328,14 @@ size_t TFileStream::Write(const void* Buffer, const size_t Size)
 		throw IOException(serr);
 	}
 
-	return (size_t)c;
+	assert(static_cast<size_t>(c) == Size);
+	return static_cast<size_t>(c);
 }
 
 size_t TFileStream::WriteLn(const string& str)
 {
 	auto c = Write(str);
-	return WriteCRLF() + c; 
+	return WriteCRLF() + c;
 }
 
 size_t TFileStream::WriteLn(const void* Buffer, const size_t Size)
@@ -338,6 +344,8 @@ size_t TFileStream::WriteLn(const void* Buffer, const size_t Size)
 	return WriteCRLF() + c;
 }
 
+//TODO shall we throw an exception in case of lseek returned -1 (error)?
+// like it is done in Write and Read methods.
 off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 {
 	switch (sMode)

@@ -99,7 +99,7 @@ protected:
 	void	Error(const uint Value, const uint vmax) const;
 	void	Grow();
 	void	GrowTo(const uint ToCount);
-	void*	CalcAddr(const uint num) const { return (void*)((uint8_t*)FMemory + static_cast<size_t>(num) * FItemSize); }
+	void*	CalcAddr(const uint num) const { return static_cast<void*>(static_cast<uint8_t*>(FMemory) + static_cast<size_t>(num) * FItemSize); }
 	[[noreturn]] void	ThrowZeroItemSize() const { throw THArrayException("Error in THArrayRaw: ItemSize cannot be zero!"); }
 public:
 	THArrayRaw(); // sets ItemSize to default value 1
@@ -420,6 +420,7 @@ protected:
 public:
 	THash() {}
 	THash(const THash<I, V, Cmp>& a);
+	THash<I, V, Cmp>& operator=(const THash<I, V, Cmp>& other) = default;
 	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); }
 	virtual ~THash() {}
 
@@ -662,7 +663,7 @@ template<class T>
 bool THArray<T>::operator==(const THArray<T>& a) const
 {
 	if (FCount == a.FCount)
-		return memcmp(FBegin, a.FBegin, FCount * sizeof(T)) == 0;
+		return memcmp(FBegin, a.FBegin, FCount * sizeof(T)) == 0; //TODO if T is not simple type memcmp might not work properly due to vtable pointer
 	else
 		return false;
 }
@@ -1012,8 +1013,8 @@ void THash<I, V, Cmp>::Delete(const I& Key)
 	int n = FAKeys.IndexOf(Key);
 	if (n >= 0)
 	{
-		FAKeys.DeleteValue((uint)n);
-		FAValues.DeleteValue((uint)n);
+		FAKeys.DeleteValue(static_cast<uint>(n));
+		FAValues.DeleteValue(static_cast<uint>(n));
 	}
 }
 
@@ -1037,7 +1038,7 @@ V& THash<I, V, Cmp>::GetValue(const I& Key) const
 	if (n < 0)
 		throw THArrayException("THash<I,V>::GetValue(Key) : Key not found !");
 
-	return FAValues[(uint)n];
+	return FAValues[static_cast<uint>(n)];
 }
 
 template <class I, class V, class Cmp>
@@ -1046,7 +1047,7 @@ V* THash<I, V, Cmp>::GetValuePointer(const I& Key) const
 	int n = FAKeys.IndexOf(Key);
 	if (n < 0)
 		return nullptr;
-	return FAValues.GetValuePointer((uint)n);
+	return FAValues.GetValuePointer(static_cast<uint>(n));
 }
 
 /*template <class I,class V>

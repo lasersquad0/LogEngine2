@@ -27,7 +27,7 @@ double round(const double Value, const int Precision)
 	double temp = Value * p;
 
 	double ttt = temp - static_cast<int>(temp);
-	if (ttt == 0) 
+	if (ttt == 0) //TODO floating point should not be compared to 0 by ==
 		return temp/p;
 	
 	if (ttt >= 0.5 && Value > 0)
@@ -460,12 +460,13 @@ std::string trimRight(std::string str)
 	return str;
 }
 
+/*
 int CompareNCase(const std::string& str1, const std::string& str2)
-{	
+{
 	if ((str1.length() == 0) && (str2.length() == 0)) // two empty strings are equal
 		return 0;
 
-	if ((str1.length() == 0)) //empty string is less any non empty 
+	if ((str1.length() == 0)) //empty string is less any non empty
 		return -1;
 
 	if (str2.length() == 0) // non-empty string is larger any empty one
@@ -489,10 +490,10 @@ int CompareNCase(const std::string& str1, const std::string& str2)
 		return 1;
 	else if (str1.length() < str2.length())
 		return -1;
-	else 
+	else
 		return 0;
 //#endif
-}
+} */
 
 bool isUInt(std::string & value)
 {
@@ -524,7 +525,7 @@ uint GetThreadID(const std::thread::id& id)
 
 static char mytolower(int c) // to eliminate compile warning "warning C4244: '=': conversion from 'int' to 'char', possible loss of data"
 {
-	return (char)tolower(c);
+	return static_cast<char>(tolower(c));
 }
 std::string StrToLower(std::string str) // needs to be passed by value
 {

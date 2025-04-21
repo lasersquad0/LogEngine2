@@ -230,7 +230,7 @@ public:
 
 			// Else try again with more space.
 			size = (n > -1) ?
-				(size_t)(n + 1) :   // ISO/IEC 9899:1999
+				static_cast<size_t>(n + 1) :   // ISO/IEC 9899:1999
 				size * 2; // twice the old size
 
 			delete[] buffer;
@@ -400,7 +400,7 @@ public:
 
 	static int ThreadProc(void* parameter)
 	{
-		LoggerThreadInfo* info = (LoggerThreadInfo*)parameter;
+		LoggerThreadInfo* info = reinterpret_cast<LoggerThreadInfo*>(parameter);
 
 		LogEvent* current_msg;
 		do

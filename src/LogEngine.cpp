@@ -25,11 +25,11 @@ private:
 	// logger names are case INsensitive
 	THash<std::string, Logger*, CompareStringNCase> FLoggers;
 
-	Registry() {};
+	Registry() {}
 	~Registry() 
 	{ 
 		Shutdown(); 
-	};
+	}
 public:
 	Registry(const Registry&) = delete;
 	Registry& operator=(const Registry&) = delete;
@@ -209,7 +209,7 @@ static uint ParseInt(std::string s, uint defaultValue = 0)
 
 	try
 	{
-		uint result = stoi(sl) * factor;
+		uint result = static_cast<uint>(stoi(sl) * factor);
 		return result;
 	}
 	catch (...)
