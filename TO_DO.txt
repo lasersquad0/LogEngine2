@@ -2,8 +2,7 @@ TODO
 ----
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
 
-* rotating logger with nonstandard filename extension e.g. .txt instead of .log
-check how rotating files are generated - what extension.
+* [FIXED] Rotating logger should preserve filename extension when creating timestamp files.
 
 * add possibility to define my own line macros placeholders
 
@@ -16,8 +15,7 @@ check how rotating files are generated - what extension.
 * make it header only???
 
 * think of error_hanler for specific logger. what errors we should track?
-
-* think of file_event_handlers BeforeOpen AfterOpen BeforeClose AfterClose
+e.g. cannot create log file during GetLogger operation or during logger construction without GetLogger call
 
 * [DONE] Add callback logger type. User will be able to provide his own function (or lambda) that will be called on each log message of this logger.
 
