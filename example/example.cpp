@@ -1,5 +1,10 @@
-
-// LogEngine2 usage example
+/*
+ * Example.cpp
+ *
+ * Copyright 2025, LogEngine Project. All rights reserved.
+ *
+ * See the COPYING file for the terms of usage and distribution.
+ */
 
 #include <cstdio>
 #include <chrono>
@@ -81,20 +86,20 @@ int main(int, char *[])
 
 void FileLoggerExample()
 {
-    auto& stdout_logger = LogEngine::GetStdoutLogger("stdoutlogger");
-    stdout_logger.Info("Console stdout logger has created.");
+    auto& stdoutLogger = LogEngine::GetStdoutLogger("stdoutlogger");
+    stdoutLogger.Info("Console stdout logger has created.");
 
-    auto& stderr_logger = LogEngine::GetStderrLogger("stderrlogger");
-    stderr_logger.Info("Console stderr logger has created.");
+    auto& stderrLogger = LogEngine::GetStderrLogger("stderrlogger");
+    stderrLogger.Info("Console stderr logger has created.");
 
     // Create file logger (not rotated).
-    auto& file_logger = LogEngine::GetFileLogger("file_logger", LOG_FILES_DIR "basic_file_log.txt");
-    file_logger.Info("My file_logger has created.");
+    auto& fileLogger = LogEngine::GetFileLogger("file_logger", LOG_FILES_DIR "basic_file_log.txt");
+    fileLogger.Info("My file_logger has created.");
  
     //later you can get existing file logger using its name
-    auto& file_logger2 = LogEngine::GetLogger("file_logger");
-    //file_logger2 is the reference to the same file_logger created above
-    file_logger2.Info("My file_logger2 has got.");
+    auto& fileLogger2 = LogEngine::GetLogger("file_logger");
+    //fileLogger2 is the reference to the same file_logger created above
+    fileLogger2.Info("My file_logger2 has got.");
 }
 
 #include "RotatingFileSink.h"
@@ -201,18 +206,17 @@ void MultiSinkExample()
 
 /*
 // stopwatch example
-#include "spdlog/spdlog.h"
-#include "spdlog/stopwatch.h"
-//#include <thread>
 void StopwatchExample()
 {
-    spdlog::stopwatch sw;
+    stopwatch sw;
     std::this_thread::sleep_for(std::chrono::milliseconds(999));
-    spdlog::info("Stopwatch: {} seconds", sw);
+
+    auto& stopLogger = LogEngine::GetFileLogger("loggerforstopwatch", LOG_FILES_DIR "stopwatch_log.txt");
+    stopLogger.InfoFmt("Stopwatch: {} seconds", sw);
 }
 
+#include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
-
 void replace_default_logger_example() 
 {
     // store the old logger so we don't break other examples.
