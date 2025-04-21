@@ -15,7 +15,7 @@ Main advantages are:
 See ```testXXX.cpp``` files from ```test/``` directory as examples of using logengine library in addition to [Usage samples](#usage-samples) below.
 See file ```test/testFiles/example.lfg``` for full description of LogEngine configuration parameters file.
 
-Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2. 
+Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2/issues. 
 
 Current maintainer: lasersquad@gmail.com.
 
