@@ -109,7 +109,8 @@ protected:
 			newFileName = existingFileName + BackupExt;
 			break;
 		case rsTimeStamp:
-			newFileName = StripFileExt(existingFileName) + "(" + FormatCurrDateTime("%d-%m-%Y %H.%M.%S") + ")" + LogExt;
+			// preserve original file extension (if any) in file name with time stamp
+			newFileName = StripFileExt(existingFileName) + "(" + FormatCurrDateTime("%d-%m-%Y %H.%M.%S") + ")" + ExtractFileExt(existingFileName); //LogExt;
 			break;
 		case rsNumbers:
 		{
