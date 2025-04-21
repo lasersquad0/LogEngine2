@@ -13,7 +13,7 @@ Main advantages are:
  * small amount of source code.
 
 See ```testXXX.cpp``` files from [test/](test/) directory as examples of using logengine library in addition to [Usage samples](#usage-samples) below.
-See file ```test/testFiles/example.lfg``` for full description of LogEngine configuration parameters file.
+See file [example.lfg](test/testFiles/example.lfg) for full description of LogEngine configuration parameters file.
 
 Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2/issues. 
 
@@ -21,11 +21,11 @@ Current maintainer: lasersquad@gmail.com.
 
 ## Install
 #### Microsoft Windows
-Use MSVC project from here ```prj/msvc/LogEngine/LogEngine.vcproj```.
-There are several predefined configurations like Debug, Release and others. You can build either one you need. 
+Open this MSVC project [LogEngine.vcproj](prj/msvc/LogEngine/LogEngine.vcproj) in Visual Studio.
+It has several predefined configurations like Debug, Release and others. You can build either one you need. 
 Each configuration generates .lib file with unique names (like ```LogEngine2_64.lib``` for Release or ```LogEngine2d_64.lib``` for Debug).
 
-Also see ```prj/msvc/testLogEngine``` (or ```prj/Builder6/testLogEngine```) projects for examples how to use LogEngine2 library.
+You can also look at folders [prj/msvc/testLogEngine](prj/msvc/testLogEngine) (or [prj/Builder6/testLogEngine[(prj/Builder6/testLogEngine)) for the projects with examples how to use LogEngine2 library.
 
 #### Other systems
 For other systems see ```INSTALL``` txt file for details.
