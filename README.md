@@ -12,8 +12,8 @@ Main advantages are:
  * platform independent 
  * small amount of source code.
 
-See ```testXXX.cpp``` files from ```test/``` directory as an examples of using logengine library in addition to examples below.
-See ```test/testFiles/example.lfg``` - for full description of LogEngine parameters file.
+See ```testXXX.cpp``` files from ```test/``` directory as examples of using logengine library in addition to [Usage samples](#Usage samples) below.
+See file ```test/testFiles/example.lfg``` for full description of LogEngine configuration parameters file.
 
 Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2. 
 
@@ -36,6 +36,7 @@ For other systems see ```INSTALL``` txt file for details.
 * Feature-rich formatting, using the std::format available in C++20.
 * Load loggers configuration from .lfg file
 * Asynchronous mode (can be turned on and off)
+* Custom callback logger type
 * Various log targets:
   * Regular log files
   * Rotating log files
