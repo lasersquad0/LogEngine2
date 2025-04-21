@@ -62,11 +62,14 @@ std::string BoolToStr(bool Value);
 // function to convert string value (1,0,yes,no,true,false) to the bool
 bool StrToBool(const std::string& Value);
 
-// extracts filename from path with filename
+// extracts filename from path with FileName
 std::string ExtractFileName(const std::string& FileName);
 
-// extracts directory name from path
+// extracts directory name from FileName. FileName can be either file name or path with file name.
 std::string ExtractFileDir(const std::string& FileName);
+
+// extracts file extention. returns empty string if file does not have the extention
+std::string ExtractFileExt(const std::string& FileName);
 
 // excludes file extention from FileName
 std::string StripFileExt(const std::string& FileName);
@@ -184,6 +187,7 @@ int CompareNCase(const STRING& str1, const STRING& str2)
 bool isUInt(std::string& value);
 
 uint GetThreadID();
+uint GetThreadID(const std::thread::id& id);
 
 std::string StrToLower(std::string str);
 

@@ -217,6 +217,32 @@ std::string ExtractFileDir(const std::string& FileName)
 	return FileName.substr(0, i);
 }
 
+std::string ExtractFileExt(const std::string& FileName)
+{
+	size_t i = FileName.length();
+	if (i == 0) return "";
+
+	bool f = false;
+	do
+	{
+		i--;
+		if (FileName[i] == '.')
+		{
+			f = true; // we found a dot
+			break;
+		}
+
+		if (FileName[i] == '\\' || FileName[i] == '/') // stop is folder delimiter found
+			break;
+
+	} while (i > 0);
+
+	if (f)
+		return FileName.substr(i);
+	else
+		return "";
+}
+
 std::string StripFileExt(const std::string& FileName)
 {
 	size_t i = FileName.length();
@@ -482,6 +508,15 @@ uint GetThreadID()
 {
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
+	uint thrID;
+	ss >> thrID;
+	return thrID;
+}
+
+uint GetThreadID(const std::thread::id& id)
+{
+	std::stringstream ss;
+	ss << id;
 	uint thrID;
 	ss >> thrID;
 	return thrID;
