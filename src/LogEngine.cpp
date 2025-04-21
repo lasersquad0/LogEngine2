@@ -13,17 +13,64 @@
 
 LOGENGINE_NS_BEGIN
 
-class Destructor
+/*class Destructor
 {
 public:
 	~Destructor() { ShutdownLoggers(); }
+};*/
+
+class Registry
+{
+private:
+	// logger names are case INsensitive
+	THash<std::string, Logger*, CompareStringNCase> FLoggers;
+
+	Registry() {};
+	~Registry() 
+	{ 
+		Shutdown(); 
+	};
+public:
+	Registry(const Registry&) = delete;
+	Registry& operator=(const Registry&) = delete;
+
+	void Shutdown()
+	{
+		for (uint i = 0; i < FLoggers.Count(); i++)
+			delete FLoggers.GetValues()[i];
+
+		FLoggers.ClearMem();
+	}
+
+	uint Count() { return FLoggers.Count(); }
+	bool IfExists(const std::string& loggerName) { return FLoggers.IfExists(loggerName); }
+
+	Logger& RegisterLogger(const std::string& loggerName)
+	{
+		Logger** loggerPtr = FLoggers.GetValuePointer(loggerName);
+		if (loggerPtr == nullptr)
+		{
+			Logger* logger = new Logger(loggerName);
+			FLoggers.SetValue(loggerName, logger);
+			return *logger;
+		}
+		else
+		{
+			return **loggerPtr;
+		}
+	}
+
+	//void InitializeLogger(Logger& newLogger);
+
+	static Registry& Instance()
+	{
+		static Registry FInstance;
+		return FInstance;
+	}
 };
 
-// logger names are case INsensitive
-static THash<std::string, Logger*, CompareStringNCase> loggers;
-
 static Properties properties;
-static Destructor destructor; // variable destructor must be located BELOW variable loggers because loggers should exist when destructor is being destroyed.
+//static Destructor destructor; // variable destructor must be located BELOW variable loggers because loggers should exist when destructor is being destroyed.
 
 void SetProperty(const std::string& name, const std::string& value)
 {
@@ -42,22 +89,17 @@ bool PropertyExist(const std::string& name)
 
 void ShutdownLoggers()
 {
-	for (uint i = 0; i < loggers.Count(); i++)
-	{
-		delete loggers.GetValues()[i];
-	}
-
-	loggers.ClearMem();
+	Registry::Instance().Shutdown();
 }
 
 uint LoggersCount()
 {
-	return loggers.Count();
+	return Registry::Instance().Count();
 }
 
-bool LoggerExist(const std::string& name)
+bool LoggerExist(const std::string& loggerName)
 {
-	return loggers.IfExists(name);
+	return Registry::Instance().IfExists(loggerName);
 }
 
 // returns reference to the logger with name specified in loggerName parameter
@@ -65,17 +107,7 @@ bool LoggerExist(const std::string& name)
 // "empty" means that the logger does not contain any Sinks.
 Logger& GetLogger(const std::string& loggerName)
 {
-	Logger** loggerPtr = loggers.GetValuePointer(loggerName);
-	if (loggerPtr == nullptr)
-	{
-		Logger* logger = new Logger(loggerName);
-		loggers.SetValue(loggerName, logger);
-		return *logger;
-	}
-	else
-	{
-		return **loggerPtr;
-	}
+	return Registry::Instance().RegisterLogger(loggerName);
 }
 
 // returns reference to the file logger with name specified in loggerName parameter

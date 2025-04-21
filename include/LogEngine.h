@@ -26,6 +26,7 @@ bool PropertyExist(const std::string& name);
 
 void ShutdownLoggers();
 uint LoggersCount();
+bool LoggerExist(const std::string& loggerName);
 
 Logger& GetLogger(const std::string& loggerName);
 
