@@ -12,7 +12,7 @@ Main advantages are:
  * platform independent 
  * small amount of source code.
 
-See ```testXXX.cpp``` files from ```test/``` directory as examples of using logengine library in addition to [Usage samples](#Usage samples) below.
+See ```testXXX.cpp``` files from ```test/``` directory as examples of using logengine library in addition to [Usage samples](#usage-samples) below.
 See file ```test/testFiles/example.lfg``` for full description of LogEngine configuration parameters file.
 
 Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2. 
