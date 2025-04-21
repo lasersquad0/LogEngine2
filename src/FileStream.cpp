@@ -127,11 +127,11 @@ int TMemoryStream::Read(void* Buffer, size_t Size)
 	return static_cast<int>(Size);
 }
 
-int TMemoryStream::Write(const void* Buffer, const size_t Size)
+size_t TMemoryStream::Write(const void* Buffer, const size_t Size)
 {
    //	_set_errno(EINVAL);
-	if (Buffer == nullptr) return -1;
-	if (Size == 0) return -1;
+	if (Buffer == nullptr) return 0; // nothing to write
+	if (Size == 0) return 0;
 	//_set_errno(0);
 
 	if (FWPos + Size > FSize) // not enough space in FMemory buffer
@@ -151,7 +151,7 @@ int TMemoryStream::Write(const void* Buffer, const size_t Size)
 
 	memcpy(FMemory + FWPos, Buffer, Size);
 	FWPos += Size;
-	return static_cast<int>(Size);
+	return Size; //static_cast<int>(Size);
 }
 
 template<typename T>
@@ -294,43 +294,47 @@ int TFileStream::Read(void* Buffer, size_t Size)
 	return c;
 }
 
-int TFileStream::WriteCRLF(void)
+size_t TFileStream::WriteCRLF(void)
 {
 	return Write(EndLine, strlen(EndLine));
 }
 
-int TFileStream::Write(const string& str)
+size_t TFileStream::Write(const string& str)
 {
 	return Write(str.data(), str.length());
 }
 
 // If successfull Write returns number of bytes written
 // Throws an exception in case of any error during writing
-int TFileStream::Write(const void* Buffer, const size_t Size)
+size_t TFileStream::Write(const void* Buffer, const size_t Size)
 {
+	if (Buffer == nullptr) return 0; // nothing to write
+
 	if (FFileMode == fmRead)
 		throw IOException("File opened in read-only mode. Can't write!");
 
+	// mywrite returns -1 in case of an error
+	// it returns -1 even when it cannot write entire buffer to disk
 	int c = mywrite(hf, Buffer, (uint)Size);
 
-	if (c == -1 || c != Size)
+	if (c == -1 /*|| c != Size*/)
 	{
 		string serr = "Cannot write to file '" + FFileName + "'! May be disk full?";
 		throw IOException(serr);
 	}
 
-	return c;
+	return (size_t)c;
 }
 
-int TFileStream::WriteLn(const string& str)
+size_t TFileStream::WriteLn(const string& str)
 {
-	int c = Write(str);
+	auto c = Write(str);
 	return WriteCRLF() + c; 
 }
 
-int TFileStream::WriteLn(const void* Buffer, const size_t Size)
+size_t TFileStream::WriteLn(const void* Buffer, const size_t Size)
 {
-	int c = Write(Buffer, Size);
+	auto c = Write(Buffer, Size);
 	return WriteCRLF() + c;
 }
 

@@ -46,7 +46,7 @@ protected:
 public:
 	virtual ~TStream() {}
 	virtual int Read(void* Buffer, size_t Size) = 0;
-	virtual int Write(const void* Buffer, const size_t Size) = 0;
+	virtual size_t Write(const void* Buffer, const size_t Size) = 0;
 	virtual size_t Length() = 0;
 	virtual off_t Seek(const off_t Offset, const TSeekMode sMode) = 0;
 	//virtual int ReadChar();
@@ -172,7 +172,7 @@ public:
 	TMemoryStream(uint BuffSize = DEFAULT_BUF_SIZE) { FMemory = new uint8_t[BuffSize]; }
 	~TMemoryStream() override { if (FNeedFree) free(FMemory); }
 	int Read(void* Buffer, size_t Size) override;
-	int Write(const void* Buffer, const size_t Size) override;
+	size_t Write(const void* Buffer, const size_t Size) override;
 	size_t Length() override { return FSize; }
 	off_t SeekR(const off_t Offset, const TSeekMode sMode);
 	off_t SeekW(const off_t Offset, const TSeekMode sMode);
@@ -192,11 +192,11 @@ public:
 	TFileStream(const std::string& FileName, const TFileMode fMode = fmWrite);
 	~TFileStream() override;
 	int Read(void* Buffer, size_t Size) override;
-	int Write(const void* Buffer, const size_t Size) override;
-	int Write(const std::string& str);
-	int WriteLn(const std::string& str);
-	int WriteLn(const void* Buffer, const size_t Size);
-	int WriteCRLF(void);
+	size_t Write(const void* Buffer, const size_t Size) override;
+	size_t Write(const std::string& str);
+	size_t WriteLn(const std::string& str);
+	size_t WriteLn(const void* Buffer, const size_t Size);
+	size_t WriteCRLF(void);
 	size_t Length() override;
 	void Flush();
 
