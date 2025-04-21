@@ -24,6 +24,10 @@ void MultiSinkExample();
 
 int main(int, char *[]) 
 {
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    _CrtMemState s1, s2, s3;
+    _CrtMemCheckpoint(&s1); // Take a snapshot at the start of main()
+
     try
     {
         LogEngine::Logger& logger = LogEngine::GetStdoutLogger("consolelogger");
@@ -68,7 +72,7 @@ int main(int, char *[])
 
         // Release all spdlog resources, and drop all loggers in the registry.
         // This is optional (only mandatory if using windows + async log).
-        LogEngine::ShutdownLoggers();
+       // LogEngine::ShutdownLoggers();
     }
 
     catch (const LogEngine::LogException &ex) 
@@ -76,6 +80,9 @@ int main(int, char *[])
         std::printf("Log initialization failed: %s\n", ex.what());
         return 1;
     }
+
+    _CrtMemCheckpoint(&s2); // Take a snapshot at the end of main()
+    if (_CrtMemDifference(&s3, &s1, &s2)) _CrtMemDumpStatistics(&s3); // Dump memory statistics excluding global variables
 }
 
 // .lfg file location directory relative to current app directory
