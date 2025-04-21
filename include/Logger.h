@@ -1,7 +1,7 @@
 /*
  * Logger.h
  *
- * Copyright 2024, LogEngine Project. All rights reserved.
+ * Copyright 2025, LogEngine2 Project. All rights reserved.
  *
  * See the COPYING file for the terms of usage and distribution.
  */
@@ -376,6 +376,8 @@ public:
 		return FSinks.Count();
 	}
 
+	// return by value (not by reference) is done intentionally here
+	// to be able to return nullptr value when Sink not found
 	std::shared_ptr<Sink> GetSink(const std::string& sinkName)
 	{
 		for(auto& si : FSinks)
