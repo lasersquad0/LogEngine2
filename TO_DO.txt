@@ -2,7 +2,10 @@ TODO
 ----
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
 
-* add possibility to define my own line macros
+* rotating logger with nonstandard filename extension e.g. .txt instead of .log
+check how rotating files are generated - what extension.
+
+* add possibility to define my own line macros placeholders
 
 * get values for macro placeholders from Properties and subst in log line
 
@@ -12,14 +15,11 @@ This file contains an imcomplete list of things to be done, not necessarily orde
 
 * make it header only???
 
-* think of error_hanler for specific logger. what error we should track?
+* think of error_hanler for specific logger. what errors we should track?
 
 * think of file_event_handlers BeforeOpen AfterOpen BeforeClose AfterClose
 
-* what about callback logger? like the following
-    auto logger = spdlog::callback_logger_mt("custom_callback_logger",
-                                             [](const spdlog::details::log_msg & /*msg*/) {
-                                                 // do what you need to do with msg });
+* [DONE] Add callback logger type. User will be able to provide his own function (or lambda) that will be called on each log message of this logger.
 
 * Default logger?? like LogEngine::Warn() LogEngine::ErrorFmt(), etc.
 
