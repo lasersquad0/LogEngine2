@@ -7,8 +7,7 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef COMMON_H
-#define COMMON_H
+#pragma once
 
 //#include <ctype.h>
 #include <time.h>
@@ -16,6 +15,12 @@
 #include <string>
 #include <chrono>
 #include <mutex>
+
+#ifdef LOGENGINE_HEADER_ONLY
+#define LOGENGINE_INLINE inline
+#else
+#define LOGENGINE_INLINE
+#endif
 
 typedef unsigned char uchar;
 typedef unsigned int uint;
@@ -193,4 +198,7 @@ std::string StrToLower(std::string str);
 
 std::string DisplaySystemVersion();
 
-#endif //COMMON_H
+
+#ifdef LOGENGINE_HEADER_ONLY
+#include "Common-hdr.h"
+#endif

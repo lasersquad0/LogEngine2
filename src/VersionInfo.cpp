@@ -6,7 +6,6 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-
 #include <string>
 
 #ifdef _WIN32
@@ -175,4 +174,5 @@ std::string DisplaySystemVersion(const char* filename)
     ldd_cmd.append(filename);
     system(ldd_cmd.c_str());
 }
+
 #endif /* _WIN32 */

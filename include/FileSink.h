@@ -97,7 +97,7 @@ public:
 };
 
 // callbacks type
-typedef std::function<void(const LogEngine::LogEvent& lv)> CustomLogCallback;
+typedef std::function<void(const LogEvent& lv)> CustomLogCallback;
 
 class CallbackSink : public Sink
 {

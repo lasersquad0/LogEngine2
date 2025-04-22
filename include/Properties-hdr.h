@@ -6,15 +6,12 @@
 * See the COPYING file for the terms of usage and distribution.
 */
 
-//#include <limits.h>
-//#include <istream>
-
-#ifndef LOGENGINE_HEADER_ONLY
+#include <limits.h>
+#include <istream>
 #include "Properties.h"
-#include "Properties-hdr.h"
-#endif
 
-//LOGENGINE_NS_BEGIN
+
+LOGENGINE_NS_BEGIN
 
 /*
 void Properties::load(std::istream& in) 
@@ -94,7 +91,7 @@ void Properties::save(std::ostream& out)
 }
 */
 
-/*int Properties::getInt(const std::string& property, int defaultValue /*=0) const
+LOGENGINE_INLINE int Properties::getInt(const std::string& property, int defaultValue /*=0*/) const
 {
 	if(!IfExists(property))
 		return defaultValue;
@@ -106,7 +103,7 @@ void Properties::save(std::ostream& out)
 	return atoi(value.c_str());
 }
 
-ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0) const
+LOGENGINE_INLINE ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0*/) const
 {
 	if (!IfExists(property))
 		return defaultValue;
@@ -120,7 +117,7 @@ ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0) 
 	return res;
 }
 
-bool Properties::getBool(const std::string& property, bool defaultValue /*=false) const
+LOGENGINE_INLINE bool Properties::getBool(const std::string& property, bool defaultValue /*=false*/) const
 {
 	if(!IfExists(property))
 		return defaultValue;
@@ -130,7 +127,7 @@ bool Properties::getBool(const std::string& property, bool defaultValue /*=false
 	return StrToBool(value); //(EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
 }
 
-std::string Properties::getString(const std::string& property, const std::string& defaultValue /*="") const 
+LOGENGINE_INLINE std::string Properties::getString(const std::string& property, const std::string& defaultValue /*=""*/) const
 {
 	if(!IfExists(property))
 		return defaultValue;
@@ -139,4 +136,3 @@ std::string Properties::getString(const std::string& property, const std::string
 }
 
 LOGENGINE_NS_END
-*/

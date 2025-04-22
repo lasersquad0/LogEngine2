@@ -10,6 +10,7 @@
 #define PROPERTIES_H
 
 #include <string>
+#include "Common.h"
 #include "DynamicArrays.h"
 
 LOGENGINE_NS_BEGIN
@@ -31,6 +32,11 @@ public:
 };
 
 LOGENGINE_NS_END
+
+#ifdef LOGENGINE_HEADER_ONLY
+#include "Properties-hdr.h"
+#endif
+
 
 #endif // PROPERTIES_H
 

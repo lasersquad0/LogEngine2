@@ -1,22 +1,22 @@
 /*
- * LogEngine.cpp
+ * LogEngine-hdr.h
  *
  * Copyright 2025, LogEngine2 Project. All rights reserved.
  *
  * See the COPYING file for the terms of usage and distribution.
  */
 
-//#include "Properties.h"
-//#include "RotatingFileSink.h"
-//#include "IniReader.h"
-
-#ifndef LOGENGINE_HEADER_ONLY
+#include "RotatingFileSink.h"
+#include "IniReader.h"
 #include "LogEngine.h"
-#include "LogEngine-hdr.h"
-#endif
 
-/*
 LOGENGINE_NS_BEGIN
+
+/*class Destructor
+{
+public:
+	~Destructor() { ShutdownLoggers(); }
+};*/
 
 class Registry
 {
@@ -69,33 +69,34 @@ public:
 };
 
 static Properties properties;
+//static Destructor destructor; // variable destructor must be located BELOW variable loggers because loggers should exist when destructor is being destroyed.
 
-void SetProperty(const std::string& name, const std::string& value)
+LOGENGINE_INLINE void SetProperty(const std::string& name, const std::string& value)
 {
 	properties.SetValue(name, value);
 }
 
-std::string GetProperty(const std::string& name, const std::string& defaultValue)
+LOGENGINE_INLINE std::string GetProperty(const std::string& name, const std::string& defaultValue)
 {
 	return properties.getString(name, defaultValue);
 }
 
-bool PropertyExist(const std::string& name)
+LOGENGINE_INLINE bool PropertyExist(const std::string& name)
 {
 	return properties.IfExists(name);
 }
 
-void ShutdownLoggers()
+LOGENGINE_INLINE void ShutdownLoggers()
 {
 	Registry::Instance().Shutdown();
 }
 
-uint LoggersCount()
+LOGENGINE_INLINE uint LoggersCount()
 {
 	return Registry::Instance().Count();
 }
 
-bool LoggerExist(const std::string& loggerName)
+LOGENGINE_INLINE bool LoggerExist(const std::string& loggerName)
 {
 	return Registry::Instance().IfExists(loggerName);
 }
@@ -103,14 +104,14 @@ bool LoggerExist(const std::string& loggerName)
 // returns reference to the logger with name specified in loggerName parameter
 // creates new "empty" logger in case if logger with specified name does not yet exists
 // "empty" means that the logger does not contain any Sinks.
-Logger& GetLogger(const std::string& loggerName)
+LOGENGINE_INLINE Logger& GetLogger(const std::string& loggerName)
 {
 	return Registry::Instance().RegisterLogger(loggerName);
 }
 
 // returns reference to the file logger with name specified in loggerName parameter
 // if logger with specified name does not exist new logger is created and one FileSink is added to thie logger
-Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName)
+LOGENGINE_INLINE Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName)
 {
 	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
@@ -121,7 +122,7 @@ Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName
 	return logger;
 }
 
-Logger& GetRotatingFileLogger(const std::string& loggerName, const std::string& fileName, ullong maxLogSize, LogRotatingStrategy strategy, uint maxBackupIndex)
+LOGENGINE_INLINE Logger& GetRotatingFileLogger(const std::string& loggerName, const std::string& fileName, ullong maxLogSize, LogRotatingStrategy strategy, uint maxBackupIndex)
 {
 	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
@@ -132,7 +133,7 @@ Logger& GetRotatingFileLogger(const std::string& loggerName, const std::string& 
 	return logger;
 }
 
-Logger& GetStdoutLogger(const std::string& loggerName)
+LOGENGINE_INLINE Logger& GetStdoutLogger(const std::string& loggerName)
 {
 	Logger& logger = GetLogger(loggerName); //TODO what to do when logger with the same name but another type (e.g. FileLogger) already exists. 
 	if (logger.SinkCount() > 0) return logger; // this is existed logger
@@ -142,7 +143,7 @@ Logger& GetStdoutLogger(const std::string& loggerName)
 	return logger;
 }
 
-Logger& GetStderrLogger(const std::string& loggerName)
+LOGENGINE_INLINE Logger& GetStderrLogger(const std::string& loggerName)
 {
 	Logger& logger = GetLogger(loggerName);
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
@@ -152,7 +153,7 @@ Logger& GetStderrLogger(const std::string& loggerName)
 	return logger;
 }
 
-Logger& GetMultiLogger(const std::string& loggerName, SinkList& sinks)
+LOGENGINE_INLINE Logger& GetMultiLogger(const std::string& loggerName, SinkList& sinks)
 {
 	Logger& logger = GetLogger(loggerName);
 	logger.ClearSinks();
@@ -162,7 +163,7 @@ Logger& GetMultiLogger(const std::string& loggerName, SinkList& sinks)
 	return logger;
 }
 
-Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std::shared_ptr<Sink>> list)
+LOGENGINE_INLINE Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std::shared_ptr<Sink>> list)
 {
 	Logger& logger = GetLogger(loggerName); // TODO what is pre-existed logger with sinks has returned???
 	logger.ClearSinks();
@@ -172,7 +173,7 @@ Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std:
 	return logger;
 }
 
-Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback& callback)
+LOGENGINE_INLINE Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback& callback)
 {
 	Logger& logger = GetLogger(loggerName);
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
@@ -216,7 +217,7 @@ static uint ParseInt(std::string s, uint defaultValue = 0)
 	}
 }
 
-void InitFromFile(const std::string& fileName)
+LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 {
 	IniReader reader;
 	reader.LoadIniFile(fileName);
@@ -431,4 +432,4 @@ void InitFromFile(std::string fileName)
 }
 */
 
-//LOGENGINE_NS_END
+LOGENGINE_NS_END

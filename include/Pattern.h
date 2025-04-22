@@ -11,6 +11,7 @@
 #include <cassert>
 #include <vector>
 #include <sstream>
+#include "Common.h"
 #include "DynamicArrays.h"
 #include "LogEvent.h"
 
@@ -20,6 +21,9 @@
 
 
 LOGENGINE_NS_BEGIN
+
+#define APPNAME_PROPERTY  "AppName"
+#define APPVERSION_PROPERTY "AppVersion"
 
 class Holder
 {
@@ -200,7 +204,7 @@ class Pattern
 protected:
 	THArray<Holder*> FHolders; // container of pointers is required here to support proper virtual "->Format()" calls 
 	std::string FPattern;
-	void parsePattern(const std::string& pattern);
+	void parsePattern(const std::string& pattern); // compiles string pattern into list of appropriate Holder classes
 	void clearHolders();
 public:
 	Pattern(const std::string& pattern) { parsePattern(pattern); }
@@ -211,3 +215,7 @@ public:
 };
 
 LOGENGINE_NS_END
+
+#ifdef LOGENGINE_HEADER_ONLY
+#include "Pattern-hdr.h"
+#endif

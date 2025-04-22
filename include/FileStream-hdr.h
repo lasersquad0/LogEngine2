@@ -6,7 +6,7 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-/*#include <sys/stat.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
@@ -19,17 +19,10 @@
 #endif
 
 #include <cassert>
-*/
-
-#ifndef LOGENGINE_HEADER_ONLY
 #include "FileStream.h"
-#include "FileStream-hdr.h"
-#endif
 
 
-//LOGENGINE_NS_BEGIN
-
-//using namespace std;
+LOGENGINE_NS_BEGIN
 
 //////////////////////////////////////////////////////////////////////
 //  TStream Class
@@ -87,10 +80,9 @@ void TStream::operator >>(wstring& Value)
 }
 */
 
-/*
-string TStream::ReadPString()
+LOGENGINE_INLINE std::string TStream::ReadPString()
 {
-	string res;
+	std::string res;
 	uint i; //TODO shall i be size_t type?
 	*this >> i;    // reading string size
 	res.resize(i); // allocating space in string
@@ -98,7 +90,7 @@ string TStream::ReadPString()
 	return res;
 }
 
-void TStream::WritePString(std::string& str)
+LOGENGINE_INLINE void TStream::WritePString(std::string& str)
 {
 	*this << str.size();
 	*this << str.data();
@@ -108,14 +100,14 @@ void TStream::WritePString(std::string& str)
 //  TMemoryStream Class
 //////////////////////////////////////////////////////////////////////
 
-void TMemoryStream::ResetPos()
+LOGENGINE_INLINE void TMemoryStream::ResetPos()
 {
 	FSize = 0;
 	FRPos = 0;
 	FWPos = 0;
 }
 
-int TMemoryStream::Read(void* Buffer, size_t Size)
+LOGENGINE_INLINE int TMemoryStream::Read(void* Buffer, size_t Size)
 {
 	assert(FRPos <= FSize);
 	assert(FWPos <= FSize);
@@ -134,7 +126,7 @@ int TMemoryStream::Read(void* Buffer, size_t Size)
 	return static_cast<int>(Size);
 }
 
-size_t TMemoryStream::Write(const void* Buffer, const size_t Size)
+LOGENGINE_INLINE size_t TMemoryStream::Write(const void* Buffer, const size_t Size)
 {
    //	_set_errno(EINVAL);
 	if (Buffer == nullptr) return 0; // nothing to write
@@ -151,7 +143,7 @@ size_t TMemoryStream::Write(const void* Buffer, const size_t Size)
 		else // we do not control the buffer, so we cannot reallocate it
 		{
 		 //	_set_errno(ENOSPC);
-			string serr = "External buffer size is too small! Cannot write.";
+			std::string serr = "External buffer size is too small! Cannot write.";
 			throw IOException(serr);
 		}
 	 }
@@ -171,7 +163,7 @@ T check_range(const T& start, const T& end, const T& offset)
 #define CHECK_RANGE_OFF_T(start, end, offset) static_cast<pos_type>(check_range(static_cast<off_t>(start), static_cast<off_t>(end), (offset)))
 
 
-TMemoryStream::pos_type TMemoryStream::SeekR(const off_t Offset, const TSeekMode sMode)
+LOGENGINE_INLINE TMemoryStream::pos_type TMemoryStream::SeekR(const off_t Offset, const TSeekMode sMode)
 {
 	switch (sMode)
 	{
@@ -185,7 +177,7 @@ TMemoryStream::pos_type TMemoryStream::SeekR(const off_t Offset, const TSeekMode
 	throw IOException("Invalid TMemoryStream::SeekR() mode.");
 }
 
-TMemoryStream::pos_type TMemoryStream::SeekW(const off_t Offset, const TSeekMode sMode)
+LOGENGINE_INLINE TMemoryStream::pos_type TMemoryStream::SeekW(const off_t Offset, const TSeekMode sMode)
 {
 	switch (sMode)
 	{
@@ -199,7 +191,7 @@ TMemoryStream::pos_type TMemoryStream::SeekW(const off_t Offset, const TSeekMode
 	throw IOException("Invalid TMemoryStream::SeekW() mode.");
 }
 
-void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
+LOGENGINE_INLINE void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
 {
 	ResetPos();
 	if (FNeedFree) free(FMemory);
@@ -209,7 +201,7 @@ void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
 }
 
 // call this method when you want to return back to internal buffer
-void TMemoryStream::UnsetBuffer()
+LOGENGINE_INLINE void TMemoryStream::UnsetBuffer()
 {
 	if (FNeedFree) return; // if we have internal buffer - do nothing
 
@@ -238,7 +230,7 @@ void TMemoryStream::UnsetBuffer()
 #endif
 
 
-TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
+LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
 {
 	FFileName = FileName;
 	FFileMode = fMode;
@@ -267,7 +259,7 @@ TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 
 	if (hf == -1)
 	{
-		string serr;
+		std::string serr;
 		if (res == EINVAL)
 			serr = "Wrong file name '" + FileName + "'!";
 		else if (res == EACCES)
@@ -279,7 +271,7 @@ TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 	}
 }
 
-TFileStream::~TFileStream()
+LOGENGINE_INLINE TFileStream::~TFileStream()
 {
 	myclose(hf);
 	hf = 0;
@@ -287,7 +279,7 @@ TFileStream::~TFileStream()
 
 // If successfull Read returns number of read bytes
 // Throws an exception in case of any error during reading
-int TFileStream::Read(void* Buffer, size_t Size)
+LOGENGINE_INLINE int TFileStream::Read(void* Buffer, size_t Size)
 {
 	if (FFileMode == fmWrite || FFileMode == fmWriteTrunc)
 		throw IOException("File opened in write-only mode. Can't read!");
@@ -298,26 +290,26 @@ int TFileStream::Read(void* Buffer, size_t Size)
 
 	if (c == -1)
 	{
-		string serr = "Cannot read from file '" + FFileName + "'! May be file closed?";
+		std::string serr = "Cannot read from file '" + FFileName + "'! May be file closed?";
 		throw IOException(serr);
 	}
 
 	return c;
 }
 
-size_t TFileStream::WriteCRLF(void)
+LOGENGINE_INLINE size_t TFileStream::WriteCRLF(void)
 {
 	return Write(EndLine, strlen(EndLine));
 }
 
-size_t TFileStream::Write(const string& str)
+LOGENGINE_INLINE size_t TFileStream::Write(const std::string& str)
 {
 	return Write(str.data(), str.length());
 }
 
 // If successfull Write returns number of bytes written
 // Throws an exception in case of any error during writing
-size_t TFileStream::Write(const void* Buffer, const size_t Size)
+LOGENGINE_INLINE size_t TFileStream::Write(const void* Buffer, const size_t Size)
 {
 	if (Buffer == nullptr) return 0; // nothing to write
 	if (Size == 0) return 0;
@@ -329,9 +321,9 @@ size_t TFileStream::Write(const void* Buffer, const size_t Size)
 	// it returns -1 even when it cannot write entire buffer to disk
 	int c = mywrite(hf, Buffer, static_cast<uint>(Size));
 
-	if (c == -1)
+	if (c == -1 /*|| c != Size*/)
 	{
-		string serr = "Cannot write to file '" + FFileName + "'! May be disk full?";
+		std::string serr = "Cannot write to file '" + FFileName + "'! May be disk full?";
 		throw IOException(serr);
 	}
 
@@ -339,13 +331,13 @@ size_t TFileStream::Write(const void* Buffer, const size_t Size)
 	return static_cast<size_t>(c);
 }
 
-size_t TFileStream::WriteLn(const string& str)
+LOGENGINE_INLINE size_t TFileStream::WriteLn(const std::string& str)
 {
 	auto c = Write(str);
 	return WriteCRLF() + c;
 }
 
-size_t TFileStream::WriteLn(const void* Buffer, const size_t Size)
+LOGENGINE_INLINE size_t TFileStream::WriteLn(const void* Buffer, const size_t Size)
 {
 	auto c = Write(Buffer, Size);
 	return WriteCRLF() + c;
@@ -353,7 +345,7 @@ size_t TFileStream::WriteLn(const void* Buffer, const size_t Size)
 
 //TODO shall we throw an exception in case of lseek returned -1 (error)?
 // like it is done in Write and Read methods.
-off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
+LOGENGINE_INLINE off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 {
 	switch (sMode)
 	{
@@ -365,14 +357,14 @@ off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 	throw IOException("Invalid TFileStream::Seek() mode.");
 }
 
-size_t TFileStream::Length()
+LOGENGINE_INLINE size_t TFileStream::Length()
 {
 	struct stat st;
 	fstat(hf, &st);
 	return static_cast<size_t>(st.st_size);
 };
 
-void TFileStream::Flush()
+LOGENGINE_INLINE void TFileStream::Flush()
 {
 #ifdef WIN32
 	_commit(hf);
@@ -382,4 +374,3 @@ void TFileStream::Flush()
 }
 
 LOGENGINE_NS_END
-*/

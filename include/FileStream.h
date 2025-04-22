@@ -13,7 +13,6 @@
 #include <string>
 #include <exception>
 #include <locale>
-
 #include "Common.h"
 
 LOGENGINE_NS_BEGIN
@@ -212,5 +211,9 @@ public:
 };
 
 LOGENGINE_NS_END
+
+#ifdef LOGENGINE_HEADER_ONLY
+#include "FileStream-hdr.h"
+#endif
 
 #endif //FILESTREAM_H

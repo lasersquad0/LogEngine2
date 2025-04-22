@@ -6,19 +6,14 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-//#include <string.h> // need for strstr under Linux
-//#include <sstream>
-//#include <algorithm>
-//#include <sys/timeb.h>
-
-#ifndef LOGENGINE_HEADER_ONLY
+#include <string.h> // need for strstr under Linux
+#include <sstream>
+#include <algorithm>
+#include <sys/timeb.h>
 #include "Common.h"
-#include "Common-hdr.h"
-#endif
 
-/*
 // truncates Value to Precision digits after point
-double round(const double Value, const int Precision)
+LOGENGINE_INLINE double round(const double Value, const int Precision)
 {
 	int i = Precision;
 	double ret;
@@ -54,7 +49,7 @@ double round(const double Value, const int Precision)
 #ifdef WIN32
 
 // function for convert int Value to string
-std::string IntToStr(int Value, int FieldSize)
+LOGENGINE_INLINE std::string IntToStr(int Value, int FieldSize)
 {
 	char buf[CONV_BUF];
 	char buf2[CONV_BUF];
@@ -65,7 +60,7 @@ std::string IntToStr(int Value, int FieldSize)
 }
 
 // function for convert uint Value to string
-std::string IntToStr(uint Value, int FieldSize)
+LOGENGINE_INLINE std::string IntToStr(uint Value, int FieldSize)
 {
 	char buf[CONV_BUF];
 	char buf2[CONV_BUF];
@@ -76,7 +71,7 @@ std::string IntToStr(uint Value, int FieldSize)
 }
 	
 // function for convert int Value to string
-std::string IntToStr(int Value)
+LOGENGINE_INLINE std::string IntToStr(int Value)
 {
 	char buf[CONV_BUF];
 	sprintf_s(buf, CONV_BUF, "%d", Value);
@@ -84,7 +79,7 @@ std::string IntToStr(int Value)
 }
 
 // function for convert uint Value to string
-std::string IntToStr(uint Value)
+LOGENGINE_INLINE std::string IntToStr(uint Value)
 {
 	char buf[CONV_BUF];
 	sprintf_s(buf, CONV_BUF, "%u", Value);
@@ -92,7 +87,7 @@ std::string IntToStr(uint Value)
 }
 
 // function for convert ulong Value to string
-std::string IntToStr(ulong Value)
+LOGENGINE_INLINE std::string IntToStr(ulong Value)
 {
 	char buf[CONV_BUF];
 	sprintf_s(buf, CONV_BUF, "%lu", Value);
@@ -100,7 +95,7 @@ std::string IntToStr(ulong Value)
 }
 
 // function for convert double Value to string
-std::string FloatToStr(double Value)
+LOGENGINE_INLINE std::string FloatToStr(double Value)
 {
 	char buf[50];
 	sprintf_s(buf, 50, "%f", Value);
@@ -112,7 +107,7 @@ std::string FloatToStr(double Value)
 
 
 // function for convert int Value to string
-std::string IntToStr(int Value, int FieldSize)
+LOGENGINE_INLINE std::string IntToStr(int Value, int FieldSize)
 {
 	char buf[CONV_BUF];
 	char buf2[CONV_BUF];
@@ -123,7 +118,7 @@ std::string IntToStr(int Value, int FieldSize)
 }
 
 // function for convert uint Value to string
-std::string IntToStr(uint Value, int FieldSize)
+LOGENGINE_INLINE std::string IntToStr(uint Value, int FieldSize)
 {
 	char buf[CONV_BUF];
 	char buf2[CONV_BUF];
@@ -134,7 +129,7 @@ std::string IntToStr(uint Value, int FieldSize)
 }
 
 // function for convert int Value to string
-std::string IntToStr(int Value)
+LOGENGINE_INLINE std::string IntToStr(int Value)
 {
 	char buf[CONV_BUF];
 	sprintf(buf, "%d", Value);
@@ -142,7 +137,7 @@ std::string IntToStr(int Value)
 }
 
 // function for convert uint Value to string
-std::string IntToStr(uint Value)
+LOGENGINE_INLINE std::string IntToStr(uint Value)
 {
 	char buf[CONV_BUF];
 	sprintf(buf, "%u", Value);
@@ -150,7 +145,7 @@ std::string IntToStr(uint Value)
 }
 
 // function for convert ulong Value to string
-std::string IntToStr(ulong Value)
+LOGENGINE_INLINE std::string IntToStr(ulong Value)
 {
 	char buf[CONV_BUF];
 	sprintf(buf, "%lu", Value);
@@ -159,7 +154,7 @@ std::string IntToStr(ulong Value)
 
 
 // function for convert double Value to string
-std::string FloatToStr(double Value)
+LOGENGINE_INLINE std::string FloatToStr(double Value)
 {
 	char buf[50];
 	sprintf(buf, "%f", Value);
@@ -171,7 +166,7 @@ std::string FloatToStr(double Value)
 #endif //WIN32
 
 // function for convert bool Value to string
-std::string BoolToStr(bool Value)
+LOGENGINE_INLINE std::string BoolToStr(bool Value)
 {
 	if(Value)
 		return "1";
@@ -179,13 +174,13 @@ std::string BoolToStr(bool Value)
 		return "0";
 
 }
-bool StrToBool(const std::string& Value)
+LOGENGINE_INLINE bool StrToBool(const std::string& Value)
 {
 	return EqualNCase<std::string>(Value, "1") || EqualNCase<std::string>(Value, "yes") || EqualNCase<std::string>(Value, "true");
 }
 
 // extracts filename from path with filename
-std::string ExtractFileName(const std::string& FileName)
+LOGENGINE_INLINE std::string ExtractFileName(const std::string& FileName)
 {
 	size_t i = FileName.length();
 	if (i == 0) return "";
@@ -204,7 +199,7 @@ std::string ExtractFileName(const std::string& FileName)
 }
 
 // extracts file dir from path with filename
-std::string ExtractFileDir(const std::string& FileName)
+LOGENGINE_INLINE std::string ExtractFileDir(const std::string& FileName)
 {
 	size_t i = FileName.length();
 	if (i == 0) return "";
@@ -222,7 +217,7 @@ std::string ExtractFileDir(const std::string& FileName)
 	return FileName.substr(0, i);
 }
 
-std::string ExtractFileExt(const std::string& FileName)
+LOGENGINE_INLINE std::string ExtractFileExt(const std::string& FileName)
 {
 	size_t i = FileName.length();
 	if (i == 0) return "";
@@ -248,7 +243,7 @@ std::string ExtractFileExt(const std::string& FileName)
 		return "";
 }
 
-std::string StripFileExt(const std::string& FileName)
+LOGENGINE_INLINE std::string StripFileExt(const std::string& FileName)
 {
 	size_t i = FileName.length();
 	if (i == 0) return "";
@@ -274,7 +269,7 @@ std::string StripFileExt(const std::string& FileName)
 		return FileName;
 }
 
-std::string StringReplace(const std::string& S, const std::string& SearchPattern, const std::string& ReplacePattern)
+LOGENGINE_INLINE std::string StringReplace(const std::string& S, const std::string& SearchPattern, const std::string& ReplacePattern)
 {
 	if(SearchPattern.size() == 0 || S.size() == 0)
 		return "";
@@ -304,12 +299,12 @@ std::string StringReplace(const std::string& S, const std::string& SearchPattern
 
 #define DATETIME_BUF 100
 
-tm_point GetCurrTimePoint()
+LOGENGINE_INLINE tm_point GetCurrTimePoint()
 {
 	return std::chrono::system_clock::now();
 }
 
-struct tm time_t_to_tm(const time_t t)
+LOGENGINE_INLINE struct tm time_t_to_tm(const time_t t)
 {
 #ifdef WIN32
 	struct tm ttm;
@@ -320,7 +315,7 @@ struct tm time_t_to_tm(const time_t t)
 #endif
 }
 
-struct tm GetCurrDateTime()
+LOGENGINE_INLINE struct tm GetCurrDateTime()
 {
 	const std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	//struct tm t;
@@ -329,7 +324,7 @@ struct tm GetCurrDateTime()
 }
 
 // retrieves current time as std::string
-std::string GetCurrTimeAsString(void)
+LOGENGINE_INLINE std::string GetCurrTimeAsString(void)
 { 
 	std::chrono::system_clock::time_point stime = GetCurrTimePoint();
 	std::chrono::system_clock::time_point sstime = std::chrono::time_point_cast<std::chrono::seconds>(stime); // round to seconds
@@ -353,7 +348,7 @@ std::string GetCurrTimeAsString(void)
 }
 
 // retrieves current date as std::string
-std::string GetCurrDateAsString(void)
+LOGENGINE_INLINE std::string GetCurrDateAsString(void)
 {  	
 	struct tm t = GetCurrDateTime();
     char ss[DATETIME_BUF];
@@ -364,7 +359,7 @@ std::string GetCurrDateAsString(void)
 }
 
 // retrieves current datetime as string
-std::string GetCurrDateTimeAsString(void)
+LOGENGINE_INLINE std::string GetCurrDateTimeAsString(void)
 {
 	struct tm t = GetCurrDateTime();
 	char ss[DATETIME_BUF];
@@ -374,7 +369,7 @@ std::string GetCurrDateTimeAsString(void)
 }
 
 // converts native datetime value into string
-std::string DateTimeToStr(const time_t t)
+LOGENGINE_INLINE std::string DateTimeToStr(const time_t t)
 {
 	struct tm ttm = time_t_to_tm(t);
 	char ss[DATETIME_BUF];
@@ -384,7 +379,7 @@ std::string DateTimeToStr(const time_t t)
 }
 
 // converts native datetime value into string
-std::string DateTimeToStr(struct tm const& t)
+LOGENGINE_INLINE std::string DateTimeToStr(struct tm const& t)
 {
 	char ss[DATETIME_BUF];
 	strftime(ss, DATETIME_BUF, "%F %T", &t);
@@ -393,7 +388,7 @@ std::string DateTimeToStr(struct tm const& t)
 }
 
 // gets formatted current datetime
-std::string FormatCurrDateTime(const std::string& FormatStr)
+LOGENGINE_INLINE std::string FormatCurrDateTime(const std::string& FormatStr)
 {   	
 	struct tm t = GetCurrDateTime();
 	char ss[DATETIME_BUF];
@@ -402,7 +397,7 @@ std::string FormatCurrDateTime(const std::string& FormatStr)
 	return ss;
 }
 
-std::string DelCRLF(std::string s)
+LOGENGINE_INLINE std::string DelCRLF(std::string s)
 {
 	// remove any leading and traling \n and \r, just in case.
 	size_t strBegin = s.find_first_not_of("\0x0D\0x0A");
@@ -423,9 +418,9 @@ std::string DelCRLF(std::string s)
 	}
 	//res = res.erase(strlen(res.c_str()));
 	return res; */
-/*}
+}
 
-std::string trimSPCRLF(std::string S)
+LOGENGINE_INLINE std::string trimSPCRLF(std::string S)
 {
 	// remove any leading and traling spaces, tabs and \n, \r.
 	size_t strBegin = S.find_first_not_of(" \t\0x0D\0x0A");
@@ -436,7 +431,7 @@ std::string trimSPCRLF(std::string S)
 	return S;
 }
 
-std::string trim(std::string s)
+LOGENGINE_INLINE std::string trim(std::string s)
 {
 	// remove any leading and traling spaces tabs.
 	size_t strBegin = s.find_first_not_of(" \t");
@@ -447,7 +442,7 @@ std::string trim(std::string s)
 	return s;
 }
 
-std::string trimLeft(std::string str)
+LOGENGINE_INLINE std::string trimLeft(std::string str)
 {
 	// remove any leading spaces and tabs
 	size_t strBegin = str.find_first_not_of(" \t");
@@ -456,7 +451,7 @@ std::string trimLeft(std::string str)
 	return str;
 }
 
-std::string trimRight(std::string str)
+LOGENGINE_INLINE std::string trimRight(std::string str)
 {
 	// remove any trailing spaces and tabs
 	size_t strEnd = str.find_last_not_of(" \t");
@@ -500,7 +495,7 @@ int CompareNCase(const std::string& str1, const std::string& str2)
 //#endif
 } */
 
-/*bool isUInt(std::string & value)
+LOGENGINE_INLINE bool isUInt(std::string & value)
 {
 	if (value.size() == 0) return false;
 
@@ -510,7 +505,7 @@ int CompareNCase(const std::string& str1, const std::string& str2)
 	return value.find_first_not_of("0123456789", start) == std::string::npos;
 }
 
-uint GetThreadID()
+LOGENGINE_INLINE uint GetThreadID()
 {
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
@@ -519,7 +514,7 @@ uint GetThreadID()
 	return thrID;
 }
 
-uint GetThreadID(const std::thread::id& id)
+LOGENGINE_INLINE uint GetThreadID(const std::thread::id& id)
 {
 	std::stringstream ss;
 	ss << id;
@@ -532,10 +527,10 @@ static char mytolower(int c) // to eliminate compile warning "warning C4244: '='
 {
 	return static_cast<char>(tolower(c));
 }
-std::string StrToLower(std::string str) // needs to be passed by value
+LOGENGINE_INLINE std::string StrToLower(std::string str) // needs to be passed by value
 {
 	std::transform(str.begin(), str.end(), str.begin(), mytolower);
 	return str;
 }
-*/
+
 

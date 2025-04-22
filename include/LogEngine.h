@@ -11,17 +11,19 @@
 
 #include <string>
 #include <functional>
+#include "DynamicArrays.h"
+#include "Common.h"
+#include "Compare.h"
+#include "LogEvent.h"
+#include "Properties.h"
 #include "Logger.h"
 #include "RotatingFileSink.h"
+#include "version.h"
 
 LOGENGINE_NS_BEGIN
 
-#define APPNAME_PROPERTY  "AppName"
-#define APPVERSION_PROPERTY "AppVersion"
-
-
 void SetProperty(const std::string& name, const std::string& value);
-std::string GetProperty(const std::string& name, const std::string& defaultValue = "");
+std::string GetProperty(const std::string& name, const std::string& defaultValue /*= ""*/);
 bool PropertyExist(const std::string& name);
 
 void ShutdownLoggers();
@@ -67,7 +69,11 @@ Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback
 
 void InitFromFile(const std::string& fileName);
 
-
 LOGENGINE_NS_END
 
+#ifdef LOGENGINE_HEADER_ONLY
+#include "LogEngine-hdr.h"
+#endif
+
 #endif //LOG_ENGINE_H
+

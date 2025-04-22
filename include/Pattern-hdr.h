@@ -7,16 +7,11 @@
  */
 
 //#include "LogEngine.h"
-
-#ifndef LOGENGINE_HEADER_ONLY
 #include "Pattern.h"
-#include "Pattern-hdr.h"
-#endif
 
-/*
 LOGENGINE_NS_BEGIN
 
-std::string Pattern::Format(const LogEvent& event)
+LOGENGINE_INLINE std::string Pattern::Format(const LogEvent& event)
 {
 	std::string result;
 
@@ -28,8 +23,9 @@ std::string Pattern::Format(const LogEvent& event)
 	return result;
 }
 
+std::string GetProperty(const std::string& name, const std::string& defaultValue = "");
 
-void Pattern::parsePattern(const std::string& pattern)
+LOGENGINE_INLINE void Pattern::parsePattern(const std::string& pattern)
 {
 	static const THArray<std::string> placeHolders = { "", DateMacro, TimeMacro, DateTimeMacro, MessageMacro, ThreadMacro, AppNameMacro, AppVersionMacro, OSMacro, OSVersionMacro, LogLevelMacro };
 
@@ -103,16 +99,21 @@ void Pattern::parsePattern(const std::string& pattern)
 	}
 }
 
-void Pattern::clearHolders()
+LOGENGINE_INLINE void Pattern::clearHolders()
 {
 	for (auto hld: FHolders)
 	{
 		delete hld;
 	}
 
+	/*for (uint i = 0; i < FHolders.Count(); i++)
+	{
+		Holder* h = FHolders[i];
+		delete h;
+	}*/
+
 	FHolders.Clear();
 }
 
 
 LOGENGINE_NS_END
-*/
