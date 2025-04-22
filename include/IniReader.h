@@ -11,18 +11,18 @@
 #include <string>
 #include <fstream>
 #include "Common.h"
-#include <DynamicArrays.h>
+#include "DynamicArrays.h"
 
 #define FIO_EXCEPTION_PREFIX "Ini file exception : "
 
-class file_exception : public std::exception
+class FileException : public std::exception
 {
 public:
-	file_exception(const char* Message) { Text = Message; whatText = FIO_EXCEPTION_PREFIX + std::string(Message); }
-	file_exception(const std::string& Message) { Text = Message; whatText = FIO_EXCEPTION_PREFIX + Message; }
-	file_exception(const file_exception& ex) { Text = ex.Text; whatText = ex.whatText; }
-	~file_exception() noexcept override {}
-	file_exception& operator=(const file_exception& ex) { Text = ex.Text; whatText = ex.whatText;	return *this; }
+	FileException(const char* Message) { Text = Message; whatText = FIO_EXCEPTION_PREFIX + std::string(Message); }
+	FileException(const std::string& Message) { Text = Message; whatText = FIO_EXCEPTION_PREFIX + Message; }
+	FileException(const FileException& ex) { Text = ex.Text; whatText = ex.whatText; }
+	~FileException() noexcept override {}
+	FileException& operator=(const FileException& ex) { Text = ex.Text; whatText = ex.whatText;	return *this; }
 	const char* what() const noexcept override { return whatText.c_str(); }
 private:
 	std::string Text;
@@ -110,7 +110,7 @@ public:
 		std::ifstream fin(fileName, std::ios::in /* | std::ios::binary*/);
 
 		if (fin.fail())
-			throw file_exception("Cannot open file '" + fileName + "' for reading.");
+			throw FileException("Cannot open file '" + fileName + "' for reading.");
 
 		std::string line;
 		std::string leftSide, rightSide;

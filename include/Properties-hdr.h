@@ -6,7 +6,7 @@
 * See the COPYING file for the terms of usage and distribution.
 */
 
-#include <limits.h>
+//#include <limits.h>
 #include <istream>
 #include "Properties.h"
 

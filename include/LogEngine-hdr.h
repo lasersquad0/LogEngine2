@@ -8,7 +8,7 @@
 
 #include "RotatingFileSink.h"
 #include "IniReader.h"
-#include "LogEngine.h"
+//#include "LogEngine.h"
 
 LOGENGINE_NS_BEGIN
 
@@ -24,11 +24,16 @@ private:
 	// logger names are case INsensitive
 	THash<std::string, Logger*, CompareStringNCase> FLoggers;
 
-	Registry() {}
-	~Registry() 
-	{ 
-		Shutdown(); 
+	Registry() 
+	{
+		// adding default logger
+		Logger* logger = new Logger("");
+		FLoggers.SetValue("", logger);
+		std::shared_ptr<StdoutSink> sink(new StdoutSink("_stdout_"));
+		logger->AddSink(sink);
 	}
+
+	~Registry() { Shutdown(); }
 public:
 	Registry(const Registry&) = delete;
 	Registry& operator=(const Registry&) = delete;
@@ -44,8 +49,22 @@ public:
 	uint Count() { return FLoggers.Count(); }
 	bool IfExists(const std::string& loggerName) { return FLoggers.IfExists(loggerName); }
 
+	Logger& GetDefaultLogger()
+	{
+		return *FLoggers.GetValue("");
+	}
+
+	void SetDefaultLogger(Logger& logger)
+	{
+		FLoggers.SetValue("", &logger);
+	}
+
 	Logger& RegisterLogger(const std::string& loggerName)
 	{
+		// Logger name can be empty for default logger only
+		// other loggers must have non-empty name
+		if (loggerName.size() == 0) throw LogException("Logger name cannot be empty.");
+
 		Logger** loggerPtr = FLoggers.GetValuePointer(loggerName);
 		if (loggerPtr == nullptr)
 		{
@@ -99,6 +118,11 @@ LOGENGINE_INLINE uint LoggersCount()
 LOGENGINE_INLINE bool LoggerExist(const std::string& loggerName)
 {
 	return Registry::Instance().IfExists(loggerName);
+}
+
+LOGENGINE_INLINE Logger& GetDefaultLogger()
+{
+	return Registry::Instance().GetDefaultLogger();
 }
 
 // returns reference to the logger with name specified in loggerName parameter
@@ -183,6 +207,19 @@ LOGENGINE_INLINE Logger& GetCallbackLogger(const std::string& loggerName, const 
 	return logger;
 }
 
+void Log(const std::string& msg, const Levels::LogLevel ll)
+{
+	Registry::Instance().GetDefaultLogger().Log(msg, ll);
+}
+
+void Crit(const std::string& msg) { Log(msg, Levels::llCritical); }
+void Error(const std::string& msg) { Log(msg, Levels::llError); }
+void Warn(const std::string& msg) { Log(msg, Levels::llWarning); }
+void Info(const std::string& msg) { Log(msg, Levels::llInfo); }
+void Debug(const std::string& msg) { Log(msg, Levels::llDebug); }
+void Trace(const std::string& msg) { Log(msg, Levels::llTrace); }
+
+
 static uint ParseInt(std::string s, uint defaultValue = 0)
 {
 	if (s.empty()) return defaultValue;
@@ -249,7 +286,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 				sinkSectName.append(sn);
 
 				if (!reader.HasSection(sinkSectName))
-					throw file_exception("Sink section '" + sinkSectName + "' refered by logger '" + loggerName + "' not found in file '" + fileName + "'.");
+					throw FileException("Sink section '" + sinkSectName + "' refered by logger '" + loggerName + "' not found in file '" + fileName + "'.");
 
 				std::string value = reader.GetValue(sinkSectName, TYPE_PARAM, ST_DEFAULT_NAME, 0);
 				LogSinkType stype = STfromString(value);
@@ -264,7 +301,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 				{
 					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
 					if (sinkFileName.empty())
-						throw file_exception("File sink '" + sn + "' missing FileName parameter.");
+						throw FileException("File sink '" + sn + "' missing FileName parameter.");
 
 					sink = new FileSink(sn, sinkFileName);
 					
@@ -274,7 +311,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 				{
 					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
 					if (sinkFileName.empty())
-						throw file_exception("File sink '" + sn + "' missing FileName parameter.");
+						throw FileException("File sink '" + sn + "' missing FileName parameter.");
 					
 					LogRotatingStrategy strategy = RSfromString(reader.GetValue(sinkSectName, STRATEGY_PARAM, RS_DEFAULT_NAME));
 					uint maxlogsize = ParseInt(reader.GetValue(sinkSectName, MAXLOGSIZE_PARAM, DefaultMaxLogSizeStr), DefaultMaxLogSize);
@@ -290,7 +327,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 
 				sink->SetLogLevel(LLfromString(reader.GetValue(sinkSectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
 				PatternLayout* lay = new PatternLayout();
-				lay->SetAllPatterns(reader.GetValue(sinkSectName, PATTERNALL_PARAM, DefaultLinePattern, 0));  
+				lay->SetPattern(reader.GetValue(sinkSectName, PATTERNALL_PARAM, DefaultLinePattern, 0));  
 				if (reader.HasValue(sinkSectName, CRITPATTERN_PARAM))  lay->SetCritPattern(reader.GetValue(sinkSectName,  CRITPATTERN_PARAM));
 				if (reader.HasValue(sinkSectName, ERRORPATTERN_PARAM)) lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM));
 				if (reader.HasValue(sinkSectName, WARNPATTERN_PARAM))  lay->SetWarnPattern(reader.GetValue(sinkSectName,  WARNPATTERN_PARAM));
@@ -301,10 +338,8 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 				sink->SetLayout(lay);
 				logger.AddSink(std::shared_ptr<Sink>(sink));
 			}
-
 		}
 	}
-
 }
 
 /*

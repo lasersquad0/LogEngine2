@@ -9,6 +9,7 @@
 #pragma once
 
 #include <string>
+#include "Common.h"
 #include "LogEvent.h"
 #include "PatternLayout.h"
 
@@ -66,7 +67,7 @@ public:
 	// sets log line pattern for all log lines
 	void SetPattern(const std::string& pattern)
 	{
-		FLayout->SetAllPatterns(pattern);
+		FLayout->SetPattern(pattern);
 	}
 
 	virtual std::string FormatString(const LogEvent& e)
@@ -86,7 +87,7 @@ public:
 	// sets log line pattern for all log lines
 	void SetDefaultPattern()
 	{
-		FLayout->SetAllDefaultPatterns();
+		FLayout->SetDefaultPattern();
 	}
 
 	/**

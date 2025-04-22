@@ -30,6 +30,8 @@ void ShutdownLoggers();
 uint LoggersCount();
 bool LoggerExist(const std::string& loggerName);
 
+Logger& GetDefaultLogger();
+
 Logger& GetLogger(const std::string& loggerName);
 
 Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName);
@@ -45,6 +47,58 @@ Logger& GetMultiLogger(const std::string& loggerName, SinkList& sinks);
 Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std::shared_ptr<Sink>> list);
 
 Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback& callback);
+
+void Log(const std::string& msg, const Levels::LogLevel ll);
+
+void Crit(const std::string& msg);
+void Error(const std::string& msg);
+void Warn(const std::string& msg);
+void Info(const std::string& msg);
+void Debug(const std::string& msg);
+void Trace(const std::string& msg);
+
+template<class... Args>
+void LogFmt(Levels::LogLevel ll, const std::format_string<Args...> fmt, Args&&... args)
+{
+	GetDefaultLogger().LogFmt(ll, fmt, args...);
+}
+
+template<class ... Args>
+void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
+{
+	LogFmt(Levels::llCritical, fmt, std::forward<Args>(args)...);
+}
+
+template<class ... Args>
+void ErrorFmt(const std::format_string<Args...> fmt, Args&& ...args)
+{
+	LogFmt(Levels::llError, fmt, std::forward<Args>(args)...);
+}
+
+template<class ... Args>
+void WarnFmt(const std::format_string<Args...> fmt, Args&& ...args)
+{
+	LogFmt(Levels::llWarning, fmt, std::forward<Args>(args)...);
+}
+
+template<class ... Args>
+void InfoFmt(const std::format_string<Args...> fmt, Args&& ...args)
+{
+	LogFmt(Levels::llInfo, fmt, std::forward<Args>(args)...);
+}
+
+template<class ... Args>
+void DebugFmt(const std::format_string<Args...> fmt, Args&& ...args)
+{
+	LogFmt(Levels::llDebug, fmt, std::forward<Args>(args)...);
+}
+
+template<class ... Args>
+void TraceFmt(const std::format_string<Args...> fmt, Args&& ...args)
+{
+	LogFmt(Levels::llTrace, fmt, std::forward<Args>(args)...);
+}
+
 
 // parameters for loggers
 #define LOGGER_PREFIX  "logger."

@@ -11,6 +11,7 @@
 #include <string>
 #include <iostream>
 #include <functional>
+#include "Common.h"
 #include "Sink.h"
 #include "LogEvent.h"
 #include "FileStream.h"

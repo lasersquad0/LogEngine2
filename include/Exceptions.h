@@ -8,7 +8,9 @@
 
 #pragma once
 
+#include <stdarg.h>
 #include <string>
+#include "Common.h"
 
 LOGENGINE_NS_BEGIN
 
