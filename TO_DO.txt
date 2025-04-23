@@ -2,6 +2,8 @@ TODO
 ----
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
 
+* Add tests for threadsafety parameter in .lfg file
+
 * [FIXED] Rotating logger should preserve filename extension when creating timestamp files.
 
 * add possibility to define my own line macros placeholders
@@ -10,16 +12,17 @@ This file contains an imcomplete list of things to be done, not necessarily orde
 
 * make benchmarks and publish them in users guide
 
-* two types of loggers: single threaded and multithreaded
+* [DONE] Add possibility of having two types of loggers: "single threaded" (thread UNSAFE) and "multi threaded" (thread SAFE).
+Thread safe logger can be called from multiple threads simultaneously. It uses std:: mutex for synchronization.
 
-* make it header only???
+* [DONE] Add ability to use LogEngine library as header only lib. "Header only" mode will be turned on by defining global symbol LOGENGINE_HEADDER_ONLY in project settings. After that it is anough to do #include "LogEngine.h" to start using the library.
 
 * think of error_hanler for specific logger. what errors we should track?
 e.g. cannot create log file during GetLogger operation or during logger construction without GetLogger call
 
 * [DONE] Add callback logger type. User will be able to provide his own function (or lambda) that will be called on each log message of this logger.
 
-* Default logger?? like LogEngine::Warn() LogEngine::ErrorFmt(), etc.
+* [DONE] Added default logger. This is stdout loggers that can be accessed like this LogEngine::Warn(), LogEngine::ErrorFmt(), etc.
 
 * [DONE] .h file with LogEngine version defines LOGENGINE_VER_MAJOR, LOGENGINE_VER_MINOR, LOGENGINE_VER_PATCH.
 
@@ -37,7 +40,7 @@ e.g. cannot create log file during GetLogger operation or during logger construc
 
 * [DONE] add configuration to write logs into stdout and stderr
 
-* Add possibility to write logs with << operator LOG(INFO) << "logstr1" << "logstr2"
+* Add possibility to write logs with << operator: LOG(INFO) << "logstr1" << "logstr2"
 
 * [DONE] add Async mode for writing logs. where logs are put into memory container and another thread performs actual routing and writing to file(s).
 
