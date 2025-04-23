@@ -23,20 +23,20 @@ void TStreamTest::testMemoryStream1()
 {
 	TMemoryStream stream;
 
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(0, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(0, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(0, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromCurrent));
 
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(1, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(1, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, smFromCurrent));
 
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(100, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(55, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-10, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(500, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-500, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(100, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(55, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-1, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-10, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(500, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-500, smFromCurrent));
 }
 
 void TStreamTest::testMemoryStream2()
@@ -46,37 +46,37 @@ void TStreamTest::testMemoryStream2()
 
 	stream.SetBuffer((uint8_t*)str, 10);
 
-	CPPUNIT_ASSERT_EQUAL(5l, stream.SeekR(5, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(6l, stream.SeekR(6, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(0, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(99, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-1, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-10, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-0, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-99, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(5ull, stream.SeekR(5, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(6ull, stream.SeekR(6, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(99, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-1, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-10, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-99, smFromBegin));
 
-	CPPUNIT_ASSERT_EQUAL(5l, stream.SeekR(5, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(4l, stream.SeekR(6, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(0, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(99, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(-1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(-10, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(-0, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(-99, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(5ull, stream.SeekR(5, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(4ull, stream.SeekR(6, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(0, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(99, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(-1, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(-10, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(-0, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(-99, smFromEnd));
 
 	//set position to beginning
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromBegin));
 
-	CPPUNIT_ASSERT_EQUAL(5l, stream.SeekR(5, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(6, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(0, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(99, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(9l, stream.SeekR(-1, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(7l, stream.SeekR(-2, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(7l, stream.SeekR(-0, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-99, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekR(-99, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekR(99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(5ull, stream.SeekR(5, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(6, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(0, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(9ull, stream.SeekR(-1, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(7ull, stream.SeekR(-2, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(7ull, stream.SeekR(-0, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekR(99, smFromCurrent));
 }
 
 
@@ -84,20 +84,20 @@ void TStreamTest::testMemoryStream3()
 {
 	TMemoryStream stream;
 
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(0, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(0, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(0, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(0, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(0, smFromCurrent));
 
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(1, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(1, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(1, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(1, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(1, smFromCurrent));
 
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(100, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(55, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-10, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(500, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-500, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(100, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(55, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-1, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-10, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(500, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-500, smFromCurrent));
 }
 
 void TStreamTest::testMemoryStream4()
@@ -107,37 +107,37 @@ void TStreamTest::testMemoryStream4()
 
 	stream.SetBuffer((uint8_t*)str, 10);
 
-	CPPUNIT_ASSERT_EQUAL(5l, stream.SeekW(5, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(6l, stream.SeekW(6, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(0, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(99, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-1, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-10, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-0, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-99, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(5ull, stream.SeekW(5, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(6ull, stream.SeekW(6, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(99, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-1, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-10, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-99, smFromBegin));
 
-	CPPUNIT_ASSERT_EQUAL(5l, stream.SeekW(5, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(4l, stream.SeekW(6, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(0, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(99, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(-1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(-10, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(-0, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(-99, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(5ull, stream.SeekW(5, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(4ull, stream.SeekW(6, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(0, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(99, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(-1, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(-10, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(-0, smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(-99, smFromEnd));
 
 	//set position to beginning
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(0, smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(0, smFromBegin));
 
-	CPPUNIT_ASSERT_EQUAL(5l, stream.SeekW(5, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(6, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(0, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(99, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(9l, stream.SeekW(-1, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(7l, stream.SeekW(-2, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(7l, stream.SeekW(-0, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-99, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(0l, stream.SeekW(-99, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(10l, stream.SeekW(99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(5ull, stream.SeekW(5, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(6, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(0, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(9ull, stream.SeekW(-1, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(7ull, stream.SeekW(-2, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(7ull, stream.SeekW(-0, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(-99, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(10ull, stream.SeekW(99, smFromCurrent));
 }
 
 void TStreamTest::testMemoryStream5()

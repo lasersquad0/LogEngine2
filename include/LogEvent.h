@@ -38,7 +38,6 @@ inline const std::string& LLtoCapsString(const Levels::LogLevel ll) { return Log
 inline const char* LLtoShortString(const Levels::LogLevel ll) { return LogLevelShortNames[ll]; }
 
 
-
 inline Levels::LogLevel LLfromString(std::string name)
 {
 	//std::transform(name.begin(), name.end(), name.begin(), mytolower);
@@ -51,12 +50,12 @@ inline Levels::LogLevel LLfromString(std::string name)
 	if (name == "warn") return Levels::llWarning;
 	if (name == "err") return Levels::llError;
 
-	return LL_DEFAULT; // Levels::llOff;
+	return LL_DEFAULT;
 }
 
-enum LogSinkType { stStdout, stStderr, stFile, stRotatingFile, stString, n_SinkTypes };
+enum LogSinkType { stStdout, stStderr, stFile, stRotatingFile, stString, stCallback, n_SinkTypes };
 
-#define ST_NAMES { "stdout", "stderr", "file", "rotatingfile", "string" }
+#define ST_NAMES { "stdout", "stderr", "file", "rotatingfile", "string", "callback" }
 #define ST_DEFAULT stStdout
 #define ST_DEFAULT_NAME "Stdout"
 
@@ -70,7 +69,24 @@ inline LogSinkType STfromString(std::string name) // parameter needs to be passe
 	if (it != std::end(SinkTypeNames))
 		return static_cast<LogSinkType>(std::distance(std::begin(SinkTypeNames), it));
 
-	return ST_DEFAULT; 
+	return ST_DEFAULT;
+}
+
+enum LogSinkThreaded { sthSingle, sthMulti, n_SinkThreaded };
+
+#define STH_NAMES { "single", "multi" }
+#define STH_DEFAULT sthSingle
+#define STH_DEFAULT_NAME "single"
+
+static const std::string SinkThreadedNames[] STH_NAMES;
+
+inline LogSinkThreaded STHfromString(std::string name) // parameter needs to be passed by value
+{
+	auto it = std::find(std::begin(SinkThreadedNames), std::end(SinkThreadedNames), StrToLower(name));
+	if (it != std::end(SinkThreadedNames))
+		return static_cast<LogSinkThreaded>(std::distance(std::begin(SinkThreadedNames), it));
+
+	return STH_DEFAULT;
 }
 
 

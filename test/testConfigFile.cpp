@@ -105,7 +105,7 @@ void ConfigFileTest::testConfigFile6()
     CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
     auto sink = logger1.GetSink("Siii");
     
-    RotatingFileSink* sinkPtr = dynamic_cast<RotatingFileSink*>(sink.get());
+    RotatingFileSinkST* sinkPtr = dynamic_cast<RotatingFileSinkST*>(sink.get());
     CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == sinkPtr); // check sink type
   
@@ -124,7 +124,7 @@ void ConfigFileTest::testConfigFile7()
     auto sink = logger1.GetSink("SuperSink");
 
     CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
-    RotatingFileSink* rsink = dynamic_cast<RotatingFileSink*>(sink.get());
+    RotatingFileSinkMT* rsink = dynamic_cast<RotatingFileSinkMT*>(sink.get());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == rsink); // check sink type
     CPPUNIT_ASSERT_EQUAL(std::string("sink.super.log"), rsink->getFileName());
     CPPUNIT_ASSERT_EQUAL(DefaultMaxBackupIndex, rsink->GetMaxBackupIndex()); 
@@ -151,7 +151,7 @@ void ConfigFileTest::testConfigFile8()
     auto sink = logger1.GetSink("SuperFSink");
 
     CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
-    FileSink* fsink = dynamic_cast<FileSink*>(sink.get());
+    FileSinkST* fsink = dynamic_cast<FileSinkST*>(sink.get());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == fsink); // check sink type
     CPPUNIT_ASSERT_EQUAL(std::string("sink super.log"), fsink->getFileName());
     PatternLayout* lay = /*dynamic_cast<PatternLayout*>*/(fsink->GetLayout());
@@ -161,6 +161,12 @@ void ConfigFileTest::testConfigFile8()
     CPPUNIT_ASSERT_EQUAL(std::string("C %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(Levels::llCritical));
     CPPUNIT_ASSERT_EQUAL(std::string("I %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llInfo));
 
+}
+
+// bad LFG file with missing Sink section
+void ConfigFileTest::testConfigFile9()
+{
+    CPPUNIT_ASSERT_THROW(InitFromFile(TEST_FILES_FOLDER "test9.lfg"), FileException);
 }
 
 void ConfigFileTest::testConfigFile20()
@@ -175,10 +181,10 @@ void ConfigFileTest::testConfigFile20()
     CPPUNIT_ASSERT_EQUAL(2u, logger1.SinkCount());
     auto sink = logger1.GetSink("s1");
     CPPUNIT_ASSERT_EQUAL(Levels::llTrace, sink->GetLogLevel());
-    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSink*>(sink.get())); // check sink type
+    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSinkST*>(sink.get())); // check sink type
     sink = logger1.GetSink("s2");
     CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
-    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<StdoutSink*>(sink.get())); // check sink type
+    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<StdoutSinkMT*>(sink.get())); // check sink type
 
     Logger& logger2 = GetLogger("Second");
     CPPUNIT_ASSERT_EQUAL(Levels::llWarning, logger2.GetLogLevel());
@@ -187,17 +193,17 @@ void ConfigFileTest::testConfigFile20()
 
     sink = logger2.GetSink("s3");
     CPPUNIT_ASSERT_EQUAL(Levels::llTrace, sink->GetLogLevel());
-    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSink*>(sink.get())); // check sink type
+    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSinkST*>(sink.get())); // check sink type
 
     sink = logger2.GetSink("s2");
     CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
-    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<StdoutSink*>(sink.get())); // check sink type
+    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<StdoutSinkMT*>(sink.get())); // check sink type
     
     sink = logger2.GetSink("rotating");
-    RotatingFileSink* rsink = dynamic_cast<RotatingFileSink*>(sink.get());
+    RotatingFileSinkST* rsink = dynamic_cast<RotatingFileSinkST*>(sink.get());
     CPPUNIT_ASSERT_EQUAL(LL_DEFAULT, sink->GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == rsink); // check sink type
-    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSink*>(sink.get())); // check sink type
+    CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSinkST*>(sink.get())); // check sink type
     CPPUNIT_ASSERT_EQUAL(6*1024ull, rsink->GetMaxLogSize());
     CPPUNIT_ASSERT_EQUAL(5u, rsink->GetMaxBackupIndex());
     CPPUNIT_ASSERT_EQUAL(rsNumbers, rsink->GetStrategy());
@@ -211,6 +217,4 @@ void ConfigFileTest::testConfigFile21()
     printf("\n");
     printf(ver.c_str());
 }
-
-
 

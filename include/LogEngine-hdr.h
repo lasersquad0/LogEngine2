@@ -6,9 +6,9 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
+#include "FileSink.h"
 #include "RotatingFileSink.h"
 #include "IniReader.h"
-//#include "LogEngine.h"
 
 LOGENGINE_NS_BEGIN
 
@@ -29,7 +29,8 @@ private:
 		// adding default logger
 		Logger* logger = new Logger("");
 		FLoggers.SetValue("", logger);
-		std::shared_ptr<StdoutSink> sink(new StdoutSink("_stdout_"));
+		// by default we use single threaded sink here
+		std::shared_ptr<StdoutSinkST> sink(new StdoutSinkST("_stdout_"));
 		logger->AddSink(sink);
 	}
 
@@ -135,44 +136,86 @@ LOGENGINE_INLINE Logger& GetLogger(const std::string& loggerName)
 
 // returns reference to the file logger with name specified in loggerName parameter
 // if logger with specified name does not exist new logger is created and one FileSink is added to thie logger
-LOGENGINE_INLINE Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName)
+LOGENGINE_INLINE Logger& GetFileLoggerST(const std::string& loggerName, const std::string& fileName)
 {
 	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
 
-	auto sink = std::make_shared<FileSink>(loggerName, fileName); //TODO may be use file name as Sink name instead of logger name?
+	auto sink = std::make_shared<FileSinkST>(loggerName, fileName); //TODO may be use file name as Sink name instead of logger name?
 	logger.AddSink(sink);
 
 	return logger;
 }
 
-LOGENGINE_INLINE Logger& GetRotatingFileLogger(const std::string& loggerName, const std::string& fileName, ullong maxLogSize, LogRotatingStrategy strategy, uint maxBackupIndex)
+LOGENGINE_INLINE Logger& GetFileLoggerMT(const std::string& loggerName, const std::string& fileName)
 {
 	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
 
-	auto sink = std::make_shared<RotatingFileSink>(loggerName, fileName, maxLogSize, strategy, maxBackupIndex); //TODO may be use file name as Sink name instead of logger name?
+	auto sink = std::make_shared<FileSinkMT>(loggerName, fileName); //TODO may be use file name as Sink name instead of logger name?
 	logger.AddSink(sink);
 
 	return logger;
 }
 
-LOGENGINE_INLINE Logger& GetStdoutLogger(const std::string& loggerName)
+LOGENGINE_INLINE Logger& GetRotatingFileLoggerST(const std::string& loggerName, const std::string& fileName, ullong maxLogSize, LogRotatingStrategy strategy, uint maxBackupIndex)
+{
+	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
+	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
+
+	auto sink = std::make_shared<RotatingFileSinkST>(loggerName, fileName, maxLogSize, strategy, maxBackupIndex); //TODO may be use file name as Sink name instead of logger name?
+	logger.AddSink(sink);
+
+	return logger;
+}
+
+LOGENGINE_INLINE Logger& GetRotatingFileLoggerMT(const std::string& loggerName, const std::string& fileName, ullong maxLogSize, LogRotatingStrategy strategy, uint maxBackupIndex)
+{
+	Logger& logger = GetLogger(loggerName); // TODO what if second logger has the same logger name, but different file name???
+	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
+
+	auto sink = std::make_shared<RotatingFileSinkMT>(loggerName, fileName, maxLogSize, strategy, maxBackupIndex); //TODO may be use file name as Sink name instead of logger name?
+	logger.AddSink(sink);
+
+	return logger;
+}
+
+LOGENGINE_INLINE Logger& GetStdoutLoggerST(const std::string& loggerName)
 {
 	Logger& logger = GetLogger(loggerName); //TODO what to do when logger with the same name but another type (e.g. FileLogger) already exists. 
 	if (logger.SinkCount() > 0) return logger; // this is existed logger
 
-	auto sink = std::make_shared<StdoutSink>(loggerName);
+	auto sink = std::make_shared<StdoutSinkST>(loggerName);
 	logger.AddSink(sink);
 	return logger;
 }
 
-LOGENGINE_INLINE Logger& GetStderrLogger(const std::string& loggerName)
+LOGENGINE_INLINE Logger& GetStdoutLoggerMT(const std::string& loggerName)
+{
+	Logger& logger = GetLogger(loggerName); //TODO what to do when logger with the same name but another type (e.g. FileLogger) already exists. 
+	if (logger.SinkCount() > 0) return logger; // this is existed logger
+
+	auto sink = std::make_shared<StdoutSinkMT>(loggerName);
+	logger.AddSink(sink);
+	return logger;
+}
+
+LOGENGINE_INLINE Logger& GetStderrLoggerST(const std::string& loggerName)
 {
 	Logger& logger = GetLogger(loggerName);
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
 
-	auto sink = std::make_shared<StderrSink>(loggerName);
+	auto sink = std::make_shared<StderrSinkST>(loggerName);
+	logger.AddSink(sink);
+	return logger;
+}
+
+LOGENGINE_INLINE Logger& GetStderrLoggerMT(const std::string& loggerName)
+{
+	Logger& logger = GetLogger(loggerName);
+	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
+
+	auto sink = std::make_shared<StderrSinkST>(loggerName);
 	logger.AddSink(sink);
 	return logger;
 }
@@ -197,12 +240,22 @@ LOGENGINE_INLINE Logger& GetMultiLogger(const std::string& loggerName, std::init
 	return logger;
 }
 
-LOGENGINE_INLINE Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback& callback)
+LOGENGINE_INLINE Logger& GetCallbackLoggerST(const std::string& loggerName, const CustomLogCallback& callback)
 {
 	Logger& logger = GetLogger(loggerName);
 	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
 
-	auto sink = std::make_shared<CallbackSink>(loggerName, callback);
+	auto sink = std::make_shared<CallbackSinkST>(loggerName, callback);
+	logger.AddSink(sink);
+	return logger;
+}
+
+LOGENGINE_INLINE Logger& GetCallbackLoggerMT(const std::string& loggerName, const CustomLogCallback& callback)
+{
+	Logger& logger = GetLogger(loggerName);
+	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
+
+	auto sink = std::make_shared<CallbackSinkMT>(loggerName, callback);
 	logger.AddSink(sink);
 	return logger;
 }
@@ -280,7 +333,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 			IniReader::ValueType& sinks = section.GetValue(SINK_PARAM);
 			for (auto sn : sinks)
 			{
-				if (sn.empty()) continue;
+				if (sn.empty()) continue; // ignore sinks with empty names
 
 				std::string sinkSectName = SINK_PREFIX;
 				sinkSectName.append(sn);
@@ -290,20 +343,25 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 
 				std::string value = reader.GetValue(sinkSectName, TYPE_PARAM, ST_DEFAULT_NAME, 0);
 				LogSinkType stype = STfromString(value);
+				LogSinkThreaded threaded = STHfromString(reader.GetValue(sinkSectName, THREAD_PARAM, STH_DEFAULT_NAME, 0));
+				
 				Sink* sink = nullptr;
 
 				switch (stype)
 				{
-				case stStdout: sink = new StdoutSink(sn); break;
-				case stStderr: sink = new StderrSink(sn); break;
-				case stString: sink = new StringSink(sn); break;
+				case stStdout: if(threaded == sthSingle) sink = new StdoutSinkST(sn); else sink = new StdoutSinkMT(sn); break;
+				case stStderr: if (threaded == sthSingle) sink = new StderrSinkST(sn); else sink = new StderrSinkMT(sn); break;
+				case stString: if (threaded == sthSingle) sink = new StringSinkST(sn); else sink = new StringSinkMT(sn); break;
 				case stFile:
 				{
 					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
 					if (sinkFileName.empty())
 						throw FileException("File sink '" + sn + "' missing FileName parameter.");
 
-					sink = new FileSink(sn, sinkFileName);
+					if (threaded == sthSingle)
+						sink = new FileSinkST(sn, sinkFileName);
+					else
+						sink = new FileSinkMT(sn, sinkFileName);
 					
 					break;
 				}
@@ -317,7 +375,10 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 					uint maxlogsize = ParseInt(reader.GetValue(sinkSectName, MAXLOGSIZE_PARAM, DefaultMaxLogSizeStr), DefaultMaxLogSize);
 					uint maxIndex = ParseInt(reader.GetValue(sinkSectName, MAXBACKUPINDEX_PARAM, DefaultMaxBackupIndexStr), DefaultMaxBackupIndex);
 
-					sink = new RotatingFileSink(sn, sinkFileName, maxlogsize, strategy, maxIndex);
+					if (threaded == sthSingle)
+						sink = new RotatingFileSinkST(sn, sinkFileName, maxlogsize, strategy, maxIndex);
+					else
+						sink = new RotatingFileSinkMT(sn, sinkFileName, maxlogsize, strategy, maxIndex);
 
 					break;
 				}

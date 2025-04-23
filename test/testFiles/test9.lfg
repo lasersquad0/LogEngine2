@@ -1,6 +1,14 @@
-
-MaxLogSize = 1
-
-BackupType =
-
-DebugLevel = 11
+[logger.loooger]
+#
+sink =logSINK 	
+#!
+[Sink.SINK]
+FileName  =   sink .log
+Type= File
+LogLevel= ERROR
+MaxLogFileSize = 20m
+MaxBackupIndex = aaa
+Strategy = none
+#
+#
+#

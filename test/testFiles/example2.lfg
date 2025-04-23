@@ -2,8 +2,10 @@
 # name of this section starts with predefined word 'logger' with dot '.' and name of logger after it.
 # you can define in the file as many loggers as you need 
 # logger and sink names are case insensitive in file. it means that 'MainLogger' and 'mainlogger' are considered and name of one logger 
+
 [logger.mainLogger]
 loglevel = debug
+
 # there are may be many 'sink' parameters in logger section.
 # each sink parameter contains name of the sink defined further in [sink.xx] sections in this file. 
 # during parsing all declared sinks will be added to the current logger.
@@ -41,6 +43,7 @@ loglevel = trace
 # this sink sends error log messages to standard output
 Type=STDout
 LOGLEVEL=error
+ThreadSafety =multi
 
 [SINK.s3]
 Type=File

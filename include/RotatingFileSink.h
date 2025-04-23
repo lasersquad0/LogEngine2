@@ -46,7 +46,8 @@ inline LogRotatingStrategy RSfromString(std::string name) // parameter needs to 
 #define LogExt    ".log"
 #define BackupExt ".bak"
 
-class RotatingFileSink : public FileSink
+template<class Mutex>
+class RotatingFileSink : public FileSink<Mutex>
 {
 protected:
 	ullong FInitialFileSize; // log file size on the moment of creating this class. need for proper work of file rotating by size
@@ -55,28 +56,28 @@ protected:
 	uint FMaxBackupIndex;
 public:
 	RotatingFileSink(const std::string& name, const std::string& fileName, ullong MaxLogSize = DefaultMaxLogSize,
-		LogRotatingStrategy strategy = DefaultRotatingStrategy, uint MaxBackupIndex = DefaultMaxBackupIndex) : FileSink(name, fileName)
+		LogRotatingStrategy strategy = DefaultRotatingStrategy, uint MaxBackupIndex = DefaultMaxBackupIndex) : FileSink<Mutex>(name, fileName)
 	{
 		FMaxLogSize = MaxLogSize;
 		FStrategy = strategy;
 		FMaxBackupIndex = MaxBackupIndex;
-		FInitialFileSize = FStream->Length();
+		FInitialFileSize = this->FStream->Length();
 	}
 
-	void SendMsg(const LogEvent& e) override
+	void sendMsg(const LogEvent& e) override
 	{
-		if (FInitialFileSize + FBytesWritten > FMaxLogSize) truncLogFile();
+		if (FInitialFileSize + this->FBytesWritten > FMaxLogSize) truncLogFile();
 
-		FileSink::SendMsg(e);
+		FileSink<Mutex>::sendMsg(e);
 	}
 
-	void Flush() override { FStream->Flush(); }
-	ullong GetMaxLogSize() { return FMaxLogSize; }
-	uint GetMaxBackupIndex() { return FMaxBackupIndex; }
-	LogRotatingStrategy GetStrategy() { return FStrategy; }
+	void Flush() override { this->FStream->Flush(); }
+	ullong GetMaxLogSize() const { return FMaxLogSize; }
+	uint GetMaxBackupIndex() const { return FMaxBackupIndex; }
+	LogRotatingStrategy GetStrategy() const { return FStrategy; }
 
 protected:
-	uint FindFreeBackupIndex(std::string& existingFileName)
+	uint FindFreeBackupIndex(std::string& existingFileName) const
 	{
 		std::string s = StripFileExt(existingFileName);
 		uint ind = 1;
@@ -90,7 +91,7 @@ protected:
 		return ind;
 	}
 
-	void ShiftBackupFiles(std::string& existingFileName, uint freeIndex)
+	void ShiftBackupFiles(std::string& existingFileName, uint freeIndex) const
 	{
 		std::string s = StripFileExt(existingFileName);
 		for (uint i = freeIndex - 1; i > 0; i--)
@@ -101,7 +102,7 @@ protected:
 		}
 	}
 
-	std::string GenerateBackupName(std::string& existingFileName)
+	std::string GenerateBackupName(std::string& existingFileName) const
 	{
 		std::string newFileName;
 		switch (FStrategy)
@@ -131,10 +132,10 @@ protected:
 	{
 		//mutexguard lock(mtx);
 
-		std::string filename = FStream->GetFileName();
+		std::string filename = this->FStream->GetFileName();
 
-		delete FStream;
-		FStream = nullptr;
+		delete this->FStream;
+		this->FStream = nullptr;
 
 		std::string newName;
 		switch (FStrategy)
@@ -158,9 +159,9 @@ protected:
 			break;
 		}
 
-		FStream = new TFileStream(filename);
-		FInitialFileSize = FStream->Length();
-		FBytesWritten = 0;
+		this->FStream = new TFileStream(filename);
+		FInitialFileSize = this->FStream->Length();
+		this->FBytesWritten = 0;
 	}
 
 };

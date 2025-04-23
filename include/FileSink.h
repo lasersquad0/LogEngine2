@@ -20,13 +20,21 @@
 
 LOGENGINE_NS_BEGIN
 
-class FileSink : public Sink
+template<class Mutex>
+class FileSink : public BaseSink<Mutex>
 {
 protected:
 	TFileStream* FStream;
 
+	void sendMsg(const LogEvent& e) override
+	{
+		std::string str = this->FormatString(e); // FormatString adds '\n' to the end of string
+		//FStream.Seek(0, smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
+		this->FBytesWritten += static_cast<ullong>(FStream->WriteLn(str));
+	}
+
 public:
-	FileSink(const std::string& name, const std::string& fileName) : Sink(name)
+	FileSink(const std::string& name, const std::string& fileName) : BaseSink<Mutex>(name)
 	{
 		FStream = new TFileStream(fileName);
 		FStream->Seek(0, smFromEnd); // move to the end of file 
@@ -39,13 +47,6 @@ public:
 		delete FStream; 
 	}
 
-	void SendMsg(const LogEvent& e) override
-	{
-		std::string str = FormatString(e); // FormatString adds '\n' to the end of string
-		//FStream.Seek(0, smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
-		FBytesWritten += static_cast<ullong>(FStream->WriteLn(str));
-	}
-
 	/**
 	* Get the FileName of this file sink. The name of the file where sink writes its logs.
 	* @returns the FileName of the sink.
@@ -55,41 +56,43 @@ public:
 	void Flush() override {	FStream->Flush(); }
 };
 
-
-class StdoutSink : public Sink
+template<class Mutex>
+class StdoutSink : public BaseSink<Mutex>
 {
 public:
-	StdoutSink(const std::string& name) : Sink(name) { /*SetLayout(new PatternLayout());*/ }
+	StdoutSink(const std::string& name) : BaseSink<Mutex>(name) { /*SetLayout(new PatternLayout());*/ }
 
-	void SendMsg(const LogEvent& e) override
+	void sendMsg(const LogEvent& e) override
 	{
-		std::string str = FormatString(e);
+		std::string str = this->FormatString(e);
 		std::cout << str << EndLine;
 	}
 };
 
-class StderrSink : public Sink
+template<class Mutex>
+class StderrSink : public BaseSink<Mutex>
 {
 public:
-	StderrSink(const std::string& name) : Sink(name) { /*SetLayout(new PatternLayout());*/ }
+	StderrSink(const std::string& name) : BaseSink<Mutex>(name) { /*SetLayout(new PatternLayout());*/ }
 
-	void SendMsg(const LogEvent& e) override
+	void sendMsg(const LogEvent& e) override
 	{
-		std::string str = FormatString(e);
+		std::string str = this->FormatString(e);
 		std::cerr << str << std::endl;
 	}
 };
 
-class StringSink : public Sink
+template<class Mutex>
+class StringSink : public BaseSink<Mutex>
 {
 private:
 	std::ostringstream output;
 public:
-	StringSink(const std::string& name) : Sink(name) { /*SetLayout(new PatternLayout());*/ }
+	StringSink(const std::string& name) : BaseSink<Mutex>(name) { /*SetLayout(new PatternLayout());*/ }
 
-	void SendMsg(const LogEvent& e) override
+	void sendMsg(const LogEvent& e) override
 	{
-		std::string str = FormatString(e);
+		std::string str = this->FormatString(e);
 		output << str << std::endl;
 	}
 
@@ -100,14 +103,15 @@ public:
 // callbacks type
 typedef std::function<void(const LogEvent& lv)> CustomLogCallback;
 
-class CallbackSink : public Sink
+template<class Mutex>
+class CallbackSink : public BaseSink<Mutex>
 {
 private:
 	CustomLogCallback FCallback;
 public:
-	CallbackSink(const std::string& name, const CustomLogCallback& callback) : Sink(name), FCallback(callback) { }
+	CallbackSink(const std::string& name, const CustomLogCallback& callback) : BaseSink<Mutex>(name), FCallback(callback) { }
 
-	void SendMsg(const LogEvent& e) override
+	void sendMsg(const LogEvent& e) override
 	{
 		FCallback(e);
 	}

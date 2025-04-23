@@ -10,7 +10,9 @@
 #define LOG_ENGINE_H
 
 #include <string>
-#include <functional>
+//#include <functional>
+
+// all includes below need for header only mode
 #include "DynamicArrays.h"
 #include "Common.h"
 #include "Compare.h"
@@ -18,9 +20,23 @@
 #include "Properties.h"
 #include "Logger.h"
 #include "RotatingFileSink.h"
+#include "IniReader.h"
 #include "version.h"
 
 LOGENGINE_NS_BEGIN
+
+typedef FileSink<std::mutex> FileSinkMT;
+typedef FileSink<NullMutex> FileSinkST;
+typedef StdoutSink<std::mutex> StdoutSinkMT;
+typedef StdoutSink<NullMutex> StdoutSinkST;
+typedef StderrSink<std::mutex> StderrSinkMT;
+typedef StderrSink<NullMutex> StderrSinkST;
+typedef StringSink<std::mutex> StringSinkMT;
+typedef StringSink<NullMutex> StringSinkST;
+typedef RotatingFileSink<std::mutex> RotatingFileSinkMT;
+typedef RotatingFileSink<NullMutex> RotatingFileSinkST;
+typedef CallbackSink<std::mutex> CallbackSinkMT;
+typedef CallbackSink<NullMutex> CallbackSinkST;
 
 void SetProperty(const std::string& name, const std::string& value);
 std::string GetProperty(const std::string& name, const std::string& defaultValue /*= ""*/);
@@ -32,22 +48,30 @@ bool LoggerExist(const std::string& loggerName);
 
 Logger& GetDefaultLogger();
 
+#define GetFileLogger GetFileLoggerST
+#define GetStdoutLogger GetStdoutLoggerST
+#define GetStderrLogger GetStderrLoggerST
+#define GetCallbackLogger GetCallbackLoggerST
+#define GetRotatingFileLogger GetRotatingFileLoggerST
+
 Logger& GetLogger(const std::string& loggerName);
-
-Logger& GetFileLogger(const std::string& loggerName, const std::string& fileName);
-
-Logger& GetRotatingFileLogger(const std::string& loggerName, const std::string& fileName, ullong maxLogSize = DefaultMaxLogSize,
-                        	LogRotatingStrategy strategy = DefaultRotatingStrategy, uint maxBackupIndex = DefaultMaxBackupIndex);
-
-Logger& GetStdoutLogger(const std::string& loggerName);
-
-Logger& GetStderrLogger(const std::string& loggerName);
-
+Logger& GetFileLoggerST(const std::string& loggerName, const std::string& fileName);
+Logger& GetFileLoggerMT(const std::string& loggerName, const std::string& fileName);
+Logger& GetStdoutLoggerST(const std::string& loggerName);
+Logger& GetStdoutLoggerMT(const std::string& loggerName);
+Logger& GetStderrLoggerST(const std::string& loggerName);
+Logger& GetStderrLoggerMT(const std::string& loggerName);
 Logger& GetMultiLogger(const std::string& loggerName, SinkList& sinks);
 Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std::shared_ptr<Sink>> list);
+Logger& GetCallbackLoggerST(const std::string& loggerName, const CustomLogCallback& callback);
+Logger& GetCallbackLoggerMT(const std::string& loggerName, const CustomLogCallback& callback);
+Logger& GetRotatingFileLoggerST(const std::string& loggerName, const std::string& fileName, ullong maxLogSize = DefaultMaxLogSize,
+						LogRotatingStrategy strategy = DefaultRotatingStrategy, uint maxBackupIndex = DefaultMaxBackupIndex);
+Logger& GetRotatingFileLoggerMT(const std::string& loggerName, const std::string& fileName, ullong maxLogSize = DefaultMaxLogSize,
+	LogRotatingStrategy strategy = DefaultRotatingStrategy, uint maxBackupIndex = DefaultMaxBackupIndex);
 
-Logger& GetCallbackLogger(const std::string& loggerName, const CustomLogCallback& callback);
 
+// default logger functions
 void Log(const std::string& msg, const Levels::LogLevel ll);
 
 void Crit(const std::string& msg);
@@ -60,7 +84,7 @@ void Trace(const std::string& msg);
 template<class... Args>
 void LogFmt(Levels::LogLevel ll, const std::format_string<Args...> fmt, Args&&... args)
 {
-	GetDefaultLogger().LogFmt(ll, fmt, args...);
+	GetDefaultLogger().LogFmt(ll, fmt, std::forward<Args>(args)...);
 }
 
 template<class ... Args>
@@ -105,14 +129,15 @@ void TraceFmt(const std::format_string<Args...> fmt, Args&& ...args)
 #define SINK_PREFIX	   "sink."
 #define LOGLEVEL_PARAM "loglevel"
 #define ASYNMODE_PARAM "asyncmode"
-#define SINK_PARAM "sink"
+#define SINK_PARAM     "sink"
 
-//parameters for Sinks (FileSink, RotatingFileSink, StdoutSink, StderrSink, StringSink)
-#define TYPE_PARAM     "type"
-#define FILENAME_PARAM "filename"
-#define MAXLOGSIZE_PARAM "maxlogfilesize"
+//parameters for Sinks (FileSink, RotatingFileSink, StdoutSink, StderrSink, StringSink, CallbackSink)
+#define TYPE_PARAM         "type"
+#define THREAD_PARAM       "threadsafety"
+#define FILENAME_PARAM     "filename"
+#define MAXLOGSIZE_PARAM   "maxlogfilesize"
 #define MAXBACKUPINDEX_PARAM "maxbackupindex"
-#define STRATEGY_PARAM "strategy"
+#define STRATEGY_PARAM     "strategy"
 #define PATTERNALL_PARAM   "patternall"
 #define CRITPATTERN_PARAM  "critpattern"
 #define ERRORPATTERN_PARAM "errorpattern"

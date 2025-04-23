@@ -7,6 +7,7 @@ sink=superSINK
 FileName  =   sink.super.log
 Type= RotatingFile
 LogLevel= ERROR
+ThreadSafety = multi
 MaxLogFileSize = 20m
 MaxBackupIndex = aaa
 Strategy = none

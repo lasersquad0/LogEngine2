@@ -14,7 +14,9 @@
 
 #include <stdarg.h>
 #include <string>
+#include <memory>
 #include "Common.h"
+#include "Sink.h"
 #include "FileSink.h"
 #include "DynamicArrays.h"
 #include "SynchronizedQueue.h"

@@ -1613,7 +1613,7 @@ void StringToArray(const STRING& str, THArray<STRING>& arr, const typename STRIN
 inline std::string toString(const THArrayString& array)
 {
 	std::string res;
-	res.reserve(static_cast<size_t>(100) * array.Count()); // to reduce number of memory re-allocations we assume that each string in array has 100 characters
+	res.reserve(100ull * array.Count()); // to reduce number of memory re-allocations we assume that each string in array has 100 characters
 	for (uint i = 0; i < array.Count(); i++)
 	{
 		res.append(array[i]);
