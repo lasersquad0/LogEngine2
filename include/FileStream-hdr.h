@@ -343,18 +343,26 @@ LOGENGINE_INLINE size_t TFileStream::WriteLn(const void* Buffer, const size_t Si
 	return WriteCRLF() + c;
 }
 
-//TODO shall we throw an exception in case of lseek returned -1 (error)?
-// like it is done in Write and Read methods.
 LOGENGINE_INLINE off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 {
+	long c = -1;
 	switch (sMode)
 	{
-	case smFromBegin:   return mylseek(hf, Offset, SEEK_SET);
-	case smFromEnd:     return mylseek(hf, Offset, SEEK_END);
-	case smFromCurrent: return mylseek(hf, Offset, SEEK_CUR);
+	case smFromBegin:   c = mylseek(hf, Offset, SEEK_SET); break;
+	case smFromEnd:     c = mylseek(hf, Offset, SEEK_END); break;
+	case smFromCurrent: c = mylseek(hf, Offset, SEEK_CUR); break;
+	default:
+			throw IOException("Invalid TFileStream::Seek() mode.");
+
 	}
 
-	throw IOException("Invalid TFileStream::Seek() mode.");
+	if (c == -1)
+	{
+		std::string serr = "lseek returned error for file '" + FFileName + "'!";
+		throw IOException(serr);
+	}
+
+	return c;
 }
 
 LOGENGINE_INLINE size_t TFileStream::Length()
