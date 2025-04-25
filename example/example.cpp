@@ -9,6 +9,9 @@
 #include <cstdio>
 #include <chrono>
 
+#include "LogEngine.h"
+
+void DefaultLoggerExample();
 void FileLoggerExample();
 void RotatingExample();
 void LoadCFGExample();
@@ -17,10 +20,6 @@ void AsyncExample();
 //void StopwatchExample();
 void MultiSinkExample();
 //void replace_default_logger_example();
-
-#include "LogEngine.h"
-#include "Sink.h"
-#include "version.h"
 
 int main(int, char *[]) 
 {
@@ -59,20 +58,20 @@ int main(int, char *[])
         logger.SetDefaultPattern(); // returning back default log line pattern
         logger.Info("This an info message with default log line format");
 
+        DefaultLoggerExample();
         CallbackExample();
         FileLoggerExample();
         RotatingExample();
         LoadCFGExample();
 
         AsyncExample();
-        //binary_xample();
         //StopwatchExample();
         MultiSinkExample();
         //void replace_default_logger_example();
 
-        // Release all spdlog resources, and drop all loggers in the registry.
+        // Drop all loggers in the registry.
         // This is optional (only mandatory if using windows + async log).
-       // LogEngine::ShutdownLoggers();
+        LogEngine::ShutdownLoggers();
     }
 
     catch (const LogEngine::LogException &ex) 
@@ -91,16 +90,29 @@ int main(int, char *[])
 // folder for placing log files 
 #define LOG_FILES_DIR LFG_FILE_DIR "logs\\"
 
+void DefaultLoggerExample()
+{
+    // log level is llInfo by default
+    LogEngine::Info("[Default logger] It is stdout logger.");
+    LogEngine::Log("[Default logger] Warning message.", LogEngine::Levels::llWarning);
+    LogEngine::Debug("[Default logger] Here is Debug message, will not be displayed");
+
+    LogEngine::LogFmt(LogEngine::Levels::llError, "[Default logger] #1 This is formatted message {} {}", "arg1", 5);
+    LogEngine::WarnFmt("[Default logger] #2 This is formatted message {} {}", 4*7, "argX");
+}
+
 void FileLoggerExample()
 {
-    auto& stdoutLogger = LogEngine::GetStdoutLogger("stdoutlogger");
+    // Create thread unsafe console logger
+    auto& stdoutLogger = LogEngine::GetStdoutLoggerST("stdoutlogger");
     stdoutLogger.Info("Console stdout logger has created.");
 
+    // GetStderrLogger is synonim of GetStderrLoggerST 
     auto& stderrLogger = LogEngine::GetStderrLogger("stderrlogger");
     stderrLogger.Info("Console stderr logger has created.");
 
-    // Create file logger (not rotated).
-    auto& fileLogger = LogEngine::GetFileLogger("file_logger", LOG_FILES_DIR "basic_file_log.txt");
+    // Create thread safe file logger (not rotated).
+    auto& fileLogger = LogEngine::GetFileLoggerMT("file_logger", LOG_FILES_DIR "basic_file_log.txt");
     fileLogger.Info("My file_logger has created.");
  
     //later you can get existing file logger using its name
@@ -109,11 +121,11 @@ void FileLoggerExample()
     fileLogger2.Info("My file_logger2 has got.");
 }
 
-#include "RotatingFileSink.h"
+//#include "RotatingFileSink.h"
 void RotatingExample() 
 {
     // Create a file rotating logger with 1kb size max and time stampts in file names.
-    auto& rotLogger = LogEngine::GetRotatingFileLogger("logger_name", LOG_FILES_DIR "rotating.txt", 
+    auto& rotLogger = LogEngine::GetRotatingFileLoggerST("rot_logger", LOG_FILES_DIR "rotating.txt", 
         1024, LogEngine::rsTimeStamp);
     
     // five rotating files will be generated during this loop
@@ -126,14 +138,15 @@ void RotatingExample()
     }
 
     // Create a file rotating logger with 1kb size max and 10 backup files.
-    auto& rotLogger2 = LogEngine::GetRotatingFileLogger("rot_logger_name", LOG_FILES_DIR "rotating2.txt", 
+    // This logger is thread safe - can be calles from different thtreads
+    auto& rotLogger2 = LogEngine::GetRotatingFileLoggerMT("rot_logger_name", LOG_FILES_DIR "rotating2.txt", 
         1024, LogEngine::rsNumbers, 10);
     rotLogger2.Info("Rotating file message");
 }
 
 void CallbackExample() 
 {
-    auto& logger = LogEngine::GetCallbackLogger("custom_callback_logger",
+    auto& logger = LogEngine::GetCallbackLoggerST("custom_callback_logger",
         [](const LogEngine::LogEvent& /*le*/) 
         {
             std::cout << "Lambdadada " << std::endl;
@@ -170,14 +183,8 @@ void AsyncExample()
     // file (or sent to other targets) by a separate thread. 
     // it means that main thread does not wait until log messages written to the file
     // that minimizes effect from log calls
-    auto& async_logger = LogEngine::GetFileLogger("async_logger", LOG_FILES_DIR "async_log.txt");
+    auto& async_logger = LogEngine::GetFileLoggerST("async_logger", LOG_FILES_DIR "async_log.txt");
     async_logger.SetAsyncMode(true);
-
-    // Default thread pool settings can be modified *before* creating the async logger:
-    // spdlog::init_thread_pool(32768, 1); // queue with max 32k items 1 backing thread.
-    // auto async_file = spdlog::basic_logger_mt<spdlog::async_factory>("async_file_logger", "logs/async_log.txt");
-    // alternatively:
-    // auto async_file = spdlog::create_async<spdlog::sinks::basic_file_sink_mt>("async_file_logger", "logs/async_log.txt");
 
     for (int i = 1; i < 101; ++i) 
     {
@@ -191,11 +198,11 @@ void MultiSinkExample()
     using namespace LogEngine;
     
     // we need shared_ptr for Sinks here for proper freeing Sink objects when they shared between several loggers. 
-    std::shared_ptr<Sink> consoleSink(new StdoutSink("console_sink"));
+    std::shared_ptr<Sink> consoleSink(new StdoutSinkST("console_sink"));
     consoleSink->SetLogLevel(Levels::llWarning);
     consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
 
-    std::shared_ptr<Sink> fileSink(new FileSink("file_sink", LOG_FILES_DIR "multisink.txt"));
+    std::shared_ptr<Sink> fileSink(new FileSinkST("file_sink", LOG_FILES_DIR "multisink.txt"));
     fileSink->SetLogLevel(Levels::llTrace);
 
     Logger logger("multi_sink", { consoleSink, fileSink });
