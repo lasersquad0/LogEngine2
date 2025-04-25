@@ -106,13 +106,13 @@ std::string DateTimeToStr(time_t t);
 std::string DateTimeToStr(struct tm const& t);
 
 // deletes all leading and trailing \n \r symbols from string
-std::string DelCRLF(const std::string s);
+std::string DelCRLF(const std::string str);
 
 // removes all leading and trailing \n \r and space symbols from string
-std::string trimSPCRLF(std::string S);
+std::string trimSPCRLF(std::string str);
 
 // removes all leading and trailing space and tab symbols from string
-std::string trim(std::string s);
+std::string trim(std::string str);
 
 // removes any leading space and tab symbols from string
 std::string trimLeft(std::string str);

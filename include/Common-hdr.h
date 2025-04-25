@@ -8,6 +8,8 @@
 
 #include <string.h> // need for strstr under Linux
 #include <sstream>
+#include <string>
+#include <cassert>
 #include <algorithm>
 #include <sys/timeb.h>
 #include "Common.h"
@@ -397,15 +399,19 @@ LOGENGINE_INLINE std::string FormatCurrDateTime(const std::string& FormatStr)
 	return ss;
 }
 
-LOGENGINE_INLINE std::string DelCRLF(std::string s)
+LOGENGINE_INLINE std::string DelCRLF(std::string str) // str passed by value here intentionally
 {
 	// remove any leading and traling \n and \r, just in case.
-	size_t strBegin = s.find_first_not_of("\0x0D\0x0A");
-	size_t strEnd = s.find_last_not_of("\0x0D\0x0A");
-	s.erase(strEnd, s.size() - strEnd);
-	s.erase(0, strBegin);
+	size_t strBegin = str.find_first_not_of("\r\n");
+	if (strBegin == std::string::npos) return "";
+	
+	size_t strEnd = str.find_last_not_of("\r\n");
+	assert(strEnd != std::string::npos);
+	
+	str.erase(strEnd + 1 /*, s.size() - strEnd*/);
+	str.erase(0, strBegin);
 
-	return s;
+	return str;
 
 /*	int j = 0;
 	std::string res;
@@ -420,29 +426,37 @@ LOGENGINE_INLINE std::string DelCRLF(std::string s)
 	return res; */
 }
 
-LOGENGINE_INLINE std::string trimSPCRLF(std::string S)
+LOGENGINE_INLINE std::string trimSPCRLF(std::string str) // str passed by value here intentionally
 {
 	// remove any leading and traling spaces, tabs and \n, \r.
-	size_t strBegin = S.find_first_not_of(" \t\0x0D\0x0A");
-	size_t strEnd = S.find_last_not_of(" \t\0x0D\0x0A");
-	S.erase(strEnd + 1, S.size() - strEnd);
-	S.erase(0, strBegin);
+	size_t strBegin = str.find_first_not_of(" \t\r\n");
+	if (strBegin == std::string::npos) return "";
+
+	size_t strEnd = str.find_last_not_of(" \t\r\n");
+	assert(strEnd != std::string::npos);
+
+	str.erase(strEnd + 1 /*, S.size() - strEnd*/); // erase till end of string
+	str.erase(0, strBegin);
 	
-	return S;
+	return str;
 }
 
-LOGENGINE_INLINE std::string trim(std::string s)
+LOGENGINE_INLINE std::string trim(std::string str) // str passed by value here intentionally
 {
 	// remove any leading and traling spaces tabs.
-	size_t strBegin = s.find_first_not_of(" \t");
-	size_t strEnd = s.find_last_not_of(" \t");
-	s.erase(strEnd + 1, s.size() - strEnd);
-	s.erase(0, strBegin);
+	size_t strBegin = str.find_first_not_of(" \t");
+	if (strBegin == std::string::npos) return "";
+	
+	size_t strEnd = str.find_last_not_of(" \t");
+	assert(strEnd != std::string::npos);
+	
+	str.erase(strEnd + 1 /*, str.size() - strEnd*/);
+	str.erase(0, strBegin);
 
-	return s;
+	return str;
 }
 
-LOGENGINE_INLINE std::string trimLeft(std::string str)
+LOGENGINE_INLINE std::string trimLeft(std::string str) // str passed by value here intentionally
 {
 	// remove any leading spaces and tabs
 	size_t strBegin = str.find_first_not_of(" \t");
@@ -451,11 +465,11 @@ LOGENGINE_INLINE std::string trimLeft(std::string str)
 	return str;
 }
 
-LOGENGINE_INLINE std::string trimRight(std::string str)
+LOGENGINE_INLINE std::string trimRight(std::string str) // str passed by value here intentionally
 {
 	// remove any trailing spaces and tabs
 	size_t strEnd = str.find_last_not_of(" \t");
-	str.erase(strEnd + 1, str.size() - strEnd);
+	str.erase(strEnd + 1/*, str.size() - strEnd*/);
 
 	return str;
 }
