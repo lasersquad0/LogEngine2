@@ -962,7 +962,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\testRunner.cpp" />
     <ClCompile Include="..\..\..\test\testThreadLog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
@@ -988,19 +988,23 @@
     <ResourceCompile Include="testLogEngine.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\include\Common-hdr.h" />
     <ClInclude Include="..\..\..\include\Common.h" />
     <ClInclude Include="..\..\..\include\Compare.h" />
     <ClInclude Include="..\..\..\include\DynamicArrays.h" />
     <ClInclude Include="..\..\..\include\Exceptions.h" />
     <ClInclude Include="..\..\..\include\FileSink.h" />
+    <ClInclude Include="..\..\..\include\FileStream-hdr.h" />
     <ClInclude Include="..\..\..\include\FileStream.h" />
     <ClInclude Include="..\..\..\include\IniReader.h" />
-    <ClInclude Include="..\..\..\include\Layout.h" />
+    <ClInclude Include="..\..\..\include\LogEngine-hdr.h" />
     <ClInclude Include="..\..\..\include\LogEngine.h" />
     <ClInclude Include="..\..\..\include\LogEvent.h" />
     <ClInclude Include="..\..\..\include\Logger.h" />
+    <ClInclude Include="..\..\..\include\Pattern-hdr.h" />
     <ClInclude Include="..\..\..\include\Pattern.h" />
     <ClInclude Include="..\..\..\include\PatternLayout.h" />
+    <ClInclude Include="..\..\..\include\Properties-hdr.h" />
     <ClInclude Include="..\..\..\include\RotatingFileSink.h" />
     <ClInclude Include="..\..\..\include\Sink.h" />
     <ClInclude Include="..\..\..\test\testIniReader.h" />

@@ -118,9 +118,6 @@
     <ClInclude Include="..\..\..\include\IniReader.h">
       <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\Layout.h">
-      <Filter>Header Files\LogEngine2 headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\LogEngine.h">
       <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
@@ -153,6 +150,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\test\testConfigFile.h">
       <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Common-hdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\FileStream-hdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\LogEngine-hdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Pattern-hdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Properties-hdr.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
