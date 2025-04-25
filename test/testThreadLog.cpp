@@ -24,7 +24,7 @@ void ThreadLogTest::tearDown ()
 struct ThreadInfoStruct
 {
     Logger *logger;
-    bool begin;
+    std::atomic_bool begin;
 };
 
 int testThreadProc(void* param)
@@ -32,10 +32,10 @@ int testThreadProc(void* param)
 	ThreadInfoStruct *info = (ThreadInfoStruct*) param;
 	Logger *log = info->logger;
 
-	if(!log)
+	if(log == nullptr)
 	    return 0; // <<< unused, so 0. (void*) 1 looks silly =)
 
-	while (!info->begin) // waiting for begin
+	while (!info->begin.load()) // waiting for begin
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	
 	std::string s = IntToStr(GetThreadID());
@@ -60,19 +60,12 @@ int testThreadProc(void* param)
 
 void ThreadLogTest::testCallLogFromManyThreads()
 {
-	Logger& logger = GetFileLogger("testCallLogFromManyThreads", LOG_FILES_FOLDER "testCallLogFromManyThreads.log");
+	// create thread safe logger
+	Logger& logger = GetFileLoggerMT("testCallLogFromManyThreads", LOG_FILES_FOLDER "testCallLogFromManyThreads.log");
 	
 	logger.Info("begin creating threads");
 	
 	THArray<std::thread*> threads;
-	//THArray<unsigned long> ids;
-
-	//std::vector<THREAD_TYPE> handles;
-	//std::vector<unsigned long> ids;
-
-	//unsigned long thrID = 0;
-	//THREAD_TYPE hThread;
-
 	ThreadInfoStruct info = { &logger, false };
 	
 	logger.Info("Creating threads");
@@ -89,7 +82,7 @@ void ThreadLogTest::testCallLogFromManyThreads()
 
 	logger.Info("begin resuming");
 	
-	info.begin = true; //TODO small data race here, consider use atomics
+	info.begin.store(true); 
 	
 	logger.Info("all threads resumed");
 
@@ -125,17 +118,18 @@ void ThreadLogTest::testAsyncLog1()
 	log.Debug("threaded debug #1");
 	log.Trace("threaded trace #1");
 
-	log.SetAsyncMode(false); 
+	log.SetAsyncMode(false); // this call waits till logging thread finishes i.e. saves all log events into file
 }
 
 
+// measure log time when AsynMode=true
 void ThreadLogTest::testThreadLogMeasureTime1()
 {
 	std::string fileName = LOG_FILES_FOLDER "testThreadLogMeasureTime1.log";
 	std::string loggerName = "testThreadLogMeasureTime1";
 
 	remove(fileName.c_str());
-	Logger& log = GetFileLogger(loggerName, fileName);
+	Logger& log = GetFileLoggerST(loggerName, fileName); // do not need thread safe logger here
 
 	log.SetAsyncMode(true);
 
@@ -176,11 +170,12 @@ void ThreadLogTest::testThreadLogMeasureTime1()
 }
 
 
+// measure log time when AsynMode=false
 void ThreadLogTest::testNONThreadLogMeasureTime1()
 {
 	std::string fileName = LOG_FILES_FOLDER "testNONThreadLogMeasureTime1.log";
 	remove(fileName.c_str());
-	Logger& log = GetFileLogger("testNONThreadLogMeasureTime1", fileName);
+	Logger& log = GetFileLoggerST("testNONThreadLogMeasureTime1", fileName); // do not need thread safe logger here
 
 	auto start1 = std::chrono::high_resolution_clock::now();
 	

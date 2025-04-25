@@ -130,7 +130,7 @@ void ConfigFileTest::testConfigFile7()
     CPPUNIT_ASSERT_EQUAL(DefaultMaxBackupIndex, rsink->GetMaxBackupIndex()); 
     CPPUNIT_ASSERT_EQUAL(20*1024*1024ull, rsink->GetMaxLogSize()); 
     PatternLayout* lay = /*dynamic_cast<PatternLayout*>*/(rsink->GetLayout());
-    CPPUNIT_ASSERT_EQUAL(std::string(DefaultLinePattern), lay->GetAllPatterns());
+    CPPUNIT_ASSERT_EQUAL(std::string(DefaultLinePattern), lay->GetPattern());
     CPPUNIT_ASSERT_EQUAL(std::string("! %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
     CPPUNIT_ASSERT_EQUAL(std::string("# %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));
     CPPUNIT_ASSERT_EQUAL(std::string("*!* %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(Levels::llCritical));
@@ -155,7 +155,7 @@ void ConfigFileTest::testConfigFile8()
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == fsink); // check sink type
     CPPUNIT_ASSERT_EQUAL(std::string("sink super.log"), fsink->getFileName());
     PatternLayout* lay = /*dynamic_cast<PatternLayout*>*/(fsink->GetLayout());
-    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetAllPatterns());
+    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern());
     CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
     CPPUNIT_ASSERT_EQUAL(std::string("W %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));
     CPPUNIT_ASSERT_EQUAL(std::string("C %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(Levels::llCritical));
@@ -210,11 +210,9 @@ void ConfigFileTest::testConfigFile20()
 
 }
 
-
+// missing .LFG file
 void ConfigFileTest::testConfigFile21()
 {
-    std::string ver = DisplaySystemVersion();
-    printf("\n");
-    printf(ver.c_str());
+    CPPUNIT_ASSERT_THROW(InitFromFile(TEST_FILES_FOLDER "testXXX.lfg"), FileException);
 }
 

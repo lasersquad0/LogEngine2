@@ -413,18 +413,50 @@ void TStreamTest::testMemoryStream12()
 // in case of need of reallocate, error (-1) is returned and errono is set to EINVAL.
 void TStreamTest::testMemoryStream13()
 {
-	TMemoryStream stream1(0); // allocate buffer zero bytes size
+	TMemoryStream stream1(0); // allocate initial buffer zero bytes size
 	stream1 << 'F';
-	stream1 << 42; // sinze mem stream owns the buffer, it will be atomatically relocated
+	stream1 << 42; // since mem stream owns the buffer, it will be atomatically relocated
 
-	TMemoryStream stream2(1); // allocate buffer 1 byte size
+	TMemoryStream stream2(1); // allocate initial buffer 1 byte size
 	stream2 << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM";
 
 	std::string s;
 	stream2.SetBuffer((uint8_t*)s.data(), s.capacity()); // default capacity is 15
 	stream2 << "ZZZ";
-
 	stream2 << "HHHHHHHHHHHH"; // try to write 15 symbols
 
 	CPPUNIT_ASSERT_THROW(stream2 << '!', IOException); // 16th symbol overflows buffer and generates an exception because we cannot extend external buffer
+
+	stream2.SeekW(0, smFromBegin); // rewind buffer, make it available for writing again
+	stream2 << "XXX"; // no exception
+	stream2 << "MMMMMMMMMMMM"; // trying to write 15 symbols, still no exception
+
+	CPPUNIT_ASSERT_THROW(stream2 << '!', IOException); // 16th symbol overflows buffer and generates an exception 
+
+	stream2.SeekW(1, smFromBegin); // rewind buffer and offset it 1
+	stream2 << "YYY"; // no exception
+	stream2 << "123456789AB"; // now trying to write 14 symbols, still no exception
+
+	CPPUNIT_ASSERT_THROW(stream2 << 'F', IOException); // 16th symbol overflows buffer and generates an exception 
+
+	stream2.SeekW(0, smFromEnd); 
+	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
+
+	stream2.SeekW(20, smFromBegin); // actually puts position to the end of buffer
+	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
+
+	stream2.SeekW(1, smFromEnd); 
+	stream2 << "Y"; // no exception
+	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
+
+	stream2.SeekW(15, smFromEnd); // actually puts current position to the beginning of buffer
+	stream2 << "123"; // no exception
+	stream2 << "456789ABCDEF"; // now trying to write 14 symbols, still no exception
+	CPPUNIT_ASSERT_THROW(stream2 << '0', IOException); // 16th symbol overflows buffer
+
+	stream2.SeekW(20, smFromEnd); // actually puts current position to the beginning of buffer
+	stream2 << "123"; // no exception
+	stream2 << "456789ABCDEF"; // now trying to write 14 symbols, still no exception
+	CPPUNIT_ASSERT_THROW(stream2 << 'F', IOException); // 16th symbol overflows buffer
+
 }

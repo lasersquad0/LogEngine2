@@ -305,3 +305,167 @@ void UtilsTest::testExtractFileExt4()
 	CPPUNIT_ASSERT_EQUAL(std::string(""), s);
 }
 
+void UtilsTest::testTrimSPCRLF1()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF(""));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF(" "));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("	")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\r\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\r	\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\n\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\n \r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("	\n \r "));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\r\r\r\r\r\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\n\n\n\n\n\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), trimSPCRLF("\r\n\r\n\r\r\n\n"));
+}
+
+void UtilsTest::testTrimSPCRLF2()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A	")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\r\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\r	\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\n\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\n \r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A	\n \r "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\r\r\r\r\r\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\n\n\n\n\n\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A\r\n\r\n\r\r\n\n"));
+
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF(" A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("	A")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("	 A")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("		A")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("  A")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r	\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\n\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\n \rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("	\n \r A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r\r\r\r\r\r\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\n\n\n\n\n\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r\n\r\n\r\r\n\nA"));
+
+}
+
+void UtilsTest::testTrimSPCRLF3()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF(" A "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\nA\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("		A\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\nA	")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r\nA	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("	A		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF(" A  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r A\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF(" \n A\r\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("	 A\r	\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r\r A\n\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF(" \nA\n \r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("		 A	\n \r "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\r\r\r\r\r\rA\r\r\r\r\r\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("\n\n\nA\n\n\n\n\n\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), trimSPCRLF("			 A\r\n\r\n\r\r\n\n"));
+}
+
+void UtilsTest::testDelCRLF1()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF(""));
+	CPPUNIT_ASSERT_EQUAL(std::string(" "), DelCRLF(" "));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("	"), DelCRLF("	")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string("	 "), DelCRLF("	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string("		"), DelCRLF("		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string("  "), DelCRLF("  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\r\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("	"), DelCRLF("\r	\n")); // tab between
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\n\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" "), DelCRLF("\n \r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("	\n \r "), DelCRLF("	\n \r "));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\r\r\r\r\r\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\n\n\n\n\n\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\r\n\r\n\r\r\n\n"));
+}
+
+void UtilsTest::testDelCRLF2()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A "), DelCRLF("A "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A	"), DelCRLF("A	")); // tab
+	CPPUNIT_ASSERT_EQUAL(std::string("A	 "), DelCRLF("A	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string("A		"), DelCRLF("A		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string("A  "), DelCRLF("A  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\r\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A\r	"), DelCRLF("A\r	\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\n\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A\n "), DelCRLF("A\n \r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A	\n \r "), DelCRLF("A	\n \r "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\r\r\r\r\r\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\n\n\n\n\n\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\r\n\r\n\r\r\n\n"));
+
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" A"), DelCRLF(" A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("	A"), DelCRLF("	A")); // tab
+	CPPUNIT_ASSERT_EQUAL(std::string("	 A"), DelCRLF("	 A")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string("		A"), DelCRLF("		A")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string("  A"), DelCRLF("  A")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\r\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\r\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("	\nA"), DelCRLF("\r	\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\n\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" \rA"), DelCRLF("\n \rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("	\n \r A"), DelCRLF("	\n \r A"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\r\r\r\r\r\r\rA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\n\n\n\n\n\nA"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\r\n\r\n\r\r\n\nA"));
+
+}
+
+void UtilsTest::testDelCRLF3()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" A "), DelCRLF(" A "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\nA\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("		A"), DelCRLF("		A\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A		"), DelCRLF("\nA		")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string("A	 "), DelCRLF("\r\nA	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string("	A		"), DelCRLF("	A		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string(" A  "), DelCRLF(" A  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string(" A"), DelCRLF("\r A\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" \n A"), DelCRLF(" \n A\r\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("	 A\r	"), DelCRLF("	 A\r	\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" A"), DelCRLF("\r\r A\n\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" \nA\n "), DelCRLF(" \nA\n \r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("		 A	\n \r "), DelCRLF("		 A	\n \r "));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\r\r\r\r\r\rA\r\r\r\r\r\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\n\n\nA\n\n\n\n\n\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("			 A"), DelCRLF("			 A\r\n\r\n\r\r\n\n"));
+}
+

@@ -611,67 +611,55 @@ void LoggerTest::testLogStatistic()
 
 void LoggerTest::testGetFileLogger()
 {
+	CPPUNIT_ASSERT_EQUAL(0u, LoggersCount());
 	Logger& logger1 = GetFileLogger("testGetFileLogger", "filename.log");
 	CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
-	Logger& logger2 = GetFileLogger("testGetFileLogger", "filename.log"); // already existing logger has returned
+	Logger& logger2 = GetFileLoggerMT("testGetFileLogger", "filename.log"); // already existing logger has returned
 	CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
 	Logger& logger3 = GetFileLogger("testGetFileLogger", "filename2.log"); // already existing logger has returned (with old filename!!!)
 	CPPUNIT_ASSERT_EQUAL(1u, logger3.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
 }
 
 void LoggerTest::testGetStdoutLogger()
 {
+	CPPUNIT_ASSERT_EQUAL(0u, LoggersCount());
 	Logger& logger1 = GetStdoutLogger("testGetStdoutLogger");
 	CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
 	Logger& logger2 = GetStdoutLogger("testGetStdoutLogger"); // already existing logger has returned
 	CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
-	Logger& logger3 = GetStdoutLogger("testGetStdoutLogger"); // already existing logger has returned (with old filename!!!)
+	Logger& logger3 = GetStdoutLoggerMT("testGetStdoutLogger"); // already existing logger has returned
 	CPPUNIT_ASSERT_EQUAL(1u, logger3.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
 }
 
 void LoggerTest::testGetStderrLogger()
 {
-	Logger& logger1 = GetStderrLogger("testGetStderrLogger");
+	CPPUNIT_ASSERT_EQUAL(0u, LoggersCount());
+	Logger& logger1 = GetStderrLoggerMT("testGetStderrLogger");
 	CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
 	Logger& logger2 = GetStderrLogger("testGetStderrLogger"); // already existing logger has returned
 	CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
-	Logger& logger3 = GetStderrLogger("testGetStderrLogger"); // already existing logger has returned (with old filename!!!)
+	Logger& logger3 = GetStderrLogger("testGetStderrLogger"); // already existing logger has returned 
 	CPPUNIT_ASSERT_EQUAL(1u, logger3.SinkCount());
-
+	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 }
 
 /*
-void LoggerTest::testLogEmptyFileName()
-{
-	// preparing parameters
-	Properties prop;
-	prop.SetValue("BackupType", "None");
-	prop.SetValue("DetailLevel", "DefaultDetailLevel"); 
-	prop.SetValue("MaxLogSize", "100");
-	prop.SetValue("ApplicationName", "logs/LogEngine tests");
-	prop.SetValue("Version", "4.4.4");
-
-	InitLogEngine(prop);
-
-	TLogEngine *log = TLogEngine::getInstance();
-
-	std::string s = log->GetAppName();
-	CPPUNIT_ASSERT_EQUAL(std::string("logs/LogEngine tests"), s);
-	s = log->GetLogFileName();
-	CPPUNIT_ASSERT_EQUAL(std::string("logs/LogEngine tests.log"), s);
-
-	CloseLogEngine();
-}
-
-
 
 void LoggerTest::testWrong_LFG_File()
 {
