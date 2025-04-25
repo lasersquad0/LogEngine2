@@ -647,7 +647,7 @@ void THArray<T>::Reverse(uint endIndex)
 template<class T>
 THArray<T>& THArray<T>::operator=(const THArray<T>& a)
 {
-	ClearMem(); //TODO or it is better to call Clear() here to avoid memory reallocations
+	Clear(); // assignor and assignee objects may have different Capacity because Clear() does not clear allocated memory 
 	SetCapacity(a.FCount);
 
 	//memcpy(FMemory, a.FMemory, sizeof(T) * a.FCount);

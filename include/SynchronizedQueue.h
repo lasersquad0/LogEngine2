@@ -34,7 +34,7 @@ public:
         //    T out = this->GetValue(0);
         //    this->DeleteValue(0);
 
-        return this->PopFront(); // TODO PopFront causes all the other elements to be moved in memory. Think of container that does not require moving elements during PopFront
+        return this->PopFront(); // THArray works well with PopFront without moving elements in memory 
     }
 
     void PushElement(T in_element)

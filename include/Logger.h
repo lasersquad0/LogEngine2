@@ -203,6 +203,7 @@ public:
 		}
 	}
 #else
+ private:
 	std::string vformat(const char* format, va_list args)
 	{
 		size_t size = 1024; // should be enough for format string
@@ -239,7 +240,8 @@ public:
 			buffer = new char[size];
 		}
 	}
-	
+
+public:	
 	void CritFmt(const char* fmt, ...)
 	{
 		if (!ShouldLog(Levels::llCritical)) return;

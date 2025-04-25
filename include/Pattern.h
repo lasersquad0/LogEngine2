@@ -134,9 +134,14 @@ public:
 
 class OSVersionHolder : public Holder
 {
+private:
+	std::string FVersionCache;
 public:
-	std::string Format(const LogEvent&) override //TODO may be cache OSVersion info??? to void calling GetProjectInfo() too offten
+	std::string Format(const LogEvent&) override 
 	{
+		//return cached value if it is exists.
+		if (FVersionCache.size() > 0) return FVersionCache;
+
 #ifdef WIN32
 		const auto system = L"kernel32.dll";
 		DWORD dummy = 0;
@@ -156,9 +161,11 @@ public:
 			<< HIWORD(pFixed->dwFileVersionLS) << '.'
 			<< LOWORD(pFixed->dwFileVersionLS);
 
-		return o.str();
+		FVersionCache = o.str();
+		return FVersionCache;
 #else
-		return "<OSVERSION>";
+		FVersionCache = "<OSVERSION>";
+		return FVersionCache;
 #endif
 	}
 };

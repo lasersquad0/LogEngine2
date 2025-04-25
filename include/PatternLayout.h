@@ -35,7 +35,7 @@ public:
 	virtual ~PatternLayout() {}
 	virtual std::string Format(const LogEvent& lv) { return MessagePatterns[lv.msgLevel].Format(lv); }
 	virtual std::string GetPattern(Levels::LogLevel level) { return MessagePatterns[level].GetPattern(); }
-	virtual std::string GetAllPatterns() { return MessagePatterns[Levels::llOff].GetPattern(); }
+	virtual std::string GetPattern() { return MessagePatterns[Levels::llOff].GetPattern(); }
 
 	virtual void SetDefaultPattern(Levels::LogLevel level) { MessagePatterns[level].SetPattern(DefPatterns[level]); }
 

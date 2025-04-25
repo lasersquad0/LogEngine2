@@ -170,9 +170,10 @@ public:
 	//	return inidata.GetValue(section);
 	//}
 
-	std::string GetValue(const std::string& section, const std::string& key, const std::string& defaultValue = "no_value", uint index = 0u)
+	// removes leading/trailing spaces/tabs from section and key parameters before look for the value
+	std::string GetValue(const std::string& section, const std::string& key, const std::string& defaultValue = "<no_value>", uint index = 0u)
 	{
-		ValueType* p = FInidata.GetValuePointer(section, key);
+		ValueType* p = FInidata.GetValuePointer(trimSPCRLF(section), trimSPCRLF(key));
 		if (p == nullptr)
 			return defaultValue;
 		else
@@ -186,17 +187,17 @@ public:
 
 	StorageType::ValuesHash& GetSection(std::string& section)
 	{
-		return FInidata.GetValue(section);
+		return FInidata.GetValue(trimSPCRLF(section));
 	}
 
 	bool HasSection(const std::string& section)
 	{
-		return FInidata.GetValuePointer(section) != nullptr;
+		return FInidata.GetValuePointer(trimSPCRLF(section)) != nullptr;
 	}
 
 	uint ValuesCount(const std::string& section)
 	{
-		auto p = FInidata.GetValuePointer(section);
+		auto p = FInidata.GetValuePointer(trimSPCRLF(section));
 		if (p == nullptr)
 			return 0;  // just return zero if section is not found 
 		//else
@@ -216,7 +217,7 @@ public:
 
 	bool HasValue(const std::string& section, const std::string& key)
 	{
-		auto p = FInidata.GetValuePointer(section, key);
+		auto p = FInidata.GetValuePointer(trimSPCRLF(section), trimSPCRLF(key));
 		return (p != nullptr) && (p->Count() > 0);
 	}
 

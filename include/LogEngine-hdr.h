@@ -126,6 +126,11 @@ LOGENGINE_INLINE Logger& GetDefaultLogger()
 	return Registry::Instance().GetDefaultLogger();
 }
 
+LOGENGINE_INLINE void SetDefaultLogger(Logger& logger)
+{
+	return Registry::Instance().SetDefaultLogger(logger);
+}
+
 // returns reference to the logger with name specified in loggerName parameter
 // creates new "empty" logger in case if logger with specified name does not yet exists
 // "empty" means that the logger does not contain any Sinks.
@@ -232,8 +237,8 @@ LOGENGINE_INLINE Logger& GetMultiLogger(const std::string& loggerName, SinkList&
 
 LOGENGINE_INLINE Logger& GetMultiLogger(const std::string& loggerName, std::initializer_list<std::shared_ptr<Sink>> list)
 {
-	Logger& logger = GetLogger(loggerName); // TODO what is pre-existed logger with sinks has returned???
-	logger.ClearSinks();
+	Logger& logger = GetLogger(loggerName);
+	logger.ClearSinks(); // if existing logger is returned - re-initialise it with new Sinks
 	for (auto sink: list)
 		logger.AddSink(sink);
 
