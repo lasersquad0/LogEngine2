@@ -26,14 +26,16 @@ class Sink
 {
 protected:
 	std::string FName;
-	Levels::LogLevel FLogLevel{ LL_DEFAULT };
+	std::atomic<Levels::LogLevel> FLogLevel;
 	
-	virtual bool shouldLog(const Levels::LogLevel ll) { return FLogLevel >= ll; }
+	virtual bool shouldLog(const Levels::LogLevel ll) { return FLogLevel.load() >= ll; }
 	virtual void sendMsg(const LogEvent& e) = 0;
 
 public:
-	Sink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : FName{ name }, FLogLevel{ ll }
+	Sink(const std::string& name, const Levels::LogLevel ll = LL_DEFAULT) : FName{ name }
 	{
+		FLogLevel.store(ll);
+
 		//for (uint i = 0; i < n_LogLevels; i++)
 		//	FMessageCounts[i] = 0;
 	}
@@ -75,12 +77,12 @@ public:
 	
 	Levels::LogLevel GetLogLevel() const 
 	{ 
-		return FLogLevel; //TODO implement it using atomics for thread safety
+		return FLogLevel.load(); 
 	}
 	
 	void SetLogLevel(Levels::LogLevel ll) 
 	{
-		FLogLevel = ll; //TODO implement it using atomics for thread safety 
+		FLogLevel.store(ll); 
 	}
 
 	/**
@@ -105,7 +107,7 @@ protected:
 	//virtual void sendMsg(const LogEvent& e) = 0;
 
 public:
-	BaseSink(const std::string& name, const Levels::LogLevel ll = Levels::llInfo) : Sink(name, ll), FLayout{ new PatternLayout() }
+	BaseSink(const std::string& name, const Levels::LogLevel ll = LL_DEFAULT) : Sink(name, ll), FLayout{ new PatternLayout() }
 	{
 		//for (uint i = 0; i < n_LogLevels; i++)
 		//	FMessageCounts[i] = 0;
