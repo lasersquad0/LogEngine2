@@ -265,17 +265,17 @@ LOGENGINE_INLINE Logger& GetCallbackLoggerMT(const std::string& loggerName, cons
 	return logger;
 }
 
-void Log(const std::string& msg, const Levels::LogLevel ll)
+LOGENGINE_INLINE void Log(const std::string& msg, const Levels::LogLevel ll)
 {
 	Registry::Instance().GetDefaultLogger().Log(msg, ll);
 }
 
-void Crit(const std::string& msg) { Log(msg, Levels::llCritical); }
-void Error(const std::string& msg) { Log(msg, Levels::llError); }
-void Warn(const std::string& msg) { Log(msg, Levels::llWarning); }
-void Info(const std::string& msg) { Log(msg, Levels::llInfo); }
-void Debug(const std::string& msg) { Log(msg, Levels::llDebug); }
-void Trace(const std::string& msg) { Log(msg, Levels::llTrace); }
+LOGENGINE_INLINE void Crit(const std::string& msg) { Log(msg, Levels::llCritical); }
+LOGENGINE_INLINE void Error(const std::string& msg) { Log(msg, Levels::llError); }
+LOGENGINE_INLINE void Warn(const std::string& msg) { Log(msg, Levels::llWarning); }
+LOGENGINE_INLINE void Info(const std::string& msg) { Log(msg, Levels::llInfo); }
+LOGENGINE_INLINE void Debug(const std::string& msg) { Log(msg, Levels::llDebug); }
+LOGENGINE_INLINE void Trace(const std::string& msg) { Log(msg, Levels::llTrace); }
 
 
 static uint ParseInt(std::string s, uint defaultValue = 0)
