@@ -1,6 +1,8 @@
 TODO
 ----
+
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
+
 
 * Add tests for threadsafety parameter in .lfg file
 
