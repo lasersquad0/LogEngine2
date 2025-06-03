@@ -133,7 +133,7 @@ public:
 
 			if (line[0] == '[')
 			{
-				if (paramCount == 0 && section != MISSING_SECTION) // sections without parameters may exist 
+				if (paramCount == 0 && section != MISSING_SECTION) // sections without parameters may exist, add it to the hash when next section is met
 					FInidata.SetValue(section);
 
 				length = line.find(']');
@@ -156,12 +156,13 @@ public:
 				rightSide = line.substr(length + 1, line.size() - length);
 			}
 
+			// if section 'section' does not exist it will be added by this SetValue call 
 			SetValue(section, TrimSPCRLF(leftSide), TrimSPCRLF(rightSide)); // trimSPCRLF is required here for Linux since its \n and \r differ from Windows.
 			paramCount++;
 		}
 
 		// case when empty section is the last section in a file
-		if (paramCount == 0 && section != MISSING_SECTION) // sections without parameters may exist 
+		if (paramCount == 0 && section != MISSING_SECTION)
 			FInidata.SetValue(section);
 	}
 
