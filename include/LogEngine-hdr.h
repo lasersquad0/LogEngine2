@@ -6,17 +6,14 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
+#include <string>
+#include "DynamicArrays.h"
 #include "FileSink.h"
 #include "RotatingFileSink.h"
 #include "IniReader.h"
 
-LOGENGINE_NS_BEGIN
 
-/*class Destructor
-{
-public:
-	~Destructor() { ShutdownLoggers(); }
-};*/
+LOGENGINE_NS_BEGIN
 
 class Registry
 {
@@ -57,6 +54,7 @@ public:
 
 	void SetDefaultLogger(Logger& logger)
 	{
+		//TODO memory leak? need to delete previous default logger before setting new one
 		FLoggers.SetValue("", &logger);
 	}
 
@@ -98,7 +96,7 @@ LOGENGINE_INLINE void SetProperty(const std::string& name, const std::string& va
 
 LOGENGINE_INLINE std::string GetProperty(const std::string& name, const std::string& defaultValue)
 {
-	return properties.getString(name, defaultValue);
+	return properties.GetString(name, defaultValue);
 }
 
 LOGENGINE_INLINE bool PropertyExist(const std::string& name)
@@ -344,7 +342,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 				sinkSectName.append(sn);
 
 				if (!reader.HasSection(sinkSectName))
-					throw FileException("Sink section '" + sinkSectName + "' refered by logger '" + loggerName + "' not found in file '" + fileName + "'.");
+					throw LogException("Sink section '" + sinkSectName + "' refered by logger '" + loggerName + "' not found in file '" + fileName + "'.");
 
 				std::string value = reader.GetValue(sinkSectName, TYPE_PARAM, ST_DEFAULT_NAME, 0);
 				LogSinkType stype = STfromString(value);
@@ -354,14 +352,14 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 
 				switch (stype)
 				{
-				case stStdout: if(threaded == sthSingle) sink = new StdoutSinkST(sn); else sink = new StdoutSinkMT(sn); break;
+				case stStdout: if (threaded == sthSingle) sink = new StdoutSinkST(sn); else sink = new StdoutSinkMT(sn); break;
 				case stStderr: if (threaded == sthSingle) sink = new StderrSinkST(sn); else sink = new StderrSinkMT(sn); break;
 				case stString: if (threaded == sthSingle) sink = new StringSinkST(sn); else sink = new StringSinkMT(sn); break;
 				case stFile:
 				{
 					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
 					if (sinkFileName.empty())
-						throw FileException("File sink '" + sn + "' missing FileName parameter.");
+						throw LogException("File sink '" + sn + "' missing FileName parameter.");
 
 					if (threaded == sthSingle)
 						sink = new FileSinkST(sn, sinkFileName);
@@ -374,7 +372,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 				{
 					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
 					if (sinkFileName.empty())
-						throw FileException("File sink '" + sn + "' missing FileName parameter.");
+						throw LogException("File sink '" + sn + "' missing FileName parameter.");
 					
 					LogRotatingStrategy strategy = RSfromString(reader.GetValue(sinkSectName, STRATEGY_PARAM, RS_DEFAULT_NAME));
 					uint maxlogsize = ParseInt(reader.GetValue(sinkSectName, MAXLOGSIZE_PARAM, DefaultMaxLogSizeStr), DefaultMaxLogSize);
@@ -408,129 +406,5 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 	}
 }
 
-/*
-static Sink* SinkByName(THArray<Sink*>& sinks, std::string& sinkName)
-{
-	for (Sink* si: sinks)
-	{
-		if (EqualNCase(si->GetName(), sinkName)) return si;
-	}
-	return nullptr;
-}
-
-static Sink* SinkByName(THArray<std::pair<Sink*, bool>>& sinks, std::string& sinkName)
-{
-	for (auto si : sinks)
-	{
-		if (EqualNCase(si.first->GetName(), sinkName))
-		{
-			si.second = true; // mark sink as "visited"
-			return si.first;
-		}
-	}
-	return nullptr;
-}
-
-void InitFromFile(std::string fileName)
-{
-	IniReader reader;
-	reader.LoadIniFile(fileName);
-	
-	THArray<std::pair<Sink*, bool>> sinks;
-
-	// look for all sink sections, create and initialise appropriate Sinks. Put them in sinks array for further processing.
-	for (auto it = reader.begin(); it != reader.end(); ++it)
-	{
-		std::string sectName = *it;
-		//IniReader::StorageType::ValuesHash& section = reader.GetSection(sectName);
-
-		size_t n = sectName.find('.');
-		if ((n != std::string::npos) && EqualNCase(sectName.substr(0, n + 1), SINK_PREFIX) )
-		{
-			std::string sinkName = sectName.substr(n + 1);
-
-			if (sinkName.size() == 0) continue;
-
-			std::string value = reader.GetValue(sectName, TYPE_PARAM, ST_DEFAULT_NAME, 0);
-			LogSinkType stype = STfromString(value);
-			Sink* sink = nullptr;
-
-			switch (stype)
-			{
-			case stStdout: sink = new StdoutSink(sinkName); break;
-			case stStderr: sink = new StderrSink(sinkName); break;
-			case stString: sink = new StringSink(sinkName); break;
-			case stFile:
-			case stRotatingFile:
-			{
-				std::string sinkFileName = reader.GetValue(sectName, FILENAME_PARAM, "");
-				if (fileName.empty())
-					throw file_exception("File sink '" + sinkName + "' missing FileName parameter.");
-
-				if (stype == stFile)
-					sink = new FileSink(sinkName, sinkFileName);
-				else
-					sink = new RotatingFileSink(sinkName, sinkFileName);
-
-				break;
-			}
-			default:
-				throw file_exception("Unknown sink type for sink '" + sinkName);
-			}
-
-			sink->SetLogLevel(LLfromString(reader.GetValue(sectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
-
-			PatternLayout* lay = new PatternLayout();
-			lay->SetAllPatterns(reader.GetValue(sectName, PATTERNALL_PARAM, DefaultLinePattern, 0));
-			lay->SetCritPattern(reader.GetValue(sectName, CRITPATTERN_PARAM, DefaultCritPattern, 0));
-			lay->SetErrorPattern(reader.GetValue(sectName, ERRORPATTERN_PARAM, DefaultErrorPattern, 0));
-			lay->SetWarnPattern(reader.GetValue(sectName, WARNPATTERN_PARAM, DefaultWarningPattern, 0));
-
-			sink->SetLayout(lay);
-			sinks.AddValue(std::pair(sink, false));
-
-		}
-	}
-
-	// look init file again for logger sections. create a initialize apprioriate loggers, assign previously created sinks to loggers
-	for (auto it = reader.begin(); it != reader.end(); ++it)
-	{
-		std::string sectName = *it;
-		IniReader::StorageType::ValuesHash& section = reader.GetSection(sectName);
-
-		size_t n = sectName.find('.');
-		if ((n != std::string::npos) && (CompareNCase(sectName.substr(0, n + 1), LOGGER_PREFIX) == 0))
-		{
-			std::string loggerName = sectName.substr(n + 1);
-			
-			if (loggerName.size() == 0) continue;
-			
-			Logger& logger = GetLogger(loggerName);
-			logger.SetLogLevel(LLfromString(reader.GetValue(sectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
-			logger.SetAsyncMode(StrToBool(reader.GetValue(sectName, ASYNMODE_PARAM, "false", 0)));
-
-			if (!section.IfExists("Sink")) continue;
-
-			IniReader::ValueType& loggerSinks = section.GetValue("Sink");
-			for (auto sn : loggerSinks)
-			{
-				if (sn.empty()) continue;
-
-				Sink* sink = SinkByName(sinks, sn);
-				if(sink == nullptr)
-					throw file_exception("Sink '" + sn + "' refered by logger '" + loggerName + "' is not found in file '" + fileName + "'.");
-				logger.AddSink(sink);
-			}
-		}
-	}
-
-	// delete 'unused' sinks
-	//for (auto si : sinks)
-	//{
-	//	if (!si.second)	delete si.first;
-	//}
-
-}
-*/
 
 LOGENGINE_NS_END
