@@ -1,0 +1,8 @@
+# incorrect logger name - error
+[logger]
+logLevel= lol
+BackupType = XXX
+
+# empty logger name - error
+[logger.]
+loglevel=4

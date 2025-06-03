@@ -1,29 +1,27 @@
-DetailLevel = -3
+; two sink sections with the same sink names 
+; if .lfg file contains two sections with equal names then parameters of these two section 
+; are "merged" like it was single section with all parameters
+; parameters with equal names get double values
+; for example merged section [sink.logSINK] below will have one parameter FileName 
+; that contains two values (refered by index): sink1log.log and sink2log.log
 
-MaxLogSize = rrr
+[logger.loooger]
+#
+sink =logSINK 	
 
-BackupType = Nones
-
-ApplicationName = BadLFGFileApp
-
-Version = d.d.d.d
-
-LogFileName = logs/BadLFGLog.log
-
-# This text is written to the file when LogEngine is initializing. 
-StartAppLine  = %APPNAME%  ${TMP}  %APPVERSION% ${COMPUTERNAME} startup.\nLog is started at %DATETIME%.
-
-# This text is written to the file when LogEngine is stopping. 
-StopAppLine   = %APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%.
-
-SeparatorLine = ---------------------------------------------------------------------
-
-# Template for error line.
-ErrorLine     = %TIME% #%THREAD% : %MSG%
-
-# Template for warning line.
-WarningLine   = %TIME% #%THREAD% : %MSG%
-
-# Template for information line.
-InfoLine      = %TIME% #%THREAD% : %MSG%
- 
+[sink.logSINK]
+FileName = sink1log.log
+Type= RotatingFile
+LogLevel= ERROR
+MaxLogFileSize = 20m
+MaxBackupIndex = aaa
+Strategy = noneE
+#
+[sink.logSINK]
+FileName = sink2log.log
+Type= RotatingFile
+LogLevel= DEbug
+MaxLogFileSize = 20m
+MaxBackupIndex = 9
+Strategy = numbers
+#

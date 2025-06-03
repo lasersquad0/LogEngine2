@@ -1,0 +1,3 @@
+# not a logger name - ok, do nothing
+[loggger]
+loglevel=4

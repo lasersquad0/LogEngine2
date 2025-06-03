@@ -2,6 +2,9 @@
 #
 [logger.flog]
 sink=superFSINK
+[logger.flog2]
+sink=superFSINK
+LogLevel= TRACe
 #!
 [Sink.SUPERFSINK]
 FileName  =   sink super.log

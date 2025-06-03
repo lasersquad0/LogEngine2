@@ -1,0 +1,7 @@
+# empty logger name - error
+[logger.]
+loglevel=4
+
+# not a logger name - ok, do nothing
+[loggger]
+loglevel=4

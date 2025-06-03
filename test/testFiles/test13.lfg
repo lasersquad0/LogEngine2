@@ -1,29 +1,15 @@
-DetailLevel = -3
+# logger that have two sinks with equal names
 
-MaxLogSize = rrr
+[logger.loooger]
+#
+sink =logSINK 	
+sink =logSINK 	
 
-BackupType = Nones
-
-ApplicationName = Exam\npleApp
-
-Version = t.t.t.t
-
-LogFileName = logs/Error\nLog.log
-
-# This text is written to the file when LogEngine is initializing. 
-StartAppLine  = %APPNAME% ${TMP}${SHELL} %APPVERSION% ${COMPUTERNAME}${NAME} startup.\nLog is started at %DATETIME%.
-
-# This text is written to the file when LogEngine is stopping. 
-StopAppLine   = %APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%.
-
-SeparatorLine = ---------------------------------------------------------------------
-
-# Template for error line.
-ErrorLine     = %TIME% #%THREAD% : %MSG%
-
-# Template for warning line.
-WarningLine   = %TIME% #%THREAD% : %MSG%
-
-# Template for information line.
-InfoLine      = %TIME% #%THREAD% : %MESSAGE%
- 
+[sink.logSINK]
+FileName  =   sink .log
+Type= RotatingFile
+LogLevel= ERROR
+MaxLogFileSize = 20m
+MaxBackupIndex = aaa
+Strategy = noneE
+#
