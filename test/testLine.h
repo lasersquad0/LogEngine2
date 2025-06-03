@@ -32,6 +32,8 @@ class LineTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testLine18);
   CPPUNIT_TEST(testLine19);
   CPPUNIT_TEST(testLine20);
+  CPPUNIT_TEST(testLine21);
+  CPPUNIT_TEST(testLine22);
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();
@@ -58,6 +60,8 @@ public:
     void testLine18();
     void testLine19();
     void testLine20();
+    void testLine21();
+    void testLine22();
 };
 
 

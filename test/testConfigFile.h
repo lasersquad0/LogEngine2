@@ -21,6 +21,9 @@ class ConfigFileTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testConfigFile7);
     CPPUNIT_TEST(testConfigFile8);
     CPPUNIT_TEST(testConfigFile9);
+    CPPUNIT_TEST(testConfigFile10);
+    CPPUNIT_TEST(testConfigFile11);
+    CPPUNIT_TEST(testConfigFile12);
     CPPUNIT_TEST(testConfigFile20);
     CPPUNIT_TEST(testConfigFile21);
 
@@ -38,6 +41,9 @@ public:
     void testConfigFile7();
     void testConfigFile8();
     void testConfigFile9();
+    void testConfigFile10();
+    void testConfigFile11();
+    void testConfigFile12();
     void testConfigFile20();
     void testConfigFile21();
 };

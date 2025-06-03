@@ -2,9 +2,11 @@
 #include "Shared.h"
 #include "testProperties.h"
 #include "Properties.h"
-#include "LogEngine.h"
+//#include "LogEngine.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEnginePropertiesTest );
+
+using namespace LogEngine;
 
 void LogEnginePropertiesTest::setUp ()
 {
@@ -18,16 +20,16 @@ void LogEnginePropertiesTest::tearDown ()
 
 void LogEnginePropertiesTest::testProperties1()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test1.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test1.lfg", !fin.fail());
-	//fin.unsetf(std::ios::skipws);
 	Properties props;
-	props.load(fin);
 	
+	props.SetValue("DetailLevel", "4");
+	props.SetValue("MaxLogSize", "1");
+	props.SetValue("BackupType", "None");
+
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT(props.getString("BackupType") == "None");
+	CPPUNIT_ASSERT_EQUAL(4, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(1, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT(props.GetString("BackupType") == "None");
 }
 
 void LogEnginePropertiesTest::testProperties2()
@@ -36,158 +38,168 @@ void LogEnginePropertiesTest::testProperties2()
 
 	std::string s = "  123 ";
 	std::string ss = s;
-	std::string sss = props.trim(s);
+	std::string sss = Trim(s);
 
 	CPPUNIT_ASSERT_EQUAL(s, ss); // check that trim does not change string s
 	CPPUNIT_ASSERT_EQUAL(sss, std::string("123"));
 
-	CPPUNIT_ASSERT(props.trim("").empty());
-	CPPUNIT_ASSERT(props.trim(" ") == "");
-	CPPUNIT_ASSERT(props.trim("  ") == "");
-	CPPUNIT_ASSERT(props.trim("   \n") == "\n");
-	CPPUNIT_ASSERT(props.trim("\n") == "\n");
-    CPPUNIT_ASSERT_EQUAL(std::string("a"), props.trim("a"));
-	CPPUNIT_ASSERT_EQUAL(std::string("aa"), props.trim("aa"));
-	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), props.trim("aaa"));
-	CPPUNIT_ASSERT_EQUAL(std::string("a"), props.trim(" a"));
-	CPPUNIT_ASSERT_EQUAL(std::string("a"), props.trim("  a"));
-	CPPUNIT_ASSERT(props.trim("\n  a") == "\n  a");
-	CPPUNIT_ASSERT_EQUAL(std::string("a"), props.trim("a "));
-	CPPUNIT_ASSERT_EQUAL(std::string("a"), props.trim("a  "));
-	CPPUNIT_ASSERT(props.trim("a  \n") == "a  \n");
-	CPPUNIT_ASSERT_EQUAL(std::string("a"), props.trim(" a "));
-	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), props.trim("  aaa   "));
-	CPPUNIT_ASSERT_EQUAL(std::string("a a a"), props.trim(" a a a  "));
+	CPPUNIT_ASSERT(Trim("").empty());
+	CPPUNIT_ASSERT(Trim(" ") == "");
+	CPPUNIT_ASSERT(Trim("  ") == "");
+	CPPUNIT_ASSERT(Trim("   \n") == "\n");
+	CPPUNIT_ASSERT(Trim("\n") == "\n");
+    CPPUNIT_ASSERT_EQUAL(std::string("a"), Trim("a"));
+	CPPUNIT_ASSERT_EQUAL(std::string("aa"), Trim("aa"));
+	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), Trim("aaa"));
+	CPPUNIT_ASSERT_EQUAL(std::string("a"), Trim(" a"));
+	CPPUNIT_ASSERT_EQUAL(std::string("a"), Trim("  a"));
+	CPPUNIT_ASSERT(Trim("\n  a") == "\n  a");
+	CPPUNIT_ASSERT_EQUAL(std::string("a"), Trim("a "));
+	CPPUNIT_ASSERT_EQUAL(std::string("a"), Trim("a  "));
+	CPPUNIT_ASSERT(Trim("a  \n") == "a  \n");
+	CPPUNIT_ASSERT_EQUAL(std::string("a"), Trim(" a "));
+	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), Trim("  aaa   "));
+	CPPUNIT_ASSERT_EQUAL(std::string("a a a"), Trim(" a a a  "));
 }
 
 void LogEnginePropertiesTest::testProperties3()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test2.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test2.lfg", !fin.fail());
-
 	Properties props;
-	props.load(fin);
+	props.SetValue("DetailLevel", "");
+	props.SetValue("MaxLogSize", "");
+	props.SetValue("BackupType", "");
 	
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(0, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(0, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT(props.getString("BackupType").empty());
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
+	
 }
 
 void LogEnginePropertiesTest::testProperties4()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test3.lfg"/*, std::ios::in*/);
-
-    //if(std::ios_base::failbit == (fin.rdstate() & std::ios_base::failbit))
-    CPPUNIT_ASSERT_MESSAGE("Cannot open file " TEST_FILES_FOLDER "test3.lfg", !fin.fail());
-	
 	Properties props;
-	props.load(fin);
-	
+	props.SetValue("DetailLevel", "1");
+	props.SetValue("DetailLevel", "0");
+
 	CPPUNIT_ASSERT_EQUAL(1u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(0, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(0, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT(props.getString("BackupType").empty());
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0ul, props.GetUInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
 }
 
 void LogEnginePropertiesTest::testProperties5()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test4.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test4.lfg", !fin.fail());
-
 	Properties props;
-	props.load(fin);
-	
+	props.SetValue("DetailLevel", "4");
+	props.SetValue("MaxLogSize", "1");
+	props.SetValue("BackupType", "Single");
+
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT_EQUAL(std::string("Single"), props.getString("BackupType"));
+	CPPUNIT_ASSERT_EQUAL(4, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(1, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT_EQUAL(4ul, props.GetUInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(1ul, props.GetUInt("MaxLogSize"));
+	CPPUNIT_ASSERT_EQUAL(std::string("Single"), props.GetString("BackupType"));
 }
 
 void LogEnginePropertiesTest::testProperties6()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test5.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test5.lfg", !fin.fail());
-
 	Properties props;
-	props.load(fin);
-	
+	props.SetValue("DetailLevel", "4");
+	props.SetValue("MaxLogSize", "1");
+	props.SetValue("BackupType", "Timestamp");
+
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT_EQUAL(std::string("Timestamp"), props.getString("BackupType"));
+	CPPUNIT_ASSERT_EQUAL(4, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(1, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT_EQUAL(std::string("Timestamp"), props.GetString("BackupType"));
 }
 
 void LogEnginePropertiesTest::testProperties7()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test6.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test6.lfg", !fin.fail());
+	//std::ifstream fin(TEST_FILES_FOLDER "test6.lfg"/*, std::ios::in*/);
+	//CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test6.lfg", !fin.fail());
 
 	Properties props;
-	props.load(fin);
+	props.SetValue("DetailLevel", "a"); // incorrect value
+	props.SetValue("MaxLogSize", "1");
+	props.SetValue("BackupType", "None");
+
 	
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.getString("BackupType"));
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel")); //default value for int is used
+	CPPUNIT_ASSERT_EQUAL(0ul, props.GetUInt("DetailLevel")); //default value for int is used
+	CPPUNIT_ASSERT_EQUAL(1, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.GetString("BackupType"));
 }
 
 void LogEnginePropertiesTest::testProperties8()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test7.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test7.lfg", !fin.fail());
-
 	Properties props;
-	props.load(fin);
-	
+	props.SetValue("DetailLevel", "12345678987654321"); // too large value
+	props.SetValue("MaxLogSize", "one"); // incorrect value for int param
+	props.SetValue("BackupType", "");
+
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT(props.getString("BackupType").empty());
+	CPPUNIT_ASSERT_EQUAL(0ul, props.GetUInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
 }
 
 void LogEnginePropertiesTest::testProperties9()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test8.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test8.lfg", !fin.fail());
-
 	Properties props;
-	props.load(fin);
-				
+	props.SetValue("DetailLevel", "00000");
+	props.SetValue("MaxLogSize", "100");
+	props.SetValue("BackupType", "None");
+	props.SetValue("ApplicationName", "ExampleApp");
+	props.SetValue("Version", "E.E.E.E");
+	props.SetValue("LogFileName", "logs/ExampleApp.log");
+	props.SetValue("StartAppLine", "\n%APPNAME% %APPVERSION% startup.\nLog is started at %DATETIME%.");
+	props.SetValue("StopAppLine", "%APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%.");
+	props.SetValue("SeparatorLine", "---------------------------------------------------------------------");
+	props.SetValue("ErrorLine", "%TIME% #%THREAD% : %MSG%");
+	props.SetValue("Warningline", "%TIME% #%THREAD% : %MSG%");
+	props.SetValue("InfoLine", "%TIME% #%THREAD% : %MSG%");
+
 	CPPUNIT_ASSERT_EQUAL(12u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(0, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(100, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.getString("BackupType"));
-	CPPUNIT_ASSERT_EQUAL(std::string("ExampleApp"), props.getString("ApplicationName"));
-	CPPUNIT_ASSERT_EQUAL(std::string("E.E.E.E"), props.getString("Version"));
-	CPPUNIT_ASSERT_EQUAL(std::string("logs/ExampleApp.log"), props.getString("LogFileName"));
-	std::string s = props.getString("StartAppLine");
+	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(100, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.GetString("BackupType"));
+	CPPUNIT_ASSERT_EQUAL(std::string("ExampleApp"), props.GetString("ApplicationName"));
+	CPPUNIT_ASSERT_EQUAL(std::string("E.E.E.E"), props.GetString("Version"));
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/ExampleApp.log"), props.GetString("LogFileName"));
+	std::string s = props.GetString("StartAppLine");
 	CPPUNIT_ASSERT_EQUAL(std::string("\n%APPNAME% %APPVERSION% startup.\nLog is started at %DATETIME%."), s);
-	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%."), props.getString("StopAppLine"));
-	CPPUNIT_ASSERT_EQUAL(std::string("---------------------------------------------------------------------"), props.getString("SeparatorLine"));
-	s = props.getString("ErrorLine");
+	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%."), props.GetString("StopAppLine"));
+	CPPUNIT_ASSERT_EQUAL(std::string("---------------------------------------------------------------------"), props.GetString("SeparatorLine"));
+	s = props.GetString("ErrorLine");
 	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), s);
-	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("WarningLine"));
-	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("InfoLine"));
+	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.GetString("WarningLine"));
+	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.GetString("InfoLine"));
 }
 
 void LogEnginePropertiesTest::testProperties10()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test12.lfg"/*, std::ios::in*/);
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test12.lfg", !fin.fail());
-
 	Properties props;
-	props.load(fin);
-	
-	CPPUNIT_ASSERT_EQUAL(6u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(11, props.getInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(std::string("TimeStamp"), props.getString("BackupType"));
-	CPPUNIT_ASSERT_EQUAL(101, props.getInt("MaxLogSize"));
-	CPPUNIT_ASSERT_EQUAL(std::string("1.1.1.1"), props.getString("Version"));
-	CPPUNIT_ASSERT_EQUAL(std::string("ExampleApp11"), props.getString("applicationname"));
-	CPPUNIT_ASSERT_EQUAL(std::string("c:\\temp\\ExampleApp11.log"), props.getString("LogFileName"));
-}
+	props.SetValue("DetailLevel", "0000011");
+	props.SetValue("MaxLogSize", "101");
+	props.SetValue("BackupType", "TimeStamp");
+	props.SetValue("ApplicationName", "ExampleApp11");
+	props.SetValue("Version", "1.1.1.1");
+	props.SetValue("LogFileName", "c:\\temp\\ExampleApp11.log");
 
+	CPPUNIT_ASSERT_EQUAL(6u, props.Count());
+	CPPUNIT_ASSERT_EQUAL(11, props.GetInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(std::string("TimeStamp"), props.GetString("BackupType"));
+	CPPUNIT_ASSERT_EQUAL(101, props.GetInt("MaxLogSize"));
+	CPPUNIT_ASSERT_EQUAL(std::string("1.1.1.1"), props.GetString("Version"));
+	CPPUNIT_ASSERT_EQUAL(std::string("ExampleApp11"), props.GetString("applicationname"));
+	CPPUNIT_ASSERT_EQUAL(std::string("c:\\temp\\ExampleApp11.log"), props.GetString("LogFileName"));
+}
 
 void LogEnginePropertiesTest::testProperties11()
 {
@@ -211,33 +223,22 @@ void LogEnginePropertiesTest::testProperties11()
 
 void LogEnginePropertiesTest::testProperties12()
 {
-	std::ifstream fin(TEST_FILES_FOLDER "test13.lfg");
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test13.lfg", !fin.fail());
-
 	Properties props;
-	props.load(fin);
 
-	CPPUNIT_ASSERT_EQUAL(12u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(0ul, props.getUInt("DetailLevel", DefaultDetailLevel)); // in file it is '-1'
-	CPPUNIT_ASSERT_EQUAL(1000ul, props.getUInt("MaxLogSize", DefaultMaxLogSize)); // should be default value 100 while in file it is non digit value
-	CPPUNIT_ASSERT_EQUAL(std::string("Nones"), props.getString("BackupType")); // in file it is errorenos value
-	CPPUNIT_ASSERT_EQUAL(std::string("Exam\npleApp"), props.getString("ApplicationName"));
-	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), props.getString("Version"));
-	CPPUNIT_ASSERT_EQUAL(std::string("logs/Error\nLog.log"), props.getString("LogFileName"));
+	props.SetValue("DetailLevel", "-1");
+	props.SetValue("MaxLogSize", "MaxLogSize"); // incorrect value
+	props.SetValue("BackupType", "Nones");
+	props.SetValue("ApplicationName", "Exam\npleApp");
+	props.SetValue("Version", "t.t.t.t");
+	props.SetValue("LogFileName", "logs/Error\nLog.log");
 
-	std::string s = props.getString("StartAppLine");
-#ifdef WIN32
-	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% C:\\Users\\Andrey\\AppData\\Local\\Temp %APPVERSION% CMDB-182726 startup.\nLog is started at %DATETIME%."), s);
-#else
-	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% /bin/bash %APPVERSION% CMDB-182726 startup.\nLog is started at %DATETIME%."), s);
-#endif
-	
-	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%."), props.getString("StopAppLine"));
-	CPPUNIT_ASSERT_EQUAL(std::string("---------------------------------------------------------------------"), props.getString("SeparatorLine"));
-	s = props.getString("ErrorLine");
-	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), s);
-	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("WarningLine"));
-	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MESSAGE%"), props.getString("InfoLine"));
+
+	CPPUNIT_ASSERT_EQUAL(6u, props.Count());
+	CPPUNIT_ASSERT_EQUAL(5ul, props.GetUInt("DetailLevel", 5ul)); // in file it is '-1'
+	CPPUNIT_ASSERT_EQUAL(1000ul, props.GetUInt("MaxLogSize", 1000ul)); // should be default value 100 while in file it is non digit value
+	CPPUNIT_ASSERT_EQUAL(std::string("Nones"), props.GetString("BackupType")); // in file it is errorenos value
+	CPPUNIT_ASSERT_EQUAL(std::string("Exam\npleApp"), props.GetString("ApplicationName"));
+	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), props.GetString("Version"));
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/Error\nLog.log"), props.GetString("LogFileName"));
+
 }
-
-#undef TEST_FILES_FOLDER
