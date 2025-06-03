@@ -17,13 +17,11 @@
 #include <memory>
 #include "Common.h"
 #include "Sink.h"
-#include "FileSink.h"
+#include "LogEvent.h"
 #include "DynamicArrays.h"
 #include "SynchronizedQueue.h"
 
 LOGENGINE_NS_BEGIN
-
-class Logger;
 
 typedef SafeQueue<LogEvent*> LoggerQueue;
 struct LoggerThreadInfo
@@ -35,20 +33,6 @@ struct LoggerThreadInfo
 typedef Sink* SinkPtr;
 typedef THArray<std::shared_ptr<Sink>> SinkList;
 
-// this class avoids having two equal pointers in the list of Sinks
-/*class SinkList : public THArray<SinkPtr>
-{
-public:
-	uint InsertValue(const uint Index, const SinkPtr& Value) override
-	{
-		int res = this->IndexOf(Value);
-		if (res == -1)
-			return THArray<Sink*>::InsertValue(Index, Value);
-		else 
-			return res;
-	}
-};*/
-
 class Logger
 {
 private:
@@ -58,6 +42,7 @@ private:
 	Levels::LogLevel FLogLevel;
 	SinkList FSinks;
 	bool FAsync = false;
+	TStringHashNCase FProperties;
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
@@ -89,6 +74,8 @@ public:
 		if (propagate)
 			for (auto& sk : FSinks) sk->SetLogLevel(ll);
 	}
+	
+	std::string GetName() { return FName; }
 
 	bool GetAsyncMode() { return FAsync; }
 	void SetAsyncMode(bool amode)
@@ -148,6 +135,25 @@ public:
 		}
 	}
 
+	void SetProperty(const std::string& name, const std::string& value)
+	{
+		FProperties.SetValue(name, value);
+	}
+
+	std::string GetProperty(const std::string& name, const std::string& defaultValue = "")
+	{
+		std::string* pval = FProperties.GetValuePointer(name);
+		if (pval)
+			return *pval;
+		else
+			return defaultValue;
+	}
+
+	bool PropertyExist(const std::string& name)
+	{
+		return FProperties.IfExists(name);
+	}
+
 #if defined(WIN32) && _HAS_CXX20==1 && !defined(__BORLANDC__)
 	template<class ... Args>
 	void CritFmt(const std::format_string<Args...> fmt, Args&& ...args)
@@ -193,12 +199,12 @@ public:
 		// TODO think how to pass all args into SendToAllSinks and create final string there
 		if (FAsync)
 		{
-			LogEvent* event = new LogEvent(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
+			LogEvent* event = new LogEvent(this, std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
 			FQueue.PushElement(event);
 		}
 		else
 		{
-			LogEvent ev(std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
+			LogEvent ev(this, std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
 			InternalLog(ev);
 		}
 	}
@@ -312,12 +318,12 @@ public:
 		// TODO think how to pass all args into SendToAllSinks and create final string there
 		if (FAsync)
 		{
-			LogEvent* event = new LogEvent(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
+			LogEvent* event = new LogEvent(this, vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
 			FQueue.PushElement(event);
 		}
 		else
 		{
-			LogEvent ev(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
+			LogEvent ev(this, vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
 			InternalLog(ev);
 		}
 		//LogEvent ev(vformat(fmt, va), ll, GetThreadID(), GetCurrDateTime());
@@ -338,12 +344,12 @@ public:
 
 		if (FAsync)
 		{
-			LogEvent* event = new LogEvent(msg, ll, GetThreadID(), GetCurrDateTime());
+			LogEvent* event = new LogEvent(this, msg, ll, GetThreadID(), GetCurrDateTime());
 			FQueue.PushElement(event);
 		}
 		else
 		{
-			LogEvent ev(msg, ll, GetThreadID(), GetCurrDateTime());
+			LogEvent ev(this, msg, ll, GetThreadID(), GetCurrDateTime());
 			InternalLog(ev);
 		}
 	}
