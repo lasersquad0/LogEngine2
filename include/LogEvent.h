@@ -12,7 +12,10 @@
 //#include <string_view>
 #include <sys/timeb.h>
 #include <algorithm>
-#include "Common.h"
+#include <ctime>
+//#include "Common.h"
+#include "Exceptions.h"
+
 
 LOGENGINE_NS_BEGIN
 
@@ -42,7 +45,8 @@ inline Levels::LogLevel LLfromString(std::string name)
 {
 	//std::transform(name.begin(), name.end(), name.begin(), mytolower);
 
-	auto it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), StrToLower(name));
+	name = StrToLower(name);
+	auto it = std::find(std::begin(LogLevelNames), std::end(LogLevelNames), name);
 	if (it != std::end(LogLevelNames))
 		return static_cast<Levels::LogLevel>(std::distance(std::begin(LogLevelNames), it));
 
@@ -69,7 +73,8 @@ inline LogSinkType STfromString(std::string name) // parameter needs to be passe
 	if (it != std::end(SinkTypeNames))
 		return static_cast<LogSinkType>(std::distance(std::begin(SinkTypeNames), it));
 
-	return ST_DEFAULT;
+	throw LogException(std::format("Sink Type '{}' is not valid sink type name.", name));
+	//return ST_DEFAULT;
 }
 
 enum LogSinkThreaded { sthSingle, sthMulti, n_SinkThreaded };
@@ -89,17 +94,19 @@ inline LogSinkThreaded STHfromString(std::string name) // parameter needs to be 
 	return STH_DEFAULT;
 }
 
+class Logger;
 
 class LogEvent
 {
 public:
+	Logger* logger; // pointer to logger instance that generated this log event
 	struct tm tmtime;
 	std::string message;
 	Levels::LogLevel msgLevel;
-	unsigned int threadID; // this is a thread that generated a log message. it may differ from thread that makes actual writing to the file (in case LogEngone.Threaded property is set to true)
+	unsigned int threadID; // this is a thread that generated a log message. it may differ from thread that makes actual writing to the file (when Logger's AsyncMode set to true)
 
-	LogEvent(const std::string& msg, Levels::LogLevel msgType, unsigned int thrID, struct tm time)
-		: tmtime(time), message(msg),msgLevel(msgType), threadID(thrID) {}
+	LogEvent(Logger* lgr, const std::string& msg, Levels::LogLevel msgLv, unsigned int thrID, struct tm time)
+		: logger(lgr), tmtime(time), message(msg),msgLevel(msgLv), threadID(thrID) {}
 
 };
 
