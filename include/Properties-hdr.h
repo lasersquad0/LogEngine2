@@ -91,24 +91,26 @@ void Properties::save(std::ostream& out)
 }
 */
 
-LOGENGINE_INLINE int Properties::getInt(const std::string& property, int defaultValue /*=0*/) const
+LOGENGINE_INLINE int Properties::GetInt(const std::string& property, int defaultValue /*=0*/) const
 {
 	if(!IfExists(property))
 		return defaultValue;
 	
-	std::string value = trim(GetValue(property));
+	std::string value = Trim(GetValue(property));
 	if(value.size() == 0)
 		return defaultValue;
 	
-	return atoi(value.c_str());
+	int res = atoi(value.c_str());
+	res = res == INT_MAX ? defaultValue : res;
+	return res;
 }
 
-LOGENGINE_INLINE ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0*/) const
+LOGENGINE_INLINE ulong Properties::GetUInt(const std::string& property, ulong defaultValue /*=0*/) const
 {
 	if (!IfExists(property))
 		return defaultValue;
 
-	std::string value = trim(GetValue(property));
+	std::string value = Trim(GetValue(property));
 
 	if (!isUInt(value)) return defaultValue; // return defaultValue if string is NOT an integer
 
@@ -117,22 +119,34 @@ LOGENGINE_INLINE ulong Properties::getUInt(const std::string& property, ulong de
 	return res;
 }
 
-LOGENGINE_INLINE bool Properties::getBool(const std::string& property, bool defaultValue /*=false*/) const
+LOGENGINE_INLINE bool Properties::GetBool(const std::string& property, bool defaultValue /*=false*/) const
 {
-	if(!IfExists(property))
+	std::string* pstr = GetValuePointer(property);
+	if (pstr)
+		return StrToBool(Trim(GetValue(property)));
+	else
 		return defaultValue;
+
+	//if(!IfExists(property))
+		//return defaultValue;
 	
-	std::string value = trim(GetValue(property));
+//	std::string value = trim(GetValue(property));
 	
-	return StrToBool(value); //(EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
+	//return StrToBool(value); //(EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
 }
 
-LOGENGINE_INLINE std::string Properties::getString(const std::string& property, const std::string& defaultValue /*=""*/) const
+LOGENGINE_INLINE std::string Properties::GetString(const std::string& property, const std::string& defaultValue /*=""*/) const
 {
-	if(!IfExists(property))
+	std::string* pstr = GetValuePointer(property);
+	if (pstr)
+		return *pstr;
+	else
 		return defaultValue;
+
+	//if(!IfExists(property))
+	//	return defaultValue;
 	
-	return GetValue(property);
+	//return GetValue(property);
 }
 
 LOGENGINE_NS_END
