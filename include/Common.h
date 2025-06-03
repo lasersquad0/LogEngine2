@@ -109,16 +109,16 @@ std::string DateTimeToStr(struct tm const& t);
 std::string DelCRLF(const std::string str);
 
 // removes all leading and trailing \n \r and space symbols from string
-std::string trimSPCRLF(std::string str);
+std::string TrimSPCRLF(std::string str);
 
 // removes all leading and trailing space and tab symbols from string
-std::string trim(std::string str);
+std::string Trim(std::string str);
 
 // removes any leading space and tab symbols from string
-std::string trimLeft(std::string str);
+std::string TrimLeft(std::string str);
 
 // removes any trailing space and tab symbols from string
-std::string trimRight(std::string str);
+std::string TrimRight(std::string str);
 
 // compares two strings case insensitive
 template <typename STRING>
