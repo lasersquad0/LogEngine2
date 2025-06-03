@@ -127,7 +127,7 @@ public:
 			*/
 
 			// checking if line is a comment
-			line = trim(line);
+			line = Trim(line);
 			if (line.size() == 0) continue; // empty line, go to next line
 			if (line[0] == '#' || line[0] == ';') continue; // bypass lines starting from # and ; sine they are comments
 
@@ -137,7 +137,7 @@ public:
 					FInidata.SetValue(section);
 
 				length = line.find(']');
-				section = trimSPCRLF(line.substr(1, length - 1)); // name of the section
+				section = TrimSPCRLF(line.substr(1, length - 1)); // name of the section
 				paramCount = 0; // reset parameters counter for the section
 				continue;
 			}
@@ -156,7 +156,7 @@ public:
 				rightSide = line.substr(length + 1, line.size() - length);
 			}
 
-			SetValue(section, trimSPCRLF(leftSide), trimSPCRLF(rightSide)); // trimSPCRLF is required here for Linux since its \n and \r differ from Windows.
+			SetValue(section, TrimSPCRLF(leftSide), TrimSPCRLF(rightSide)); // trimSPCRLF is required here for Linux since its \n and \r differ from Windows.
 			paramCount++;
 		}
 
@@ -165,15 +165,10 @@ public:
 			FInidata.SetValue(section);
 	}
 
-	//SectionType& GetSection(const std::string& section)
-	//{
-	//	return inidata.GetValue(section);
-	//}
-
 	// removes leading/trailing spaces/tabs from section and key parameters before look for the value
 	std::string GetValue(const std::string& section, const std::string& key, const std::string& defaultValue = "<no_value>", uint index = 0u)
 	{
-		ValueType* p = FInidata.GetValuePointer(trimSPCRLF(section), trimSPCRLF(key));
+		ValueType* p = FInidata.GetValuePointer(TrimSPCRLF(section), TrimSPCRLF(key));
 		if (p == nullptr)
 			return defaultValue;
 		else
@@ -187,17 +182,17 @@ public:
 
 	StorageType::ValuesHash& GetSection(std::string& section)
 	{
-		return FInidata.GetValue(trimSPCRLF(section));
+		return FInidata.GetValue(TrimSPCRLF(section));
 	}
 
 	bool HasSection(const std::string& section)
 	{
-		return FInidata.GetValuePointer(trimSPCRLF(section)) != nullptr;
+		return FInidata.GetValuePointer(TrimSPCRLF(section)) != nullptr;
 	}
 
 	uint ValuesCount(const std::string& section)
 	{
-		auto p = FInidata.GetValuePointer(trimSPCRLF(section));
+		auto p = FInidata.GetValuePointer(TrimSPCRLF(section));
 		if (p == nullptr)
 			return 0;  // just return zero if section is not found 
 		//else
@@ -217,7 +212,7 @@ public:
 
 	bool HasValue(const std::string& section, const std::string& key)
 	{
-		auto p = FInidata.GetValuePointer(trimSPCRLF(section), trimSPCRLF(key));
+		auto p = FInidata.GetValuePointer(TrimSPCRLF(section), TrimSPCRLF(key));
 		return (p != nullptr) && (p->Count() > 0);
 	}
 

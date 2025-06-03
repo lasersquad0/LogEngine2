@@ -12,7 +12,7 @@
 #include <iostream>
 #include <functional>
 #include "Common.h"
-#include "Sink.h"
+#include "BaseSink.h"
 #include "LogEvent.h"
 #include "FileStream.h"
 //#include "PatternLayout.h"
@@ -51,7 +51,7 @@ public:
 	* Get the FileName of this file sink. The name of the file where sink writes its logs.
 	* @returns the FileName of the sink.
 	**/
-	std::string getFileName() const { return FStream->GetFileName(); }
+	std::string GetFileName() const { return FStream->GetFileName(); }
 
 	void Flush() override {	FStream->Flush(); }
 };

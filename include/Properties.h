@@ -24,10 +24,10 @@ public:
 	//virtual void load(std::istream& in);
 	//virtual void save(std::ostream& out);
 
-	virtual int   getInt (const std::string& property, int defaultValue   = 0) const;
-	virtual ulong getUInt(const std::string& property, ulong defaultValue = 0) const;
-	virtual bool  getBool(const std::string& property, bool defaultValue = false) const;
-	virtual std::string getString(const std::string& property, const std::string& defaultValue = "") const;
+	virtual int   GetInt (const std::string& property, int defaultValue   = 0) const;
+	virtual ulong GetUInt(const std::string& property, ulong defaultValue = 0) const;
+	virtual bool  GetBool(const std::string& property, bool defaultValue = false) const;
+	virtual std::string GetString(const std::string& property, const std::string& defaultValue = "") const;
 
 };
 
