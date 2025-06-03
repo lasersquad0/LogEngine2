@@ -19,6 +19,26 @@ void ConfigFileTest::tearDown()
     ShutdownLoggers();
 }
 
+// incorrect logger section name - error
+void ConfigFileTest::testConfigFile01()
+{
+    CPPUNIT_ASSERT_THROW(InitFromFile(TEST_FILES_FOLDER "test01.lfg"), LogException);
+}
+
+// empty logger name - error
+void ConfigFileTest::testConfigFile02()
+{
+    CPPUNIT_ASSERT_THROW(InitFromFile(TEST_FILES_FOLDER "test02.lfg"), LogException);
+}
+
+// section name that is neither logger nor sink - ok, no error
+void ConfigFileTest::testConfigFile03()
+{
+    InitFromFile(TEST_FILES_FOLDER "test03.lfg");
+
+    CPPUNIT_ASSERT_EQUAL(0u, LoggersCount());
+}
+
 void ConfigFileTest::testConfigFile1()
 {
     InitFromFile(TEST_FILES_FOLDER "test1.lfg");
@@ -141,17 +161,25 @@ void ConfigFileTest::testConfigFile8()
 {
     InitFromFile(TEST_FILES_FOLDER "test8.lfg");
 
-    CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
+    CPPUNIT_ASSERT_EQUAL(2u, LoggersCount());
 
+    // two loggers refer to the same Sink
     Logger& logger1 = GetLogger("FLog");
     CPPUNIT_ASSERT_EQUAL(LL_DEFAULT, logger1.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
-    auto sink = logger1.GetSink("SuperFSink");
+    auto sink1 = logger1.GetSink("SuperFSink");
 
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
-    FileSinkST* fsink = dynamic_cast<FileSinkST*>(sink.get());
-    CPPUNIT_ASSERT_EQUAL(true, sink.get() == fsink); // check sink type
+    Logger& logger2 = GetLogger("FLog2");
+    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, logger2.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(false, logger2.GetAsyncMode());
+    CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
+    auto sink2 = logger2.GetSink("SuperFSink");
+    CPPUNIT_ASSERT_EQUAL(sink1, sink2);
+
+    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink1->GetLogLevel());
+    FileSinkST* fsink = dynamic_cast<FileSinkST*>(sink1.get());
+    CPPUNIT_ASSERT_EQUAL(true, sink1.get() == fsink); // check sink type
     CPPUNIT_ASSERT_EQUAL(std::string("sink super.log"), fsink->GetFileName());
     Layout* lay = fsink->GetLayout();
     CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern());
@@ -263,6 +291,53 @@ void ConfigFileTest::testConfigFile12()
     logger.Warn("warn_message");
     s = ssink->GetOutput();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Log lines are not equal.", std::string("[WARN] Mess:warn_message% Empty:% Unknown:%\n"), s);
+}
+
+// .lfg file, section [logger.xxxx] contains two sinks with equal names.
+// in this case only one sink is added to the logger. logger checks if the sink has already added into logger and does not add second one
+void ConfigFileTest::testConfigFile13()
+{
+    InitFromFile(TEST_FILES_FOLDER "test13.lfg");
+
+    CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
+
+    Logger& logger1 = GetLogger("Loooger");
+    CPPUNIT_ASSERT_EQUAL(LL_DEFAULT, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
+    CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+
+    auto sink = logger1.GetSink("logsink");
+    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    auto rsink = dynamic_cast<RotatingFileSinkST*>(sink.get());
+    CPPUNIT_ASSERT(rsink != nullptr);
+    CPPUNIT_ASSERT_EQUAL(true, sink.get() == rsink); // check sink type
+    CPPUNIT_ASSERT_EQUAL(std::string("sink .log"), rsink->GetFileName());
+    
+}
+
+// .lfg file contains two sink sections the same sink names.
+// if .lfg file contains two sections with equal names then parameters of these two section 
+// are "merged" like it was single section with all parameters
+// parameters with equal names get double values
+// for example merged section[sink.logSINK] in test14.lfg will have one parameter FileName
+// that contains two values (refered by index): sink1log.log and sink2log.log
+void ConfigFileTest::testConfigFile14()
+{
+    InitFromFile(TEST_FILES_FOLDER "test14.lfg");
+
+    CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
+
+    Logger& logger1 = GetLogger("Loooger");
+    CPPUNIT_ASSERT_EQUAL(LL_DEFAULT, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
+    CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
+
+    auto sink = logger1.GetSink("logsink");
+    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    auto rsink = dynamic_cast<RotatingFileSinkST*>(sink.get());
+    CPPUNIT_ASSERT(rsink != nullptr);
+    CPPUNIT_ASSERT_EQUAL(true, sink.get() == rsink); // check sink type
+    CPPUNIT_ASSERT_EQUAL(std::string("sink1log.log"), rsink->GetFileName());
 
 }
 
