@@ -11,9 +11,9 @@
 #include <cassert>
 #include <vector>
 #include <sstream>
-#include "Common.h"
 #include "DynamicArrays.h"
 #include "LogEvent.h"
+#include "Logger.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -25,6 +25,7 @@ LOGENGINE_NS_BEGIN
 #define APPNAME_PROPERTY  "AppName"
 #define APPVERSION_PROPERTY "AppVersion"
 
+
 class Holder
 {
 public:
@@ -34,14 +35,30 @@ public:
 
 #define STRFTIME_SIZE 100
 
+class LoggerNameHolder : public Holder
+{
+public:
+	std::string Format(const LogEvent& event) override { return event.logger->GetName(); }
+};
+
+class LogLevelHolder : public Holder
+{
+public:
+	std::string Format(const LogEvent& event) override { return LLtoCapsString(event.msgLevel); }
+};
+
 class DateHolder : public Holder
 {
 public:
 	std::string Format(const LogEvent& event) override
 	{
-		char ss[STRFTIME_SIZE];
-		std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y", &event.tmtime);
-		return ss;
+		char datestr[STRFTIME_SIZE];
+		size_t res = std::strftime(datestr, STRFTIME_SIZE, "%d-%b-%Y", &event.tmtime);
+		
+		if (res == 0) // error during formatting, use default system formatting
+			std::strftime(datestr, STRFTIME_SIZE, "%x", &event.tmtime);
+
+		return datestr;
 	}
 };
 
@@ -50,9 +67,13 @@ class TimeHolder : public Holder
 public:
 	std::string Format(const LogEvent& event) override
 	{
-		char ss[STRFTIME_SIZE];
-		std::strftime(ss, STRFTIME_SIZE, "%X", &event.tmtime);
-		return ss;
+		char timestr[STRFTIME_SIZE];
+		size_t res = std::strftime(timestr, STRFTIME_SIZE, "%X", &event.tmtime);
+		
+		if (res == 0) // error during formatting, use default system formatting
+			std::strftime(timestr, STRFTIME_SIZE, "%X", &event.tmtime);
+
+		return timestr;
 	}
 };
 
@@ -61,9 +82,13 @@ class DateTimeHolder : public Holder
 public:
 	std::string Format(const LogEvent& event) override
 	{
-		char ss[STRFTIME_SIZE];
-		std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y %X", &event.tmtime);
-		return ss;
+		char dtstr[STRFTIME_SIZE];
+		size_t res = std::strftime(dtstr, STRFTIME_SIZE, /*"%x %X"*/"%d-%b-%Y %X", &event.tmtime);
+
+		if (res == 0) // error during formatting, use default system formatting
+			std::strftime(dtstr, STRFTIME_SIZE, "%x %X", &event.tmtime);
+
+		return dtstr;
 	}
 };
 
@@ -77,6 +102,16 @@ class ThreadHolder : public Holder
 {
 public:
 	std::string Format(const LogEvent& event) override { return IntToStr(event.threadID/*, 4*/); }
+};
+
+class PropertyHolder : public Holder
+{
+private:
+	std::string FPropName;
+	std::string FDefValue;
+public:
+	PropertyHolder(const std::string& propName, const std::string& defValue) { this->FPropName = propName; this->FDefValue = defValue; }
+	std::string Format(const LogEvent& event) override { return event.logger->GetProperty(FPropName, this->FDefValue); }
 };
 
 class AppNameHolder : public Holder
@@ -103,14 +138,8 @@ class LiteralHolder : public Holder
 private:
 	std::string value;
 public:
-	LiteralHolder(std::string& val) { this->value = val; }
+	LiteralHolder(const std::string& val) { this->value = val; }
 	std::string Format(const LogEvent&) override { return value; }
-};
-
-class LogLevelHolder : public Holder
-{
-public:
-	std::string Format(const LogEvent& event) override { return LLtoCapsString(event.msgLevel); }
 };
 
 class OSHolder : public Holder
@@ -170,16 +199,17 @@ public:
 	}
 };
 
-#define OSMacro		      "%OS%"
-#define OSVersionMacro	  "%OSVERSION%"
-#define ThreadMacro		  "%THREAD%"
+#define LoggerNameMacro   "%LOGGERNAME%"
+#define LogLevelMacro	  "%LOGLEVEL%"
 #define MessageMacro      "%MSG%"
-#define DateTimeMacro     "%DATETIME%"
 #define DateMacro         "%DATE%"
 #define TimeMacro         "%TIME%"
+#define DateTimeMacro     "%DATETIME%"
+#define ThreadMacro		  "%THREAD%"
 #define AppNameMacro      "%APPNAME%"
 #define AppVersionMacro   "%APPVERSION%"
-#define LogLevelMacro	  "%LOGLEVEL%"
+#define OSMacro		      "%OS%"
+#define OSVersionMacro	  "%OSVERSION%"
 
 #define SecondMacro       "%SEC%"
 #define MinuteMacro       "%MIN%"
@@ -194,7 +224,7 @@ public:
 
 #define DefaultAppName        "nonameapp"
 #define DefaultAppVersion     "0.0.0.0"
-#define DefaultLinePattern    " " TimeMacro " #" ThreadMacro ": " MessageMacro
+#define DefaultLinePattern    " " DateTimeMacro " #" ThreadMacro ": " MessageMacro
 #define DefaultCritPattern    "*!*" DefaultLinePattern
 #define DefaultErrorPattern   "E!" DefaultLinePattern
 #define DefaultWarningPattern "W#" DefaultLinePattern
@@ -209,9 +239,18 @@ public:
 class Pattern
 {
 protected:
+	inline static const THash<std::string, Holder*, CompareStringNCase> FDefHolders
+	{ {LoggerNameMacro, new LoggerNameHolder()}, {LogLevelMacro, new LogLevelHolder()}, {MessageMacro, new MessageHolder()},
+	  {DateMacro, new DateHolder()}, {TimeMacro, new TimeHolder()}, {DateTimeMacro, new DateTimeHolder()},
+	  {ThreadMacro, new ThreadHolder()}, {OSMacro, new OSHolder()}, {OSVersionMacro, new OSVersionHolder()},
+	  {AppNameMacro, new PropertyHolder(APPNAME_PROPERTY, DefaultAppName)},
+	  {AppVersionMacro, new PropertyHolder(APPVERSION_PROPERTY, DefaultAppVersion)},
+	};
+
 	THArray<Holder*> FHolders; // container of pointers is required here to support proper virtual "->Format()" calls 
 	std::string FPattern;
 	void parsePattern(const std::string& pattern); // compiles string pattern into list of appropriate Holder classes
+	void parsePattern2(const std::string& pattern); // compiles string pattern into list of appropriate Holder classes
 	void clearHolders();
 public:
 	Pattern(const std::string& pattern) { parsePattern(pattern); }

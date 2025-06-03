@@ -6,7 +6,7 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-//#include "LogEngine.h"
+#include <algorithm>
 #include "Pattern.h"
 
 LOGENGINE_NS_BEGIN
@@ -23,11 +23,23 @@ LOGENGINE_INLINE std::string Pattern::Format(const LogEvent& event)
 	return result;
 }
 
+// forward declaration of one global function from LogEngine.h instead of including entire LogEngine.h
 std::string GetProperty(const std::string& name, const std::string& defaultValue = "");
 
-LOGENGINE_INLINE void Pattern::parsePattern(const std::string& pattern)
+#define MACRO_SEP '%'
+#define MACRO_SEP_STR "%"
+
+LOGENGINE_INLINE void Pattern::parsePattern2(const std::string& pattern)
 {
 	static const THArray<std::string> placeHolders = { "", DateMacro, TimeMacro, DateTimeMacro, MessageMacro, ThreadMacro, AppNameMacro, AppVersionMacro, OSMacro, OSVersionMacro, LogLevelMacro };
+
+	static const THash<std::string, Holder*> Holders2 = 
+	  { {LoggerNameMacro, new LoggerNameHolder()}, {LogLevelMacro, new LogLevelHolder()}, {MessageMacro, new MessageHolder()}, 
+		{DateMacro, new DateHolder()}, {TimeMacro, new TimeHolder()}, {DateTimeMacro, new DateTimeHolder()}, 
+		{ThreadMacro, new ThreadHolder()}, {OSMacro, new OSHolder()}, {OSVersionMacro, new OSVersionHolder()},
+		{AppNameMacro, new PropertyHolder(APPNAME_PROPERTY, DefaultAppName)},
+		{AppVersionMacro, new PropertyHolder(APPVERSION_PROPERTY, DefaultAppVersion)},
+		};
 
 	FPattern = pattern;
 
@@ -36,18 +48,18 @@ LOGENGINE_INLINE void Pattern::parsePattern(const std::string& pattern)
 	uint i = 0;
 	while (i < pattern.size())
 	{
-		if (pattern[i] == '%')
+		if (pattern[i] == MACRO_SEP)
 		{
-			std::string temp = "%";
+			std::string macro = MACRO_SEP_STR;
 			i++;
 
-			while ((i < pattern.size()) && (pattern[i] != '%'))
-				temp += pattern[i++];
+			while ((i < pattern.size()) && (pattern[i] != MACRO_SEP))
+				macro += pattern[i++];
 
-			if (i < pattern.size())
-				temp += pattern[i++];
+			if (i < pattern.size()) // do not forget to add second % to placeholder
+				macro += pattern[i++];
 
-			int j = placeHolders.IndexOf<CompareStringNCase>(temp);
+			int j = placeHolders.IndexOf<CompareStringNCase>(macro);
 
 			switch (j)
 			{
@@ -83,17 +95,69 @@ LOGENGINE_INLINE void Pattern::parsePattern(const std::string& pattern)
 				break;
 
 			default:
-				FHolders.AddValue(new LiteralHolder(temp));
+				// replace double % by single % ("%%" => "%")
+				if(macro.size() == 2 && macro[0] == MACRO_SEP && macro[1] == MACRO_SEP)
+					FHolders.AddValue(new LiteralHolder(MACRO_SEP_STR));
+				else
+					FHolders.AddValue(new LiteralHolder(macro));
 				break;
 			}
 		}
-		else
+		else // consider text between placeholders as LiteralHolder 
 		{
-			std::string temp = "";
-			while ((i < pattern.size()) && (pattern[i] != '%'))
-				temp += pattern[i++];
+			std::string lit;
+			while ((i < pattern.size()) && (pattern[i] != MACRO_SEP))
+				lit += pattern[i++];
 
-			Holder* a = new LiteralHolder(temp);
+			Holder* a = new LiteralHolder(lit);
+			FHolders.AddValue(a);
+		}
+	}
+}
+
+LOGENGINE_INLINE void Pattern::parsePattern(const std::string& pattern)
+{
+	clearHolders();
+
+	FPattern = pattern;
+
+	uint i = 0;
+	while (i < pattern.size())
+	{
+		if (pattern[i] == MACRO_SEP)
+		{
+			std::string macro = MACRO_SEP_STR;
+			i++;
+
+			while ((i < pattern.size()) && (pattern[i] != MACRO_SEP))
+				macro += pattern[i++];
+
+			if (i < pattern.size()) // do not forget to add second % to placeholder
+				macro += pattern[i++];
+
+
+			Holder** holderPtr = FDefHolders.GetValuePointer(macro);
+			if (holderPtr == nullptr)
+			{
+				// replace double % by single % ("%%" => "%")
+				if (macro.size() == 2 && macro[0] == MACRO_SEP && macro[1] == MACRO_SEP)
+					FHolders.AddValue(new LiteralHolder(MACRO_SEP_STR));
+				else
+					FHolders.AddValue(new LiteralHolder(macro));
+			}
+			else
+			{
+				FHolders.AddValue(*holderPtr);
+			}
+
+		}
+		else // consider text between placeholders as LiteralHolder 
+		{
+			std::string lit;
+			while ((i < pattern.size()) && (pattern[i] != MACRO_SEP))
+				lit += pattern[i++];
+
+			Holder* a = new LiteralHolder(lit);
 			FHolders.AddValue(a);
 		}
 	}
@@ -101,10 +165,18 @@ LOGENGINE_INLINE void Pattern::parsePattern(const std::string& pattern)
 
 LOGENGINE_INLINE void Pattern::clearHolders()
 {
-	for (auto hld: FHolders)
+	// delete only LiteralHolder objects
+	// other type are shared between Pattern instances
+	std::transform(FHolders.begin(), FHolders.end(), FHolders.begin(), [](Holder* x) 
+		{
+			if (dynamic_cast<LiteralHolder*>(x) == x) delete x;
+			return x;
+		});
+
+	/*for (auto hld: FHolders)
 	{
 		delete hld;
-	}
+	}*/
 
 	/*for (uint i = 0; i < FHolders.Count(); i++)
 	{
