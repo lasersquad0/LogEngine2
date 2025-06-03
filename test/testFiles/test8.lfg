@@ -14,7 +14,8 @@ PatternAll = ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG
 WarnPattern  = W %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%
 CritPattern  = C %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%
 InfoPattern  = I %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%
-
+DebugPattern  = [DEBUG] Time:%TIME% Thread:%THREAD% Empty:%% unknown:% [/DEBUG]
+TracePattern  = [TRACE] Time:%TIME% Mess:%Msg% Empty:%% Unknown:%
 #
 #
 #

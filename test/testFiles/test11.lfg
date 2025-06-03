@@ -1,10 +1,30 @@
+[logger.mftLog]
+#default loglevel will be used instead of incorrect one
+loglevel = infor
+sink=sinkfile
+sink=sinkconsole
 
+#default value false for AsyncMode will be used instead of incorrect value
+asyncmode=truee
 
+# logger does not have this parameter, will be ignored
+ThreadSafety = Multi
 
-Version=0
-MaxLogSize = 1000
+[SINK.sinkfile]
 
-BackupType =
+Type=File
+FileName = Log.log
+ThreadSafety =MULTI
 
-DebugLevel = 2
-DetailLevel = 7
+#default loglevel will be used instead of incorrect one
+loglevel = debugger
+
+[Sink.sinkconsole]
+#error will be raised because sink type is incorrect
+Type=STDout
+
+#default loglevel will be used instead of incorrect one
+LOGLEVEL=warner
+
+#default thread safety value will be used instead of incorrect one
+ThreadSafety =ssingle

@@ -1,8 +1,24 @@
-detaillevel=11
-MaxLogSize=101
-BACKUPTYPE=TimeStamp
-APPlicationName=ExampleApp11
-Version=1.1.1.1
-LogFileName=c:\temp\ExampleApp11.log
-
- 
+# 1.incorrect line patterns
+# 2.oneletter logger and sink names
+# 3.equal logger and sin names
+  
+[logger.p]
+sink=p
+LogLevel= Trace
+#!
+[Sink.P]
+FileName = patterns.log
+Type= string
+LogLevel= Trace
+MaxLogFileSize = 20m
+MaxBackupIndex = aaa
+Strategy = none
+PatternAll = ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG% 
+WarnPattern  = [WARN] Mess:%Msg%%% Empty:%% Unknown:%%
+CritPattern  = %%%APPNAME% %%%APPVERSION% : %MSG%
+InfoPattern  = %APPVERSION% %APPNAME% : %MSG%.
+DebugPattern  = [DEBUG] MesS:%MSg% Empty:%% unknown:% [/DEBUG]
+TracePattern  = [TRACE] Mess:%Msg% Empty:%% Unknown:%
+#
+#
+#
