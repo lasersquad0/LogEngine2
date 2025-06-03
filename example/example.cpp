@@ -79,6 +79,16 @@ int main(int, char *[])
         std::printf("Log initialization failed: %s\n", ex.what());
         return 1;
     }
+    catch (const std::exception& ex)
+    {
+        std::printf("Exception caught: %s\n", ex.what());
+        return 1;
+    }
+    catch (...)
+    {
+        std::printf("UNKNOWN EXCEPTION CAUGHT!\n");
+        return 1;
+    }
 
     _CrtMemCheckpoint(&s2); // Take a snapshot at the end of main()
     if (_CrtMemDifference(&s3, &s1, &s2)) _CrtMemDumpStatistics(&s3); // Dump memory statistics excluding global variables
