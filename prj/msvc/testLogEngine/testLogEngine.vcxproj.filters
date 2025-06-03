@@ -152,19 +152,19 @@
       <Filter>Tests</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\Common-hdr.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\FileStream-hdr.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\LogEngine-hdr.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\Pattern-hdr.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\Properties-hdr.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
