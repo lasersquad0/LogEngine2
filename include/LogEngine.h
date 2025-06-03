@@ -125,7 +125,7 @@ void TraceFmt(const std::format_string<Args...> fmt, Args&& ...args)
 
 
 // parameters for loggers
-#define LOGGER_PREFIX  "logger."
+#define LOGGER_PREFIX  "logger"
 #define SINK_PREFIX	   "sink."
 #define LOGLEVEL_PARAM "loglevel"
 #define ASYNMODE_PARAM "asyncmode"

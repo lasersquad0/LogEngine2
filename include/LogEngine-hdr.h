@@ -314,93 +314,101 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 {
 	IniReader reader;
 	reader.LoadIniFile(fileName);
+	THash<std::string, std::shared_ptr<Sink>> sinkCache;
 
 	for (auto it = reader.begin(); it != reader.end(); ++it)
 	{
 		std::string sectName = *it;
-		IniReader::StorageType::ValuesHash& section = reader.GetSection(sectName);
+		auto& section = reader.GetSection(sectName);
 
 		size_t n = sectName.find('.');
-		if ((n != std::string::npos) && EqualNCase<std::string>(sectName.substr(0, n + 1), LOGGER_PREFIX) )
+		if (/*(n != std::string::npos) &&*/ EqualNCase<std::string>(sectName.substr(0, n), LOGGER_PREFIX) )
 		{
-			std::string loggerName = sectName.substr(n + 1);
-			if (loggerName.empty()) continue;
+			std::string loggerName = (n == std::string::npos) ? "" : sectName.substr(n + 1); // loggerName should be ampty if '.' is missing in the section name
 
+			if (loggerName.empty()) 
+				throw LogException("Logger name cannot be empty. See section '" + sectName + "' in " + fileName +" file.");
 
 			Logger& logger = GetLogger(loggerName);
 			logger.SetLogLevel(LLfromString(reader.GetValue(sectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
 			logger.SetAsyncMode(StrToBool(reader.GetValue(sectName, ASYNMODE_PARAM, "false", 0)));
 
-			if (!section.IfExists(SINK_PARAM)) continue;
+			if (!section.IfExists(SINK_PARAM)) continue; // logger does not have any sinks, it's ok
 
-			IniReader::ValueType& sinks = section.GetValue(SINK_PARAM);
+			auto& sinks = section.GetValue(SINK_PARAM);
 			for (auto sn : sinks)
 			{
-				if (sn.empty()) continue; // ignore sinks with empty names
+				if (sn.empty()) continue; // ignore sinks with empty names for current logger
 
-				std::string sinkSectName = SINK_PREFIX;
-				sinkSectName.append(sn);
-
-				if (!reader.HasSection(sinkSectName))
-					throw LogException("Sink section '" + sinkSectName + "' refered by logger '" + loggerName + "' not found in file '" + fileName + "'.");
-
-				std::string value = reader.GetValue(sinkSectName, TYPE_PARAM, ST_DEFAULT_NAME, 0);
-				LogSinkType stype = STfromString(value);
-				LogSinkThreaded threaded = STHfromString(reader.GetValue(sinkSectName, THREAD_PARAM, STH_DEFAULT_NAME, 0));
-				
 				Sink* sink = nullptr;
-
-				switch (stype)
+				if (!sinkCache.IfExists(sn)) // we never met this sink before, create and configure new sink instance
 				{
-				case stStdout: if (threaded == sthSingle) sink = new StdoutSinkST(sn); else sink = new StdoutSinkMT(sn); break;
-				case stStderr: if (threaded == sthSingle) sink = new StderrSinkST(sn); else sink = new StderrSinkMT(sn); break;
-				case stString: if (threaded == sthSingle) sink = new StringSinkST(sn); else sink = new StringSinkMT(sn); break;
-				case stFile:
-				{
-					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
-					if (sinkFileName.empty())
-						throw LogException("File sink '" + sn + "' missing FileName parameter.");
+					std::string sinkSectName = SINK_PREFIX;
+					sinkSectName.append(sn);
 
-					if (threaded == sthSingle)
-						sink = new FileSinkST(sn, sinkFileName);
-					else
-						sink = new FileSinkMT(sn, sinkFileName);
-					
-					break;
+					if (!reader.HasSection(sinkSectName))
+						throw LogException("Sink section '" + sinkSectName + "' refered by logger '" + loggerName + "' not found in file '" + fileName + "'.");
+
+					std::string value = reader.GetValue(sinkSectName, TYPE_PARAM, ST_DEFAULT_NAME, 0);
+					LogSinkType stype = STfromString(value);
+					LogSinkThreaded threaded = STHfromString(reader.GetValue(sinkSectName, THREAD_PARAM, STH_DEFAULT_NAME, 0));
+
+					switch (stype)
+					{
+					case stStdout: if (threaded == sthSingle) sink = new StdoutSinkST(sn); else sink = new StdoutSinkMT(sn); break;
+					case stStderr: if (threaded == sthSingle) sink = new StderrSinkST(sn); else sink = new StderrSinkMT(sn); break;
+					case stString: if (threaded == sthSingle) sink = new StringSinkST(sn); else sink = new StringSinkMT(sn); break;
+					case stFile:
+					{
+						std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
+						if (sinkFileName.empty())
+							throw LogException("File sink '" + sn + "' missing FileName parameter.");
+
+						if (threaded == sthSingle)
+							sink = new FileSinkST(sn, sinkFileName);
+						else
+							sink = new FileSinkMT(sn, sinkFileName);
+
+						break;
+					}
+					case stRotatingFile:
+					{
+						std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
+						if (sinkFileName.empty())
+							throw LogException("File sink '" + sn + "' missing FileName parameter.");
+
+						LogRotatingStrategy strategy = RSfromString(reader.GetValue(sinkSectName, STRATEGY_PARAM, RS_DEFAULT_NAME, 0));
+						uint maxlogsize = ParseInt(reader.GetValue(sinkSectName, MAXLOGSIZE_PARAM, DefaultMaxLogSizeStr, 0), DefaultMaxLogSize);
+						uint maxIndex = ParseInt(reader.GetValue(sinkSectName, MAXBACKUPINDEX_PARAM, DefaultMaxBackupIndexStr, 0), DefaultMaxBackupIndex);
+
+						if (threaded == sthSingle)
+							sink = new RotatingFileSinkST(sn, sinkFileName, maxlogsize, strategy, maxIndex);
+						else
+							sink = new RotatingFileSinkMT(sn, sinkFileName, maxlogsize, strategy, maxIndex);
+
+						break;
+					}
+					default:
+						break;
+					}
+
+					sink->SetLogLevel(LLfromString(reader.GetValue(sinkSectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
+					PatternLayout* lay = new PatternLayout();
+					lay->SetPattern(reader.GetValue(sinkSectName, PATTERNALL_PARAM, DefaultLinePattern, 0));
+					if (reader.HasValue(sinkSectName, CRITPATTERN_PARAM))  lay->SetCritPattern(reader.GetValue(sinkSectName, CRITPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, ERRORPATTERN_PARAM)) lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, WARNPATTERN_PARAM))  lay->SetWarnPattern(reader.GetValue(sinkSectName, WARNPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, INFOPATTERN_PARAM))  lay->SetInfoPattern(reader.GetValue(sinkSectName, INFOPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, DEBUGPATTERN_PARAM)) lay->SetDebugPattern(reader.GetValue(sinkSectName, DEBUGPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, TRACEPATTERN_PARAM)) lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM));
+
+					sink->SetLayout(lay);
+					auto ssink = std::shared_ptr<Sink>(sink);
+					sinkCache.SetValue(sn, ssink);
 				}
-				case stRotatingFile:
-				{
-					std::string sinkFileName = reader.GetValue(sinkSectName, FILENAME_PARAM, "");
-					if (sinkFileName.empty())
-						throw LogException("File sink '" + sn + "' missing FileName parameter.");
-					
-					LogRotatingStrategy strategy = RSfromString(reader.GetValue(sinkSectName, STRATEGY_PARAM, RS_DEFAULT_NAME));
-					uint maxlogsize = ParseInt(reader.GetValue(sinkSectName, MAXLOGSIZE_PARAM, DefaultMaxLogSizeStr), DefaultMaxLogSize);
-					uint maxIndex = ParseInt(reader.GetValue(sinkSectName, MAXBACKUPINDEX_PARAM, DefaultMaxBackupIndexStr), DefaultMaxBackupIndex);
 
-					if (threaded == sthSingle)
-						sink = new RotatingFileSinkST(sn, sinkFileName, maxlogsize, strategy, maxIndex);
-					else
-						sink = new RotatingFileSinkMT(sn, sinkFileName, maxlogsize, strategy, maxIndex);
-
-					break;
-				}
-				default:
-					break;
-				}
-
-				sink->SetLogLevel(LLfromString(reader.GetValue(sinkSectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
-				PatternLayout* lay = new PatternLayout();
-				lay->SetPattern(reader.GetValue(sinkSectName, PATTERNALL_PARAM, DefaultLinePattern, 0));  
-				if (reader.HasValue(sinkSectName, CRITPATTERN_PARAM))  lay->SetCritPattern(reader.GetValue(sinkSectName,  CRITPATTERN_PARAM));
-				if (reader.HasValue(sinkSectName, ERRORPATTERN_PARAM)) lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM));
-				if (reader.HasValue(sinkSectName, WARNPATTERN_PARAM))  lay->SetWarnPattern(reader.GetValue(sinkSectName,  WARNPATTERN_PARAM));
-				if (reader.HasValue(sinkSectName, INFOPATTERN_PARAM))  lay->SetInfoPattern(reader.GetValue(sinkSectName,  INFOPATTERN_PARAM));
-				if (reader.HasValue(sinkSectName, DEBUGPATTERN_PARAM)) lay->SetDebugPattern(reader.GetValue(sinkSectName, DEBUGPATTERN_PARAM));
-				if (reader.HasValue(sinkSectName, TRACEPATTERN_PARAM)) lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM));
-
-				sink->SetLayout(lay);
-				logger.AddSink(std::shared_ptr<Sink>(sink));
+				logger.AddSink(sinkCache.GetValue(sn));
+				
 			}
 		}
 	}
