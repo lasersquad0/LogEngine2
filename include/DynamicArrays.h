@@ -227,11 +227,11 @@ private:
 		reference operator*() const { return *FPtr; }
 		pointer operator->() const { return FPtr; }
 
-		THArrayIterator& operator++() { /*if (FPtr != FCont->FBegin + FCont->FCount)*/ ++FPtr; return *this; } // Prefix increment
+		THArrayIterator& operator++() { if (FPtr != FCont->FBegin + FCont->FCount) ++FPtr; return *this; } // Prefix increment
 		THArrayIterator operator++(int) { THArrayIterator tmp = *this; ++(*this); return tmp; } // Postfix increment. Return value here should NOT be a reference.
 		THArrayIterator& operator+=(const difference_type add) { FPtr += add; return *this; } 
 
-		THArrayIterator& operator--() { /*if (FPtr != FCont->FBegin)*/ --FPtr; return *this; } // prefix decrement
+		THArrayIterator& operator--() { if (FPtr != FCont->FBegin) --FPtr; return *this; } // prefix decrement
 		THArrayIterator operator--(int) { THArrayIterator tmp = *this; --(*this); return tmp; } // return value here should NOT be a reference.
 		
 		difference_type operator-(const THArrayIterator& right) const { return FPtr - right.FPtr; }
@@ -419,6 +419,7 @@ protected:
 	//void replace(uint i1, uint i2);
 public:
 	THash() {}
+	THash(std::initializer_list<std::pair<I, V>> list);
 	THash(const THash<I, V, Cmp>& a);
 	THash<I, V, Cmp>& operator=(const THash<I, V, Cmp>& other) = default;
 	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); }
@@ -1160,7 +1161,7 @@ inline uint THArrayStringFix::AddChars(const void* pValue, const uint len)
 #ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400  // less than VS2005
 	strncpy_s(b, i, static_cast<const char*>(pValue), i);
 #else
-	strncpy(b, static_cast<char*>(pValue), i);
+	strncpy(b, static_cast<const char*>(pValue), i);
 #endif
 
 	i = data.Add(b);
@@ -1313,6 +1314,12 @@ inline T* THArrayAuto<T>::GetValuePointer(const int Index)
 //  THash Class Implementation
 //////////////////////////////////////////////////////////////////////
 
+template <class I, class V, class Cmp>
+THash<I, V, Cmp>::THash(std::initializer_list<std::pair<I, V> > list)
+{
+	for (const auto& pair : list) 
+		SetValue(pair.first, pair.second);
+}
 
 template <class I, class V, class Cmp>
 THash<I, V, Cmp>::THash(const THash<I, V, Cmp>& a)
@@ -1622,16 +1629,21 @@ inline std::string toString(const THArrayString& array)
 	return res;
 }
 
-// splits string to array of strings using Delim as delimiter
-/*void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n')
+// template "instantiation" for char* or char[x] parameters
+// e.g. StringToArray("aa;bb;cc", arr, ';');
+inline void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n')
 {
+	StringToArray<std::string>(str, arr, Delim);
+	/*
+	size_t i = 0;
+	size_t len = str.length();
 	std::string s;
-	uint i = 0;
+	s.reserve(len);
 
-	while (i < str.length())
+	while (i < len)
 	{
-		s = "";
-		while (i < str.length())
+		s.clear();
+		while (i < len)
 		{
 			if (str[i] == Delim)
 			{
@@ -1643,7 +1655,7 @@ inline std::string toString(const THArrayString& array)
 
 		if (s.length() > 0)
 			arr.AddValue(s);
-	}
-}*/
+	}*/
+}
 
 #endif //DYNAMIC_ARRAYS_H
