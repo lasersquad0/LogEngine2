@@ -16,6 +16,41 @@ Description:
 
 **************************************************************************
 
+2025-06-XXXXX v1.06
+[+] Added Properties functionality into Logger and Sink classes. That wllows us to define custom log line placeholders and setup date and time formats for log lines.
+[*] Improved parsing of .lfg file. More mistakes detected.
+[+] Added tests to the new functionality, updated existing ones.
+[*] Pattern and Holder classes structure has re-worked to support custom placeholders in log line
+[*] When converting sink type from string an exception is thrown in case failed conversion instead of returning default sink type
+[*] LogEvent - added new field Logger - pointer to logger that generated this event.
+
+
+2025-04-24 v1.05
+[+]LogEngine2 is now HEADER ONLY library. To use it as header only library define global symbol LOGENGINE_HEADER_ONLY and use #include "LogEgnine.h" in your source files where you need to use logging.
+[+] Added default logger. Now you can simply use LogEngine::Info("some msg") or LogEngine::DebugFmt("some msg {} {}", 2,4) to log messages to console. Default logger is console logger. It can be replaced by any custom logger if needed.
+[+] Thread safe loggers. Use functions GetFileLoggerMT, GetstdoutLoggerMT, etc. for creating thread safe loggers. Please note that thread safe loggers are slower because they use synchronization objects.
+[*] Updated tests according to new functionality
+
+2023-04-21 v1.04
+[+] Added example.cpp containing the most common use-cases of LogEngine2.
+[*] Updated README.md with detailed project description and usage samples
+[+] Added CallbackSink sink that will be very be useful when you need more flexibility for sending logs into non-standard locations.
+[+] Added possibility to initialize logger with list of existing sinks (see function GetMultiLogger())
+[+] Added version defines LOGENGINE_VER_MAJOR, LOGENGINE_VER_MINOR, LOGENGINE_VER_PATCH. Useful when you want to log LogEngine2 version number into log file.
+[*] AsyncMode now works in all LogFmt functions
+[+] Added new file mode into TFileStream class - fmWriteTrunc
+[*] Improved iterators for THarray and THash classes to better follow LogEngine2 requirements
+[+] Added more unit tests that covered new functionality and helped us to catch up several bugs.
+
+2023-11-07 v1.03
+[*] Multithreading code now uses common STL functions instead of native ones. That made code much simpler.
+[+] Added more unit tests that helped us to catch up several bugs that are now fixed.
+[*] Code is more compatible with latest C++ language standards
+[*] Fixed a couple of compiler warnings (not all though)
+[*] Improved work with date/time functions
+[*] Code cleaning and refactorings
+
+
 2007-02-25
 [+] Improved error handling during opening .lfg file.
 [*] Improved check for secure CRT under VS2005 (#if _MSC_VER < 1400 replaced by #if __STDC_SECURE_LIB__) 

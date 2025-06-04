@@ -4,13 +4,13 @@ TODO
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
 
 
-* Add tests for threadsafety parameter in .lfg file
+* [DONE] Add tests for threadsafety parameter in .lfg file
 
 * [FIXED] Rotating logger should preserve filename extension when creating timestamp files.
 
 * add possibility to define my own line macros placeholders
 
-* get values for macro placeholders from Properties and subst in log line
+* [DONE] get values for macro placeholders from Properties and subst in log line
 
 * make benchmarks and publish them in users guide
 
@@ -32,7 +32,7 @@ e.g. cannot create log file during GetLogger operation or during logger construc
 
 * add color logging to console.
 
-* configurable Date and/or Time format in log line
+* [DONE] configurable Date and/or Time format in log line. Done via logger and sink properties functionality
 
 * Add support to different log destinations: file, syslog, Windows event log, OutputDebugString, probably pipes.
 
