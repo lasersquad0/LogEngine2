@@ -394,7 +394,7 @@ private:
 		THashIterator& operator++() { if (FCurIndex < FCont->Count()) ++FCurIndex; return *this; }
 		THashIterator& operator--() { if (FCurIndex > 0) --FCurIndex; return *this; }
 		difference_type operator-(const THashIterator& right) const { return FCurIndex - right.FCurIndex; }
-		THashIterator operator-(const difference_type diff) const { return THArrayIterator(FCont, FCurIndex - diff); }
+		THashIterator operator-(const difference_type diff) const { return THArrayIterator(FCont, FCurIndex - diff); } //TODO shall we check here that FCurIndex - diff > 0?
 		THashIterator operator+(const difference_type diff) const { return THArrayIterator(FCont, FCurIndex + diff); }
 
 		value_type operator*() const { return value_type{ FCont->FAKeys[FCurIndex], FCont->FAValues[FCurIndex] }; }
