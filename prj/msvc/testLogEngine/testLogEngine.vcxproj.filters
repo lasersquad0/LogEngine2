@@ -166,6 +166,21 @@
     <ClInclude Include="..\..\..\include\Properties-hdr.h">
       <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\Properties.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Layout.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\BaseSink.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\SynchronizedQueue.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Version.h">
+      <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\testLogEngine.ico">

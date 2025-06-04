@@ -995,6 +995,7 @@
     <ResourceCompile Include="testLogEngine.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\include\BaseSink.h" />
     <ClInclude Include="..\..\..\include\Common-hdr.h" />
     <ClInclude Include="..\..\..\include\Common.h" />
     <ClInclude Include="..\..\..\include\Compare.h" />
@@ -1004,6 +1005,7 @@
     <ClInclude Include="..\..\..\include\FileStream-hdr.h" />
     <ClInclude Include="..\..\..\include\FileStream.h" />
     <ClInclude Include="..\..\..\include\IniReader.h" />
+    <ClInclude Include="..\..\..\include\Layout.h" />
     <ClInclude Include="..\..\..\include\LogEngine-hdr.h" />
     <ClInclude Include="..\..\..\include\LogEngine.h" />
     <ClInclude Include="..\..\..\include\LogEvent.h" />
@@ -1012,8 +1014,11 @@
     <ClInclude Include="..\..\..\include\Pattern.h" />
     <ClInclude Include="..\..\..\include\PatternLayout.h" />
     <ClInclude Include="..\..\..\include\Properties-hdr.h" />
+    <ClInclude Include="..\..\..\include\Properties.h" />
     <ClInclude Include="..\..\..\include\RotatingFileSink.h" />
     <ClInclude Include="..\..\..\include\Sink.h" />
+    <ClInclude Include="..\..\..\include\SynchronizedQueue.h" />
+    <ClInclude Include="..\..\..\include\Version.h" />
     <ClInclude Include="..\..\..\test\testIniReader.h" />
     <ClInclude Include="..\..\..\test\testLine.h" />
     <ClInclude Include="..\..\..\test\testConfigFile.h" />
