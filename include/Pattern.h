@@ -14,6 +14,7 @@
 #include "DynamicArrays.h"
 #include "LogEvent.h"
 #include "Logger.h"
+#include "Properties.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -25,38 +26,72 @@ LOGENGINE_NS_BEGIN
 #define APPNAME_PROPERTY  "AppName"
 #define APPVERSION_PROPERTY "AppVersion"
 
+#define LoggerNameMacro   "%LOGGERNAME%"
+#define LogLevelMacro	  "%LOGLEVEL%"
+#define MessageMacro      "%MSG%"
+#define DateMacro         "%DATE%"
+#define TimeMacro         "%TIME%"
+#define DateTimeMacro     "%DATETIME%"
+#define ThreadMacro		  "%THREAD%"
+#define AppNameMacro      "%APPNAME%"
+#define AppVersionMacro   "%APPVERSION%"
+#define OSMacro		      "%OS%"
+#define OSVersionMacro	  "%OSVERSION%"
+
+
+static std::string GetPropertyValue(Properties* props, Logger* logger, const std::string& paramName, const std::string& defValue)
+{
+	std::string* valuePtr = nullptr;
+
+	if (props != nullptr)
+		valuePtr = props->GetValuePointer(paramName);
+
+	if (valuePtr == nullptr) // if parameter is not found in props then look in logger properties
+		if (logger == nullptr)
+			return defValue;
+		else
+			return logger->GetProperty(paramName, defValue);
+	else
+		return (*valuePtr);
+}
 
 class Holder
 {
 public:
-	virtual std::string Format(const LogEvent& event) = 0;
+	virtual std::string Format(const LogEvent& event, Properties& props) = 0;
 	virtual ~Holder() {}
 };
 
-#define STRFTIME_SIZE 100
+#define SFT_SIZE 100
 
 class LoggerNameHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event) override { return event.logger->GetName(); }
+	std::string Format(const LogEvent& event, Properties&) override { return event.logger->GetName(); }
 };
 
 class LogLevelHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event) override { return LLtoCapsString(event.msgLevel); }
+	std::string Format(const LogEvent& event, Properties&) override { return LLtoCapsString(event.msgLevel); }
 };
 
 class DateHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event) override
+	std::string Format(const LogEvent& event, Properties& props) override
 	{
-		char datestr[STRFTIME_SIZE];
-		size_t res = std::strftime(datestr, STRFTIME_SIZE, "%d-%b-%Y", &event.tmtime);
+		//std::string format;
+		//auto formatPtr = props.GetValuePointer(DateMacro);
+		//format = (formatPtr == nullptr) ? "%x"/*"%d-%b-%Y"*/ : (*formatPtr);
+
+		auto format = GetPropertyValue(&props, event.logger, DateMacro, "%x");
+
+		char datestr[SFT_SIZE];
+		size_t res = std::strftime(datestr, SFT_SIZE, format.c_str(), &event.tmtime);
 		
 		if (res == 0) // error during formatting, use default system formatting
-			std::strftime(datestr, STRFTIME_SIZE, "%x", &event.tmtime);
+			std::strftime(datestr, SFT_SIZE, "%x", &event.tmtime);
 
 		return datestr;
 	}
@@ -65,13 +100,19 @@ public:
 class TimeHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event) override
+	std::string Format(const LogEvent& event, Properties& props) override
 	{
-		char timestr[STRFTIME_SIZE];
-		size_t res = std::strftime(timestr, STRFTIME_SIZE, "%X", &event.tmtime);
+		//std::string format;
+		//auto formatPtr = props.GetValuePointer(TimeMacro);
+		//format = (formatPtr == nullptr) ? "%X"/*"%d-%b-%Y"*/ : (*formatPtr);
+		
+		auto format = GetPropertyValue(&props, event.logger, TimeMacro, "%X");
+
+		char timestr[SFT_SIZE];
+		size_t res = std::strftime(timestr, SFT_SIZE, format.c_str(), &event.tmtime);
 		
 		if (res == 0) // error during formatting, use default system formatting
-			std::strftime(timestr, STRFTIME_SIZE, "%X", &event.tmtime);
+			std::strftime(timestr, SFT_SIZE, "%X", &event.tmtime);
 
 		return timestr;
 	}
@@ -80,13 +121,19 @@ public:
 class DateTimeHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event) override
+	std::string Format(const LogEvent& event, Properties& props) override
 	{
-		char dtstr[STRFTIME_SIZE];
-		size_t res = std::strftime(dtstr, STRFTIME_SIZE, /*"%x %X"*/"%d-%b-%Y %X", &event.tmtime);
+		//std::string format;
+		//auto formatPtr = props.GetValuePointer(DateTimeMacro);
+		//format = (formatPtr == nullptr) ? "%x %X"/*"%d-%b-%Y %X"*/ : (*formatPtr);
+
+		auto format = GetPropertyValue(&props, event.logger, DateTimeMacro, "%x %X");
+
+		char dtstr[SFT_SIZE];
+		size_t res = std::strftime(dtstr, SFT_SIZE, format.c_str(), &event.tmtime);
 
 		if (res == 0) // error during formatting, use default system formatting
-			std::strftime(dtstr, STRFTIME_SIZE, "%x %X", &event.tmtime);
+			std::strftime(dtstr, SFT_SIZE, "%x %X", &event.tmtime);
 
 		return dtstr;
 	}
@@ -95,13 +142,13 @@ public:
 class MessageHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event) override { return event.message; }
+	std::string Format(const LogEvent& event, Properties&) override { return event.message; }
 };
 
 class ThreadHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event) override { return IntToStr(event.threadID/*, 4*/); }
+	std::string Format(const LogEvent& event, Properties&) override { return IntToStr(event.threadID); }
 };
 
 class PropertyHolder : public Holder
@@ -110,17 +157,31 @@ private:
 	std::string FPropName;
 	std::string FDefValue;
 public:
-	PropertyHolder(const std::string& propName, const std::string& defValue) { this->FPropName = propName; this->FDefValue = defValue; }
-	std::string Format(const LogEvent& event) override { return event.logger->GetProperty(FPropName, this->FDefValue); }
+	PropertyHolder(const std::string& propName, const std::string& defValue) { FPropName = propName; FDefValue = defValue; }
+
+	std::string Format(const LogEvent& event, Properties& props) override 
+	{
+		return GetPropertyValue(&props, event.logger, FPropName, FDefValue);
+
+/*		auto valuePtr = props.GetValuePointer(FPropName);
+		if (valuePtr == nullptr) // if parameter is not found in props then look in logger properties
+			if (event.logger == nullptr) 
+				return FDefValue;
+			else
+				return event.logger->GetProperty(FPropName, FDefValue);
+		else
+			return (*valuePtr);*/
+	}
 };
 
+/*
 class AppNameHolder : public Holder
 {
 private:
-	std::string appName;
+	std::string FAppName;
 public:
-	AppNameHolder(const std::string& aname) { this->appName = aname; }
-	std::string Format(const LogEvent&) override { return appName; }
+	AppNameHolder(const std::string& aname) { FAppName = aname; }
+	std::string Format(const LogEvent&, Properties&) override { return FAppName; }
 };
 
 class AppVersionHolder : public Holder
@@ -130,22 +191,22 @@ private:
 public:
 	AppVersionHolder(const std::string& ver) { this->version = ver; }
 
-	std::string Format(const LogEvent&) override { return version; }
+	std::string Format(const LogEvent&, Properties&) override { return version; }
 };
-
+*/
 class LiteralHolder : public Holder
 {
 private:
-	std::string value;
+	std::string FValue;
 public:
-	LiteralHolder(const std::string& val) { this->value = val; }
-	std::string Format(const LogEvent&) override { return value; }
+	LiteralHolder(const std::string& value) { FValue = value; }
+	std::string Format(const LogEvent&, Properties&) override { return FValue; }
 };
 
 class OSHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent&) override
+	std::string Format(const LogEvent&, Properties&) override
 	{
 #ifdef WIN32
 		DWORD OSMajorVer = 6, OSMinorVer = 3, SPMajorVer = 0, SPMinorVer = 0;
@@ -166,7 +227,7 @@ class OSVersionHolder : public Holder
 private:
 	std::string FVersionCache;
 public:
-	std::string Format(const LogEvent&) override 
+	std::string Format(const LogEvent&, Properties&) override
 	{
 		//return cached value if it is exists.
 		if (FVersionCache.size() > 0) return FVersionCache;
@@ -199,17 +260,6 @@ public:
 	}
 };
 
-#define LoggerNameMacro   "%LOGGERNAME%"
-#define LogLevelMacro	  "%LOGLEVEL%"
-#define MessageMacro      "%MSG%"
-#define DateMacro         "%DATE%"
-#define TimeMacro         "%TIME%"
-#define DateTimeMacro     "%DATETIME%"
-#define ThreadMacro		  "%THREAD%"
-#define AppNameMacro      "%APPNAME%"
-#define AppVersionMacro   "%APPVERSION%"
-#define OSMacro		      "%OS%"
-#define OSVersionMacro	  "%OSVERSION%"
 
 #define SecondMacro       "%SEC%"
 #define MinuteMacro       "%MIN%"
@@ -250,12 +300,13 @@ protected:
 	THArray<Holder*> FHolders; // container of pointers is required here to support proper virtual "->Format()" calls 
 	std::string FPattern;
 	void parsePattern(const std::string& pattern); // compiles string pattern into list of appropriate Holder classes
-	void parsePattern2(const std::string& pattern); // compiles string pattern into list of appropriate Holder classes
+	//void parsePattern2(const std::string& pattern); // compiles string pattern into list of appropriate Holder classes
 	void clearHolders();
 public:
 	Pattern(const std::string& pattern) { parsePattern(pattern); }
 	virtual ~Pattern() { clearHolders(); }
 	virtual std::string Format(const LogEvent& event);
+	virtual std::string Format(const LogEvent& event, Properties& props);
 	void SetPattern(const std::string& pattern) { parsePattern(pattern); }
 	std::string GetPattern() { return FPattern; }
 };

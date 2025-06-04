@@ -61,9 +61,9 @@ public:
 		sendMsg(e);
 	}
 
-	virtual std::string FormatString(const LogEvent& e) override
+	std::string FormatString(const LogEvent& e) override
 	{
-		std::string str = FLayout->Format(e);
+		std::string str = FLayout->Format(e, FProperties);
 		FMessageCounts[e.msgLevel]++;
 
 		return str;

@@ -8,16 +8,31 @@
 
 #include <algorithm>
 #include "Pattern.h"
+#include "LogEvent.h"
+#include "Properties.h"
 
 LOGENGINE_NS_BEGIN
 
 LOGENGINE_INLINE std::string Pattern::Format(const LogEvent& event)
 {
 	std::string result;
+	Properties props; // empty class just as mock
 
 	for (uint i = 0; i < FHolders.Count(); i++)
 	{
-		result.append(FHolders[i]->Format(event));
+		result.append(FHolders[i]->Format(event, props));
+	}
+
+	return result;
+}
+
+LOGENGINE_INLINE std::string Pattern::Format(const LogEvent& event, Properties& props)
+{
+	std::string result;
+
+	for (uint i = 0; i < FHolders.Count(); i++)
+	{
+		result.append(FHolders[i]->Format(event, props));
 	}
 
 	return result;
@@ -29,17 +44,10 @@ std::string GetProperty(const std::string& name, const std::string& defaultValue
 #define MACRO_SEP '%'
 #define MACRO_SEP_STR "%"
 
+/*
 LOGENGINE_INLINE void Pattern::parsePattern2(const std::string& pattern)
 {
 	static const THArray<std::string> placeHolders = { "", DateMacro, TimeMacro, DateTimeMacro, MessageMacro, ThreadMacro, AppNameMacro, AppVersionMacro, OSMacro, OSVersionMacro, LogLevelMacro };
-
-	static const THash<std::string, Holder*> Holders2 = 
-	  { {LoggerNameMacro, new LoggerNameHolder()}, {LogLevelMacro, new LogLevelHolder()}, {MessageMacro, new MessageHolder()}, 
-		{DateMacro, new DateHolder()}, {TimeMacro, new TimeHolder()}, {DateTimeMacro, new DateTimeHolder()}, 
-		{ThreadMacro, new ThreadHolder()}, {OSMacro, new OSHolder()}, {OSVersionMacro, new OSVersionHolder()},
-		{AppNameMacro, new PropertyHolder(APPNAME_PROPERTY, DefaultAppName)},
-		{AppVersionMacro, new PropertyHolder(APPVERSION_PROPERTY, DefaultAppVersion)},
-		};
 
 	FPattern = pattern;
 
@@ -114,7 +122,7 @@ LOGENGINE_INLINE void Pattern::parsePattern2(const std::string& pattern)
 		}
 	}
 }
-
+*/
 LOGENGINE_INLINE void Pattern::parsePattern(const std::string& pattern)
 {
 	clearHolders();

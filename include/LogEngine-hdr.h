@@ -314,16 +314,17 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 {
 	IniReader reader;
 	reader.LoadIniFile(fileName);
-	THash<std::string, std::shared_ptr<Sink>> sinkCache;
+	THash<std::string, std::shared_ptr<Sink>> sinkCache; // used when several loggers refer to the same sink
 
 	for (auto it = reader.begin(); it != reader.end(); ++it)
 	{
 		std::string sectName = *it;
-		auto& section = reader.GetSection(sectName);
-
+		
 		size_t n = sectName.find('.');
 		if (/*(n != std::string::npos) &&*/ EqualNCase<std::string>(sectName.substr(0, n), LOGGER_PREFIX) )
 		{
+			auto& section = reader.GetSection(sectName);
+
 			std::string loggerName = (n == std::string::npos) ? "" : sectName.substr(n + 1); // loggerName should be ampty if '.' is missing in the section name
 
 			if (loggerName.empty()) 
@@ -332,6 +333,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 			Logger& logger = GetLogger(loggerName);
 			logger.SetLogLevel(LLfromString(reader.GetValue(sectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
 			logger.SetAsyncMode(StrToBool(reader.GetValue(sectName, ASYNMODE_PARAM, "false", 0)));
+			logger.FillProperties(section);
 
 			if (!section.IfExists(SINK_PARAM)) continue; // logger does not have any sinks, it's ok
 
@@ -403,6 +405,7 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 					if (reader.HasValue(sinkSectName, TRACEPATTERN_PARAM)) lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM));
 
 					sink->SetLayout(lay);
+					sink->FillProperties(reader.GetSection(sinkSectName));
 					auto ssink = std::shared_ptr<Sink>(sink);
 					sinkCache.SetValue(sn, ssink);
 				}

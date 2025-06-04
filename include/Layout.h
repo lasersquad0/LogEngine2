@@ -12,6 +12,7 @@
 #include <sstream>
 #include "LogEvent.h"
 #include "Common.h"
+#include "Properties.h"
 
 LOGENGINE_NS_BEGIN
 
@@ -20,7 +21,7 @@ class Layout
 {
 public:
 	virtual ~Layout() { }
-	virtual std::string Format(const LogEvent& event) = 0;
+	virtual std::string Format(const LogEvent& event, Properties& props) = 0;
 
 	virtual void SetPattern(const std::string&, Levels::LogLevel) = 0;
 	virtual void SetPattern(const std::string&) = 0;

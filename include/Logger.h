@@ -20,6 +20,7 @@
 #include "LogEvent.h"
 #include "DynamicArrays.h"
 #include "SynchronizedQueue.h"
+#include "Properties.h"
 
 LOGENGINE_NS_BEGIN
 
@@ -42,7 +43,7 @@ private:
 	Levels::LogLevel FLogLevel;
 	SinkList FSinks;
 	bool FAsync = false;
-	TStringHashNCase FProperties;
+	/*TStringHashNCase*/ Properties FProperties;
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
@@ -152,6 +153,17 @@ public:
 	bool PropertyExist(const std::string& name)
 	{
 		return FProperties.IfExists(name);
+	}
+
+	// copy into Properties all logger parameters which are read from .lfg file 
+	using Section = IniReader::StorageType::ValuesHash;
+	virtual void FillProperties(Section& section)
+	{
+		for (auto it = section.begin(); it != section.end(); ++it)
+		{
+			Section::iterator::value_type item = *it;
+			FProperties.SetValue(item.first, item.second[0]);
+		}
 	}
 
 #if defined(WIN32) && _HAS_CXX20==1 && !defined(__BORLANDC__)

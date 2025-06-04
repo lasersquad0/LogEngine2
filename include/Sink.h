@@ -12,6 +12,8 @@
 #include "Common.h"
 #include "LogEvent.h"
 #include "Layout.h"
+#include "Properties.h"
+#include "IniReader.h"
 
 LOGENGINE_NS_BEGIN
 
@@ -20,7 +22,8 @@ class Sink
 protected:
 	std::string FName;
 	std::atomic<Levels::LogLevel> FLogLevel;
-	
+	Properties FProperties;
+
 	virtual bool shouldLog(const Levels::LogLevel ll) { return FLogLevel.load() >= ll; }
 	virtual void sendMsg(const LogEvent& e) = 0;
 
@@ -83,6 +86,17 @@ public:
 	 * @returns the name of the sink.
 	 **/
 	const std::string& GetName() const { return FName; }
+
+	// copy all sink parameters read from .lfg file into Properties
+	using Section = IniReader::StorageType::ValuesHash;
+	virtual void FillProperties(Section& section)
+	{
+		for (auto it = section.begin(); it != section.end(); ++it)
+		{
+			Section::iterator::value_type item = *it;
+			FProperties.SetValue(item.first, item.second[0]);
+		}
+	}
 };
 
 
