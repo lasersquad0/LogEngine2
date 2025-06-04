@@ -34,8 +34,11 @@ class LineTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testLine20);
   CPPUNIT_TEST(testLine21);
   CPPUNIT_TEST(testLine22);
+  CPPUNIT_TEST(testLine23);
   CPPUNIT_TEST_SUITE_END();
 public:
+    struct tm FixedTime;
+
 	void setUp();
     void tearDown();
 
@@ -62,6 +65,7 @@ public:
     void testLine20();
     void testLine21();
     void testLine22();
+    void testLine23();
 };
 
 
