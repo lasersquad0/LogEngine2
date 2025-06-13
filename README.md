@@ -157,7 +157,7 @@ void multi_sink_example()
 
     Logger logger("multi_sink", { consoleSink, fileSink });
     // or we can create global logger 
-    // LogEngine::Logger& logger = LogEngine::GetMultiLogger("multi_sink_logger", { consoleSink, fileSink });
+    // Logger& logger = GetMultiLogger("multi_sink_logger", { consoleSink, fileSink });
 		
     logger.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
     logger.Warn("This should appear in both console and file");
