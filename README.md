@@ -137,18 +137,6 @@ void rotating_file_example()
     rotLogger2.Info("Rotating file message");
 }
 ```
----
-#### Stopwatch
-```c++
-// Stopwatch support for spdlog
-#include "spdlog/stopwatch.h"
-void stopwatch_example()
-{
-    spdlog::stopwatch sw;    
-    spdlog::debug("Elapsed {}", sw);
-    spdlog::debug("Elapsed {:.3}", sw);       
-}
-```
 
 ---
 #### Two loggers with multiple shared sinks, each with a different format and log level.
@@ -164,10 +152,13 @@ void multi_sink_example()
     consoleSink->SetLogLevel(Levels::llWarning);
     consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
 
-    std::shared_ptr<Sink> fileSink(new FileSink("file_sink", LOG_FILES_DIR "multisink.txt"));
+    std::shared_ptr<Sink> fileSink(new FileSink("file_sink", "multisink.txt"));
     fileSink->SetLogLevel(Levels::llTrace);
 
     Logger logger("multi_sink", { consoleSink, fileSink });
+    // or we can create global logger 
+    // LogEngine::Logger& logger = LogEngine::GetMultiLogger("multi_sink_logger", { consoleSink, fileSink });
+		
     logger.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
     logger.Warn("This should appear in both console and file");
     logger.Info("This message should not appear in the console, only in the file");
