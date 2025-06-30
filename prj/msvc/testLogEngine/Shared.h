@@ -1,10 +1,11 @@
 #pragma once
 
-#include <string.h>
+//#include <string.h>
 #include <string>
-#include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <format>
+//#include <iostream>
+//#include <sys/types.h>
+//#include <sys/stat.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #ifdef WIN32
@@ -74,4 +75,42 @@ struct assertion_traits<char*>   // specialization for the char* type
 
 CPPUNIT_NS_END
 
-std::string millisecToStr(long long ms);
+
+template<class STRING>
+STRING MillisecToStr(uint64_t ms)
+{
+	// make sure that STRING is one of instantiations of std::string
+	static_assert(std::is_base_of<std::basic_string<typename STRING::value_type, typename STRING::traits_type>, STRING>::value);
+
+	uint32_t milliseconds = ms % 1000;
+	uint32_t seconds = (ms / 1000) % 60;
+	uint32_t minutes = (ms / 60000) % 60;
+	uint32_t hours = (ms / 3600000) % 24;
+
+	STRING result;
+
+	if constexpr (std::is_same_v<typename STRING::value_type, char>)
+	{
+		if (hours > 0)
+			result = std::format("{} hours {} minutes {} seconds {} ms", hours, minutes, seconds, milliseconds);
+		else if (minutes > 0)
+			result = std::format("{} minutes {} seconds {} ms", minutes, seconds, milliseconds);
+		else
+			result = std::format("{} seconds {} ms", seconds, milliseconds);
+	}
+	else if constexpr (std::is_same_v<typename STRING::value_type, wchar_t>)
+	{
+		if (hours > 0)
+			result = std::format(L"{} hours {} minutes {} seconds {} ms", hours, minutes, seconds, milliseconds);
+		else if (minutes > 0)
+			result = std::format(L"{} minutes {} seconds {} ms", minutes, seconds, milliseconds);
+		else
+			result = std::format(L"{} seconds {} ms", seconds, milliseconds);
+	}
+	else
+		result = "UNKNOWN STRING TYPE";
+
+	return result;
+}
+
+//std::string millisecToStr(long long ms);

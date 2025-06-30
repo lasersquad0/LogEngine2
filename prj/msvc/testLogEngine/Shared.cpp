@@ -1,6 +1,7 @@
 
 #include "Shared.h"
 
+/*
 std::string millisecToStr(long long ms)
 {
 	int milliseconds = ms % 1000;
@@ -27,3 +28,4 @@ std::string millisecToStr(long long ms)
 
 	return buf;
 }
+*/
