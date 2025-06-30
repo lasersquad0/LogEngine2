@@ -16,7 +16,7 @@
 
 
 template<class T>
-class SafeQueue : private THArray<T>
+class SafeQueue: private THArray<T>
 {
 private:
     std::mutex mtx;
@@ -50,7 +50,7 @@ public:
     {
         //std::lock_guard<std::mutex> lock(mtx);
         while(this->Count() > 0)
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 };
 
