@@ -14,7 +14,7 @@ int main()
 
     CppUnit::TestResultCollector result;
     controller.addListener( &result );        
-    
+
     //CppUnit::BriefTestProgressListener progressListener;
     MyTestProgressListener progressListener;
     controller.addListener( &progressListener );

@@ -17,10 +17,8 @@ Description:
 **************************************************************************
 
 2025-06-XXXXX v1.06
-[+] Added OutputDebugSink class that sends messages via WIN API call OutputDebugStringA. 
-    You can use functions GetODebugLoggerST and GetODebugLoggerMT to get logger that uses OutputDebugString
-[+] Added Properties functionality into Logger and Sink classes. That allows us to define custom log line placeholders and define date/time formats for log lines.
-[*] Improved parsing of .lfg file. More incorrect cases detected.
+[+] Added Properties functionality into Logger and Sink classes. That wllows us to define custom log line placeholders and setup date and time formats for log lines.
+[*] Improved parsing of .lfg file. More mistakes detected.
 [+] Added tests to the new functionality, updated existing ones.
 [*] Pattern and Holder classes structure has re-worked to support custom placeholders in log line
 [*] When converting sink type from string an exception is thrown in case failed conversion instead of returning default sink type

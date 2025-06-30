@@ -143,8 +143,7 @@ void LoggerTest::testLog2()
 // testing logger with StringSink 
 void LoggerTest::testLog3()
 {
-	//TODO implement version of test compatible with BORLANDC
-#if defined(WIN32) && !defined(__BORLANDC__) 
+#if defined(WIN32) && !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog3");
 	std::shared_ptr<StringSinkST>sink1(new StringSinkST("strsink1"));
 	std::shared_ptr<StringSinkST>sink2(new StringSinkST("strsink2"));
@@ -288,7 +287,7 @@ void LoggerTest::testLog5()
 {
 	FileSinkST *fs1;
 	CPPUNIT_ASSERT_NO_THROW(fs1 = new FileSinkST("filesink1", LOG_FILES_FOLDER "testLog5.log"));
- 	CPPUNIT_ASSERT_THROW(new FileSinkST("filesink2", LOG_FILES_FOLDER "testLog5.log"), IOException);
+ 	CPPUNIT_ASSERT_THROW(new FileSinkST("filesink1", LOG_FILES_FOLDER "testLog5.log"), IOException);
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5.log"), IOException);
 
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
@@ -313,7 +312,6 @@ void LoggerTest::testLogMultiSink1()
 	logger.Warn("MSG#1: should appear in both console and file one time each");
 }
 
-// multi logger with duplicate sinks. diplicate sink will not be added into the logger 
 void LoggerTest::testLogMultiSink2()
 {
 	std::shared_ptr<Sink> consoleSink(new LogEngine::StdoutSinkST("consolesink"));
@@ -331,7 +329,6 @@ void LoggerTest::testLogMultiSink2()
 	logger.Warn("MSG#2: should appear in all three sinks: console, stdout and stderr by one time each.");
 }
 
-// adding duplicate sinks to the logger. diplicate sink will not be added into the logger 
 void LoggerTest::testLogMultiSink3()
 {
 	std::shared_ptr<Sink>consoleSink(new LogEngine::StdoutSinkMT("consolesink"));
@@ -567,7 +564,6 @@ void LoggerTest::testLogStrategyBakNumber()
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[Levels::llTrace]);
 }
 
-//TODO add test for BytesWritten() statistics
 void LoggerTest::testLogStatistic()
 {
 	Logger& log = GetLogger("testLogStatistic");
@@ -627,6 +623,7 @@ void LoggerTest::testGetFileLogger()
 	Logger& logger3 = GetFileLogger("testGetFileLogger", "filename2.log"); // already existing logger has returned (with old filename!!!)
 	CPPUNIT_ASSERT_EQUAL(1u, logger3.SinkCount());
 	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
+
 }
 
 void LoggerTest::testGetStdoutLogger()
@@ -662,112 +659,56 @@ void LoggerTest::testGetStderrLogger()
 	CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 }
 
-// file logger, async=false, ST- threading sync is OFF
-void LoggerTest::testLogPerfromanceST1()
-{
-	// for clear benchmarking we generate strings to log to before starting a timer
-	const int MESS_NUM = 1'000'000;
-	auto arr = new std::string[MESS_NUM];
-	for (size_t i = 0; i < MESS_NUM; i++)
-	{
-		if(i % 2 == 0)
-		  arr[i] = "Log message #" + std::to_string(i);
-		else
-   		  arr[i] = "Long information message for benchmarking purposes #" + std::to_string(i);
-	}
-
-	// remove previous file if any
-	std::string fileName = LOG_FILES_FOLDER "BenchmarkST1.log";
-	remove(fileName.c_str());
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	auto& logger = GetFileLoggerST("performanceST1", fileName);
-	logger.SetAsyncMode(false);
-
-	for (size_t i = 0; i < MESS_NUM; i++)
-	{
-		logger.Info(arr[i]);
-	}
-
-	auto stop = std::chrono::high_resolution_clock::now();
-	std::cout << std::format(" Writing {} messages to log file. Time (sync, ST): {}", MESS_NUM, MillisecToStr<std::string>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count()));
-
-	delete[] arr;
-}
-
-// file logger, async=TRUE, MT- threading sync is OFF
-void LoggerTest::testLogPerfromanceST2()
-{
-	// for clear benchmarking we generate strings to log to before starting a timer
-	const int MESS_NUM = 1'000'000;
-	auto arr = new std::string[MESS_NUM];
-	for (size_t i = 0; i < MESS_NUM; i++)
-	{
-		if (i % 2 == 0)
-			arr[i] = "Log message #" + std::to_string(i);
-		else
-			arr[i] = "Long information message for benchmarking purposes #" + std::to_string(i);
-	}
-
-	// remove previous file if any
-	std::string fileName = LOG_FILES_FOLDER "BenchmarkST2.log";
-	remove(fileName.c_str());
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	auto& logger = GetFileLoggerST("performanceST2", fileName);
-	logger.SetAsyncMode(true);
-
-	for (size_t i = 0; i < MESS_NUM; i++)
-	{
-		logger.Info(arr[i]);
-	}
-
-	logger.SetAsyncMode(false); // send stop signal to async thread and wait till its finishes execution
-
-	auto stop = std::chrono::high_resolution_clock::now();
-	std::cout << std::format(" Writing {:L} messages to log file. Time (async, ST): {}", MESS_NUM, MillisecToStr<std::string>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count()));
-
-	delete[] arr;
-}
-
-// file logger, async=false, MT- threading support is ON
-void LoggerTest::testLogPerfromanceMT1()
-{
-	// for clear benchmarking we generate strings to log to before starting a timer
-	const int MESS_NUM = 1'000'000;
-	auto arr = new std::string[MESS_NUM];
-	for (size_t i = 0; i < MESS_NUM; i++)
-	{
-		if (i % 2 == 0)
-			arr[i] = "Log message #" + std::to_string(i);
-		else
-			arr[i] = "Long information message for benchmarking purposes #" + std::to_string(i);
-	}
-	
-	// remove previous file if any
-	std::string fileName = LOG_FILES_FOLDER "BenchmarkMT1.log";
-	remove(fileName.c_str());
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	auto& logger = GetFileLoggerMT("performanceMT1", fileName);
-	logger.SetAsyncMode(false);
-
-	for (size_t i = 0; i < MESS_NUM; i++)
-	{
-		logger.Info(arr[i]);
-	}
-
-	auto stop = std::chrono::high_resolution_clock::now();
-	std::cout << std::format(" Writing {:L} messages to log file. Time (sync, MT): {}", MESS_NUM, MillisecToStr<std::string>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count()));
-
-	delete[] arr;
-}
-
-
 /*
+
+void LoggerTest::testWrong_LFG_File()
+{
+	try
+	{
+		InitLogEngine(TEST_FILES_FOLDER "test000.lfg");
+	}
+	catch (LogException& ex) 
+	{
+		CPPUNIT_ASSERT_EQUAL((char*)("[LogException] Cannot open config file: " TEST_FILES_FOLDER "test000.lfg"), (char*)ex.what());
+	}
+ 
+
+
+	InitLogEngine(TEST_FILES_FOLDER "test10.lfg");
+	log = getLogEngine();
+	CPPUNIT_ASSERT_EQUAL(4, log->GetLogDetailLevel());
+
+	InitLogEngine(TEST_FILES_FOLDER "test11.lfg");
+	log = getLogEngine();
+	CPPUNIT_ASSERT_EQUAL(7, log->GetLogDetailLevel());
+
+	printf("PASSED\n");
+}
+
+void LoggerTest::testBadLFGFile()
+{
+#ifdef WIN32 // '\n' is not alowed in Windows filenames, but allowed in Linux filenames
+	CPPUNIT_ASSERT_THROW( InitLogEngine(TEST_FILES_FOLDER "test13.lfg"), IOException );
+#else
+	InitLogEngine(TEST_FILES_FOLDER "test13.lfg"); // just make sure that no exception is thrown in contrast to Windows
+#endif
+	CloseLogEngine();
+}
+
+void LoggerTest::testBadLFGFile2()
+{
+	InitLogEngine(TEST_FILES_FOLDER "test14.lfg");
+	TLogEngine* log = TLogEngine::getInstance();
+
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetLogDetailLevel());
+	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
+	CPPUNIT_ASSERT_EQUAL(1000u, log->GetMaxLogSize());
+	CPPUNIT_ASSERT_EQUAL(std::string("d.d.d.d"), log->GetVersionInfo());
+	CPPUNIT_ASSERT_EQUAL(std::string("BadLFGFileApp"), log->GetAppName());
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/BadLFGLog.log"), log->GetLogFileName());
+
+	CloseLogEngine();
+}
 
 void LoggerTest::testLogRotation1()
 {

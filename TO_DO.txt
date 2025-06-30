@@ -3,11 +3,6 @@ TODO
 
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
 
-* implement stowatch class that works like this
-    spdlog::stopwatch sw;    
-    spdlog::debug("Elapsed {}", sw);
-    spdlog::debug("Elapsed {:.3}", sw);       
-
 
 * [DONE] Add tests for threadsafety parameter in .lfg file
 
@@ -37,27 +32,28 @@ e.g. cannot create log file during GetLogger operation or during logger construc
 
 * add color logging to console.
 
+* [DONE] configurable Date and/or Time format in log line. Done via logger and sink properties functionality
+
 * Add support to different log destinations: file, syslog, Windows event log, OutputDebugString, probably pipes.
 
 * Rename msvc project LogEngine to LogEngine2?
-
-* Add possibility to write logs with << operator: LOG(INFO) << "logstr1" << "logstr2"
-
-* Get the version number from current module (for Windows only)
-
-* Add separator line ??????
 
 * [DONE] add possibility to configure loggers from config (.lfg) file
 
 * [DONE] add configuration to write logs into stdout and stderr
 
-* [DONE] configurable Date and/or Time format in log line. Done via logger and sink properties functionality
+* Add possibility to write logs with << operator: LOG(INFO) << "logstr1" << "logstr2"
 
 * [DONE] add Async mode for writing logs. where logs are put into memory container and another thread performs actual routing and writing to file(s).
 
 * [DONE] Add possibility to write logs into multiple files 
 
-* [DONE] Add a set of help functions FormatError, FormatInfo which returns formatted string for InternalWrite. They helps us to write tests more comfortable.
+* Get the version number from current module (for Windows only)
+
+* [DONE] Add a set of help functions FormatError, FormatInfo which returns formatted 
+  string for InternalWrite. They helps us to write tests more comfortable.
+
+* Add separator line ??????
 
 * [DONE] Synchronization logs in separate thread.
 

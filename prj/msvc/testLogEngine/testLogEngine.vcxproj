@@ -986,7 +986,10 @@
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Shared.cpp" />
+    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="testLogEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="testLogEngine.rc" />
@@ -1034,9 +1037,11 @@
     </ClInclude>
     <ClInclude Include="..\..\..\test\testTStream.h" />
     <ClInclude Include="..\..\..\test\testUtils.h" />
+    <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MyTestProgressListener.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shared.h" />
+    <ClInclude Include="testLogEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\testLogEngine.ico" />

@@ -361,7 +361,7 @@ void TStreamTest::testMemoryStream11()
 	stream2 << 5;
 	stream2 << '5';
 	stream2 << 3.1415265859;
-	stream2 << s << '\n'; // \n this is end-of-line marker, otherwise we will not be able to read this string properly
+	stream2 << s;
 	stream2 << 1000000000ll;
 
 	//stream2.SeekR(stream2.Length(), smFromEnd);
