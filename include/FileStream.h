@@ -92,9 +92,10 @@ public:
 		{
 			Write(Value.data(), Value.size() * sizeof(W::value_type));
 
-			W endL;
-			BUILD_ENDL(endL);
-			Write(endL.data(), endL.size() * sizeof(W::value_type));
+			// why do we write endline on each operator<< call????????
+			//W endL;
+			//BUILD_ENDL(endL);
+			//Write(endL.data(), endL.size() * sizeof(W::value_type));
 		}
 
 		return *this;
