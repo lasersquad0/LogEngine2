@@ -177,8 +177,9 @@ LOGENGINE_INLINE void Pattern::clearHolders()
 	// other type are shared between Pattern instances
 	std::transform(FHolders.begin(), FHolders.end(), FHolders.begin(), [](Holder* x) 
 		{
+			assert(x != nullptr);
 			if (dynamic_cast<LiteralHolder*>(x) == x) delete x;
-			return x;
+			return x; // it's ok that we return pointer to deleted object here, array will be cleared below
 		});
 
 	/*for (auto hld: FHolders)

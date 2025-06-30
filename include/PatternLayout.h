@@ -60,8 +60,10 @@ public:
 			MessagePatterns[i].SetPattern(pattern);
 	}
 
+	// this is a way to "revert back" to default pattern for the specified log level
 	void SetDefaultPattern(Levels::LogLevel level) override { MessagePatterns[level].SetPattern(DefPatterns[level]); }
 
+	// this is a way to "revert back" to default patterns
 	void SetDefaultPattern() override
 	{
 		for (uint i = 0; i < Levels::n_LogLevels; i++)
