@@ -45,15 +45,25 @@ public:
 	virtual Layout* GetLayout() const = 0;
 	virtual void SetLayout(Layout* layout) = 0;
 
-	// sets log line pattern for the specified by parameter 'll' log line
+	/**
+	* Sets log line pattern for the specified log level
+	**/
 	virtual void SetPattern(const std::string& pattern, Levels::LogLevel ll) = 0;
 
-	// sets log line pattern for all log lines
+	/**
+	* Sets one log line pattern for all log levels
+	**/
 	virtual void SetPattern(const std::string& pattern) = 0;
 
+	/**
+	* Preforms log line formatting according to appropriate log line pattern and data from LogEvent
+	* @returns formatted log line as string
+	**/
 	virtual std::string FormatString(const LogEvent& e) = 0;
 
-	// sets log line pattern for the specified by parameter 'll' log line
+	/**
+	* Sets default log line pattern for the specified log level
+	**/
 	virtual void SetDefaultPattern(Levels::LogLevel ll) = 0;
 
 	// sets log line pattern for all log lines
