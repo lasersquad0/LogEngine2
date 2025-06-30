@@ -29,7 +29,7 @@ protected:
 	void sendMsg(const LogEvent& e) override
 	{
 		std::string str = this->FormatString(e); // FormatString adds '\n' to the end of string
-		//FStream.Seek(0, smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
+		//FStream->Seek(0, smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
 		this->FBytesWritten += static_cast<ullong>(FStream->WriteLn(str));
 	}
 
@@ -116,6 +116,22 @@ public:
 		FCallback(e);
 	}
 };
+
+// sink exists only for Windows compilation
+#ifdef WIN32
+template<class Mutex>
+class OutputDebugSink : public BaseSink<Mutex>
+{
+public:
+	OutputDebugSink(const std::string& name) : BaseSink<Mutex>(name) { }
+
+	void sendMsg(const LogEvent& e) override
+	{
+		std::string str = this->FormatString(e);
+		OutputDebugStringA(str.c_str());
+	}
+};
+#endif
 
 LOGENGINE_NS_END
 

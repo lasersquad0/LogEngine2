@@ -263,6 +263,28 @@ LOGENGINE_INLINE Logger& GetCallbackLoggerMT(const std::string& loggerName, cons
 	return logger;
 }
 
+#ifdef WIN32
+LOGENGINE_INLINE Logger& GetODebugLoggerST(const std::string& loggerName)
+{
+	Logger& logger = GetLogger(loggerName);
+	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
+
+	auto sink = std::make_shared<OutputDebugSinkST>(loggerName);
+	logger.AddSink(sink);
+	return logger;
+}
+
+LOGENGINE_INLINE Logger& GetODebugLoggerMT(const std::string& loggerName)
+{
+	Logger& logger = GetLogger(loggerName);
+	if (logger.SinkCount() > 0) return logger; // this is pre-existed logger
+
+	auto sink = std::make_shared<OutputDebugSinkMT>(loggerName);
+	logger.AddSink(sink);
+	return logger;
+}
+#endif
+
 LOGENGINE_INLINE void Log(const std::string& msg, const Levels::LogLevel ll)
 {
 	Registry::Instance().GetDefaultLogger().Log(msg, ll);

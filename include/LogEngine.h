@@ -38,6 +38,11 @@ typedef RotatingFileSink<NullMutex> RotatingFileSinkST;
 typedef CallbackSink<std::mutex> CallbackSinkMT;
 typedef CallbackSink<NullMutex> CallbackSinkST;
 
+#ifdef WIN32
+typedef OutputDebugSink<std::mutex> OutputDebugSinkMT;
+typedef OutputDebugSink<NullMutex> OutputDebugSinkST;
+#endif
+
 void SetProperty(const std::string& name, const std::string& value);
 std::string GetProperty(const std::string& name, const std::string& defaultValue /*= ""*/);
 bool PropertyExist(const std::string& name);
@@ -70,6 +75,10 @@ Logger& GetRotatingFileLoggerST(const std::string& loggerName, const std::string
 Logger& GetRotatingFileLoggerMT(const std::string& loggerName, const std::string& fileName, ullong maxLogSize = DefaultMaxLogSize,
 	LogRotatingStrategy strategy = DefaultRotatingStrategy, uint maxBackupIndex = DefaultMaxBackupIndex);
 
+#ifdef WIN32
+Logger& GetODebugLoggerST(const std::string& loggerName);
+Logger& GetODebugLoggerMT(const std::string& loggerName);
+#endif
 
 // default logger functions
 void Log(const std::string& msg, const Levels::LogLevel ll);
