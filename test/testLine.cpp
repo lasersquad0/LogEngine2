@@ -206,7 +206,7 @@ void LineTest::testLine15()
 	LogEvent event(nullptr, "message", Levels::llError, 1, FixedTime);
 	
 	std::string res = line.Format(event);
-	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.26100.3912"), res);
+	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.26100.4202"), res);
 }
 
 void LineTest::testLine16()

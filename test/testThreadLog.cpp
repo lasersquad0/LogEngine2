@@ -144,7 +144,7 @@ void ThreadLogTest::testThreadLogMeasureTime1()
 	auto stop = std::chrono::high_resolution_clock::now();
 
 	std::cout << std::endl << NUM_LOGS << " written in ASYNC mode.\n";
-	std::cout << "  Excec time: " << millisecToStr(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start1).count()) << std::endl;
+	std::cout << "  Excec time: " << MillisecToStr<std::string>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start1).count()) << std::endl;
 	
 	std::fstream ff(fileName, std::ios::in);
 	if (!ff)
@@ -152,7 +152,7 @@ void ThreadLogTest::testThreadLogMeasureTime1()
 
 	std::cout << "verifying log file..." << std::endl;
 
-	log.WaitQueue(); // wait till separate thread writes all log messages to file
+	log.WaitEmptyQueue(); // wait till separate thread writes all log messages to file
 
 	std::string ln;
 	size_t n;
@@ -168,7 +168,6 @@ void ThreadLogTest::testThreadLogMeasureTime1()
 	std::cout << "Done" << std::endl;
 	
 }
-
 
 // measure log time when AsynMode=false
 void ThreadLogTest::testNONThreadLogMeasureTime1()
@@ -188,7 +187,7 @@ void ThreadLogTest::testNONThreadLogMeasureTime1()
 	auto stop = std::chrono::high_resolution_clock::now();
 
 	std::cout << std::endl << NUM_LOGS << " written in SYNC mode.\n";
-	std::cout << "  Excec time: " << millisecToStr(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start1).count()) << std::endl;
+	std::cout << "  Excec time: " << MillisecToStr<std::string>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start1).count()) << std::endl;
 
 	std::fstream ff(fileName, std::ios::in);
 	if (!ff)
