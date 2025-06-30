@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "UnitTestsRunner.h"
+//#include "UnitTestsRunner.h"
 
 #include "UnitTestsRunnerDoc.h"
 
