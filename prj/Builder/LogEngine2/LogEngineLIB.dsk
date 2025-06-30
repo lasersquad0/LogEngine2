@@ -1,42 +1,32 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\program files (x86)\embarcadero\studio\23.0\include\dinkumware64\yvals.h',0,1,1681,14,1704,0,0,,
-File_1=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\src\FileStream.cpp',0,1,39,16,181,0,0,,
-File_2=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\LogEvent.h',0,1,48,25,64,0,0,,
-File_3=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\Exceptions.h',0,1,26,27,49,0,0,,
-File_4=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\src\LogEngine.cpp',0,1,236,24,259,0,0,,
-File_5=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\Logger.h',0,1,380,50,404,0,0,,
-File_6=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\Compare.h',0,1,1,20,22,0,0,,
-File_7=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\RotatingFileSink.h',0,1,83,16,106,0,0,,
-File_8=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\Sink.h',0,1,7,49,28,0,0,,
-File_9=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\Common.h',0,1,1,1,1,0,0,,
-File_10=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\src\Common.cpp',0,1,505,41,526,0,0,,
-File_11=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\src\DynamicArrays.cpp',0,1,229,23,264,0,0,,
-File_12=TSourceModule,'c:\program files (x86)\embarcadero\studio\23.0\include\windows\crtl\_stddef.h',0,1,55,30,78,0,0,,
-File_13=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\src\Archiver.cpp',0,1,99,40,185,0,0,,
-File_14=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\src\ArchiveHeader.cpp',0,1,40,30,54,0,0,,
+File_0=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\FileStream.h',0,1,117,43,140,0,0,,
+File_1=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\src\FileStream.cpp',0,1,261,129,287,0,0,,
+File_2=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\prj\Builder\testLogEngine2\Main.cpp',0,1,1,1,1,0,0,,
+File_3=TSourceModule,'C:\Users\Andrey\source\repos\LogEngine2\include\Logger.h',0,1,57,1,80,0,0,,
+File_4=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\src\Archiver.cpp',0,1,99,40,185,0,0,,
+File_5=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\src\ArchiveHeader.cpp',0,1,40,30,54,0,0,,
+File_6=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\include\Parameters.h',0,1,39,33,51,0,0,,
+File_7=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\prj\DelphiCBuilder\ArithmeticConsole\main.cpp',0,1,145,118,155,0,0,,
+File_8=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\prj\DelphiCBuilder\ArithmeticGUI\MainForm.pas',0,1,80,26,84,0,0,,
+File_9=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\include\FileRecord.h',0,1,1,58,19,0,0,,
+File_10=TSourceModule,'C:\Program Files (x86)\Embarcadero\Studio\23.0\include\dinkumware64\type_traits',0,1,3435,29,3461,0,0,,
+File_11=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\include\CommonFunctions.h',0,1,22,69,37,0,0,,
+File_12=TSourceModule,'c:\program files (x86)\embarcadero\studio\23.0\include\dinkumware64\xutility',0,1,2828,9,2849,0,0,,
+File_13=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\include\ArchiveHeader.h',0,1,147,55,168,0,0,,
+File_14=TSourceModule,'C:\Users\Andrey\source\repos\Arithmetic\src\CommonFunctions.cpp',0,1,79,1,104,0,0,,
 
 [Modules]
-Module0=C:\Users\Andrey\source\repos\LogEngine2\include\DynamicArrays.h
-Module1=C:\Users\Andrey\source\repos\LogEngine2\include\FileStream.h
-Module2=C:\Users\Andrey\source\repos\LogEngine2\prj\Builder\testLogEngine2\Main.cpp
-Count=3
+Module0=C:\Users\Andrey\source\repos\LogEngine2\src\LogEngine.cpp
+Count=1
 EditWindowCount=1
 
-[C:\Users\Andrey\source\repos\LogEngine2\include\DynamicArrays.h]
-ModuleType=TSourceModule
-
-[C:\Users\Andrey\source\repos\LogEngine2\include\FileStream.h]
-ModuleType=TSourceModule
-
-[C:\Users\Andrey\source\repos\LogEngine2\prj\Builder\testLogEngine2\Main.cpp]
+[C:\Users\Andrey\source\repos\LogEngine2\src\LogEngine.cpp]
 ModuleType=TSourceModule
 
 [EditWindow0]
-ViewCount=3
-CurrentEditView=C:\Users\Andrey\source\repos\LogEngine2\include\DynamicArrays.h
+ViewCount=1
+CurrentEditView=C:\Users\Andrey\source\repos\LogEngine2\src\LogEngine.cpp
 View0=0
-View1=1
-View2=2
 PercentageSizes=1
 Create=1
 Visible=1
@@ -69,33 +59,13 @@ TabDockBottomClients=MessageView=0
 
 [View0]
 CustomEditViewType=TEditView
-Module=C:\Users\Andrey\source\repos\LogEngine2\prj\Builder\testLogEngine2\Main.cpp
+Module=C:\Users\Andrey\source\repos\LogEngine2\src\LogEngine.cpp
 CursorX=1
 CursorY=1
-TopLine=1
+TopLine=7
 LeftCol=1
 Bookmarks=
-EditViewName=C:\Users\Andrey\source\repos\LogEngine2\prj\Builder\testLogEngine2\Main.cpp
-
-[View1]
-CustomEditViewType=TEditView
-Module=C:\Users\Andrey\source\repos\LogEngine2\include\FileStream.h
-CursorX=9
-CursorY=178
-TopLine=175
-LeftCol=1
-Bookmarks=
-EditViewName=C:\Users\Andrey\source\repos\LogEngine2\include\FileStream.h
-
-[View2]
-CustomEditViewType=TEditView
-Module=C:\Users\Andrey\source\repos\LogEngine2\include\DynamicArrays.h
-CursorX=37
-CursorY=27
-TopLine=1
-LeftCol=1
-Bookmarks=
-EditViewName=C:\Users\Andrey\source\repos\LogEngine2\include\DynamicArrays.h
+EditViewName=C:\Users\Andrey\source\repos\LogEngine2\src\LogEngine.cpp
 
 [Watches]
 Count=0
@@ -142,14 +112,14 @@ Create=1
 Visible=1
 Docked=0
 State=2
-Left=-31
-Top=300
-Width=9906
-Height=8895
+Left=146
+Top=271
+Width=8932
+Height=8527
 MaxLeft=-5
 MaxTop=-10
-MaxWidth=9906
-MaxHeight=8895
+MaxWidth=8932
+MaxHeight=8527
 ClientWidth=10000
 ClientHeight=10078
 BottomPanelSize=8593
@@ -181,13 +151,13 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=1
-Top=32
-Width=9906
+Left=8
+Top=1024
+Width=2771
 Height=1376
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=9906
+ClientWidth=2771
 ClientHeight=1376
 TBDockHeight=1376
 LRDockWidth=2771
@@ -242,11 +212,11 @@ State=0
 Left=0
 Top=0
 Width=1547
-Height=5494
+Height=8450
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1547
-ClientHeight=5494
+ClientHeight=8450
 TBDockHeight=5959
 LRDockWidth=2510
 Dockable=1
@@ -447,11 +417,11 @@ State=0
 Left=0
 Top=0
 Width=1547
-Height=5494
+Height=8450
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1547
-ClientHeight=5494
+ClientHeight=8450
 TBDockHeight=4884
 LRDockWidth=7151
 Dockable=1
@@ -482,8 +452,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-296
-Top=-217
+Left=-8
+Top=-8
 Width=1849
 Height=3140
 MaxLeft=-1
@@ -575,6 +545,25 @@ ClientWidth=1349
 ClientHeight=3498
 TBDockHeight=3682
 LRDockWidth=1896
+Dockable=1
+StayOnTop=0
+
+[ModelViewTool]
+PercentageSizes=1
+Create=1
+Visible=1
+Docked=1
+State=0
+Left=0
+Top=0
+Width=1547
+Height=8450
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1547
+ClientHeight=8450
+TBDockHeight=4884
+LRDockWidth=5307
 Dockable=1
 StayOnTop=0
 
@@ -670,7 +659,7 @@ Dockable=1
 StayOnTop=0
 TabPosition=1
 ActiveTabID=ProjectManager
-TabDockClients=ProjectManager,DataExplorerContainer,frmDesignPreview
+TabDockClients=ProjectManager,ModelViewTool,DataExplorerContainer,frmDesignPreview
 
 [DockSite3]
 HostDockSite=DockLeftPanel
@@ -719,7 +708,4 @@ StayOnTop=0
 TabPosition=1
 ActiveTabID=ToolForm
 TabDockClients=ToolForm,TemplateView
-
-[ActiveProject]
-ActiveProject=1
 

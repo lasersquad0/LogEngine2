@@ -79,13 +79,14 @@ BOOL CUnitTestsRunnerApp::InitInstance()
     // Register the application's document templates.  Document templates
     //  serve as the connection between documents, frame windows and views.
 
-    //CSingleDocTemplate* pDocTemplate;
-    //pDocTemplate = new CSingleDocTemplate(
-    //    IDR_MAINFRAME,
-    //    RUNTIME_CLASS(CUnitTestsRunnerDoc),
-    //    RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-    //    RUNTIME_CLASS(CUnitTestsRunnerView));
-    //AddDocTemplate(pDocTemplate);
+    /*CSingleDocTemplate* pDocTemplate;
+    pDocTemplate = new CSingleDocTemplate(
+        IDR_MAINFRAME,
+        RUNTIME_CLASS(CUnitTestsRunnerDoc),
+        RUNTIME_CLASS(CMainFrame),       // main SDI frame window
+        RUNTIME_CLASS(CUnitTestsRunnerView));
+    AddDocTemplate(pDocTemplate);
+    */
 
     RunUnitTests();
 
@@ -97,11 +98,11 @@ BOOL CUnitTestsRunnerApp::InitInstance()
     // Dispatch commands specified on the command line
     if (!ProcessShellCommand(cmdInfo))
         return FALSE;
-
+*/
     // The one and only window has been initialized, so show and update it.
     m_pMainWnd->ShowWindow(SW_SHOW);
     m_pMainWnd->UpdateWindow();
-*/
+
 
     return TRUE;
 }
@@ -109,10 +110,10 @@ BOOL CUnitTestsRunnerApp::InitInstance()
 
 void CUnitTestsRunnerApp::RunUnitTests()
 {
-/*  CPPUNIT_NS::MfcUi::TestRunner runner;
+  /*CPPUNIT_NS::MfcUi::TestRunner runner;
   runner.addTest( CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest() );
 
-  runner.run();  */  
+  runner.run();*/    
 }
 
 
