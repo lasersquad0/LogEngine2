@@ -382,7 +382,7 @@ void ConfigFileTest::testConfigFile20()
 
 }
 
-// missing .LFG file
+// missing or incorrect .LFG file
 void ConfigFileTest::testConfigFile21()
 {
     CPPUNIT_ASSERT_THROW(InitFromFile(TEST_FILES_FOLDER "testXXX.lfg"), FileException);
