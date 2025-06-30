@@ -47,6 +47,7 @@ private:
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
+	//TODO shall we add FQueue capacity size to constructor parameters?
 	Logger(const std::string& name, Levels::LogLevel ll = LL_DEFAULT) : FName(name), FQueue(10), FLogLevel(ll) {}
 	
 	Logger(const std::string& name, std::initializer_list<std::shared_ptr<Sink>> list, Levels::LogLevel ll = LL_DEFAULT) : Logger(name, ll) //FName(name), FQueue(10), FLogLevel(ll) 
@@ -85,11 +86,11 @@ public:
 
 		if (amode == true)
 		{
-			LoggerThreadInfo* info = new LoggerThreadInfo;
-			info->queue = &FQueue;
-			info->logger = this;
+			//LoggerThreadInfo* info = new LoggerThreadInfo;
+			//info->queue = &FQueue;
+			//info->logger = this;
 
-			std::thread thr(ThreadProc, info);
+			std::thread thr(ThreadProc, this, &FQueue);
 			FThread.swap(thr);
 			FAsync = amode;
 		}
@@ -99,6 +100,22 @@ public:
 			FQueue.PushElement(nullptr);
 			FThread.join(); // waiting till thread finishes
 		}
+	}
+
+	// Waits till async thread queue BECOMES EMPTY
+	// Empty means that all log messages are successfully sent into log file and other destinations depending on logger sinks.
+	// It DOES NOT wait till async thread finishes.
+	void WaitEmptyQueue()
+	{
+		FQueue.WaitEmptyQueue();
+	}
+
+	// Waits till async thread FINISHES
+	// Async thread is always running until it stopped by sending null message (FQueue.PushElement(nullptr)) or calling SetAsyncMode(false)
+	// Be carefull calling WaitFor() on async thread since it may never return
+	void WaitFor()
+	{
+		FThread.join();
 	}
 
 	// sets log line pattern for the specified by parameter 'll' log line
@@ -414,15 +431,10 @@ public:
 
 		return nullptr;
 	}
-	
-	void WaitQueue()
-	{
-		FQueue.WaitEmptyQueue();
-	}
 
-	static int ThreadProc(void* parameter)
+/*	static int ThreadProc(LoggerThreadInfo* parameter)
 	{
-		LoggerThreadInfo* info = reinterpret_cast<LoggerThreadInfo*>(parameter);
+		LoggerThreadInfo* info = parameter; //reinterpret_cast<LoggerThreadInfo*>(parameter);
 
 		LogEvent* current_msg;
 		do
@@ -438,6 +450,24 @@ public:
 		} while (current_msg); // null as msg means that we need to stop this thread
 
 		delete info;
+
+		return 0;
+	}
+	*/
+	static int ThreadProc(Logger* logger, LoggerQueue* queue)
+	{
+		LogEvent* current_msg;
+		do
+		{
+			current_msg = queue->WaitForElement();
+			if (current_msg)
+			{
+				LogEvent* event = current_msg;
+				logger->InternalLog(*event);
+				delete event;
+			}
+
+		} while (current_msg); // null as msg means that we need to stop this thread
 
 		return 0;
 	}
