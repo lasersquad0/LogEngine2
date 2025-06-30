@@ -287,11 +287,11 @@ private:
 	private:
 		inline pointer InRange(const pointer beg, const pointer end, const pointer val) const
 		{
-			return std::min(end, std::max(val, beg));
+			return valuemin(end, valuemax(val, beg));
 		}
 		inline pointer InRange(const pointer value) const
 		{
-			return std::min(FCont->FBegin + FCont->FCount, std::max(value, FCont->FBegin));
+			return valuemin(FCont->FBegin + FCont->FCount, valuemax(value, FCont->FBegin));
 		}
 
 	public:
@@ -349,7 +349,7 @@ public:
 	const_iterator cend()   const { return const_iterator(this, FMemory + FCount); }
 
 	THArray();
-	THArray(const THArray<T>& a);
+	THArray(const THArray<T>& a); // copy constructor
 	~THArray() override { ClearMem(); }
 
 	// allows to initialize array from initialiser list in code, e.g. THArray<std::string> arr = {"s1", "s2", "s3"};
@@ -358,7 +358,7 @@ public:
 	// allows to work with THArray as with array e.g. b = a[i]
 	inline T& operator[](const uint Index) const { return GetValue(Index); }
 	
-	THArray<T>& operator=(const THArray<T>& a); // copy constructor
+	THArray<T>& operator=(const THArray<T>& a);
 	bool operator==(const THArray<T>& a) const;
 
 	// one compare operator is enough for now
@@ -834,9 +834,9 @@ void THArray<T>::SetCapacity(const uint Value)
 
 	if (Value > 0)
 	{
-		newMemory = new T[Value];
+		newMemory = new T[Value]; //TODO here is default constructor is called for each item in array. May be time consuming.
 		for (uint i = 0; i < valuemin(Value, FCount); i++)
-			newMemory[i] = FBegin[i];
+			newMemory[i] = FBegin[i]; 
 	}
 
 	delete[] FMemory;
@@ -928,8 +928,11 @@ bool THArray<T>::operator>(const THArray<T>& a) const
 template<class T>
 void THArray<T>::Zero()
 {
-	for (uint i = 0; i < FCount; i++)
-		FBegin[i] = T();
+	if constexpr (std::is_default_constructible<T>::value)
+	{
+		for (uint i = 0; i < FCount; i++)
+			FBegin[i] = T();
+	}
 }
 
 template<class T>
