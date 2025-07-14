@@ -25,11 +25,11 @@
 LOGENGINE_NS_BEGIN
 
 typedef SafeQueue<LogEvent*> LoggerQueue;
-struct LoggerThreadInfo
+/*struct LoggerThreadInfo
 {
 	LoggerQueue* queue;
 	Logger* logger;
-};
+};*/
 
 typedef Sink* SinkPtr;
 typedef THArray<std::shared_ptr<Sink>> SinkList;
@@ -43,7 +43,7 @@ private:
 	Levels::LogLevel FLogLevel;
 	SinkList FSinks;
 	bool FAsync = false;
-	/*TStringHashNCase*/ Properties FProperties;
+	Properties FProperties;
 	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
@@ -86,10 +86,6 @@ public:
 
 		if (amode == true)
 		{
-			//LoggerThreadInfo* info = new LoggerThreadInfo;
-			//info->queue = &FQueue;
-			//info->logger = this;
-
 			std::thread thr(ThreadProc, this, &FQueue);
 			FThread.swap(thr);
 			FAsync = amode;
@@ -385,15 +381,10 @@ public:
 
 	void SendToAllSinks(const LogEvent& le)
 	{
-		for (auto si : FSinks)
+		for (auto& si : FSinks)
 		{
 			si->PubSendMsg(le);
 		}
-
-		//for (uint i = 0; i < sinks.Count(); i++)
-		//{
-		//	sinks[i]->PubSendMsg(le);
-		//}
 	}
 
 	void AddSink(const std::shared_ptr<Sink>& sink)
@@ -467,7 +458,7 @@ public:
 				delete event;
 			}
 
-		} while (current_msg); // null as msg means that we need to stop this thread
+		} while (current_msg); // nullptr as msg means that we need to stop this thread
 
 		return 0;
 	}
