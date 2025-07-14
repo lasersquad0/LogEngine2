@@ -11,7 +11,7 @@
 
 #include <exception> 
 #include <string>
-#include <format>
+//#include <format>
 #include "Compare.h"
 
 #define valuemin(v1,v2) (((v1)<(v2))?(v1):(v2))
@@ -215,7 +215,7 @@ public:
 	virtual void Clear() = 0;
 	virtual void ClearMem() = 0;
 	virtual	void DeleteValue(const uint Index) = 0;
-	virtual uint Insert(const uint Index, const void* Value) = 0;
+	//virtual uint Insert(const uint Index, const void* Value) = 0;
 	virtual uint ItemSize() const = 0;
 	virtual void Hold() = 0;
 	virtual void SetCapacity(const uint Value) = 0;
@@ -255,7 +255,7 @@ public:
 	uint	Add(const void* pValue) override       { return data.Add(pValue); }
 	uint	AddValue(const std::string& Value)     { return data.Add(Value.c_str()); }
 	void	AddFillValues(const uint Count) override { data.AddFillValues(Count); }
-	uint	Insert(const uint Index, const void* Value) override { return data.Insert(Index, Value); }
+	uint	Insert(const uint Index, const void* Value) { return data.Insert(Index, Value); }
 	void	Swap(const uint Index1, const uint Index2) override { data.Swap(Index1, Index2); }
 	uint	AddChars(const void* pValue, const uint len);
 	void	Reverse();
@@ -408,12 +408,12 @@ public:
 	T&			GetValue(const uint Index) const;
 
 	// Inserts new element Value into position Index
-	// Returns index of inserted element
-	virtual uint InsertValue(const uint Index, const T& Value);
+	// Returns reference of inserted element
+	virtual T& InsertValue(const uint Index, const T& Value);
 	
 	// The same as InsertValue but element is refered by pointer pValue
-	// Returns index of inserted element
-	uint		Insert(const uint Index, const void* pValue) override { return InsertValue(Index, *static_cast<const T*>(pValue)); }
+	// Returns reference of inserted element
+	virtual T& Insert(const uint Index, const void* pValue) { return InsertValue(Index, *static_cast<const T*>(pValue)); }
 	
 	// Deletes element at position Index from array
 	// All right element are shifted in memory accordingly
@@ -421,7 +421,7 @@ public:
 
 	// Adds new element to the end of the array.
 	// Return index of added element
-	virtual uint AddValue(const T& Value) { return InsertValue(FCount, Value); }
+	virtual uint AddValue(const T& Value) { uint index = FCount; InsertValue(index, Value); return index; }
 
 	// The same as AddValue but element is refered by pointer pValue.
 	// Returns index of added element
@@ -488,7 +488,7 @@ private:
 	// all functions that can break sorting in an array are moved to private or deleted
 	// because adding of element may actually put it in any place in the middle depending on sorting rules
 	void	SetValue(const uint Index, const T& Value) = delete;
-	uint	Insert(const uint Index, const void* Value)   override { return THArray<T>::Insert(Index, Value); }
+	T&		Insert(const uint Index, const void* Value) override { return THArray<T>::Insert(Index, Value); }
 	void	AddFillValues(const uint Count) override { THArray<T>::AddFillValues(Count); }
 	void	Push(const T& Value) override { THArray<T>::Push(Value); }
 	T		Pop()	   override { return THArray<T>::Pop(); }
@@ -498,7 +498,7 @@ private:
 	void	Reverse(uint endIndex) override { THArray<T>::Reverse(endIndex); }
 protected:
 	// used to insert value into proper position after position is calculated according to sorting rules 
-	uint	InsertValue(const uint Index, const T& Value) override { return THArray<T>::InsertValue(Index, Value); }
+	T&		InsertValue(const uint Index, const T& Value) override { return THArray<T>::InsertValue(Index, Value); }
 	
 	// returns either index of found element as positive value or negative value -(Index_where_to_put_new_element + 1) when element is not found
 	int		InternalIndexOfFrom(const T& Value, const uint Start) const;
@@ -617,7 +617,13 @@ public:
 
 	bool operator==(const THash<I, V, Cmp>& a) const;
 	bool operator> (const THash<I, V, Cmp>& a) const;
-	V& operator[](const I& key) const { return GetValue(key); }
+
+	// operator is used for reading value from hash  
+	const V& operator[](const I& Key) const { return GetValue(Key); } 
+	
+	// this operator is mostly used for writing values into hash. can be used instead of SetValue()
+	// e.g. hash[5] = value;
+	V& operator[](const I& Key);
 
 	// returns Key by ordinary index. this key can be then used to access value associated with this key
 	// this is one of the methods to iterate through the hash
@@ -926,7 +932,7 @@ bool THArray<T>::operator>(const THArray<T>& a) const
 }
 
 template<class T>
-void THArray<T>::Zero()
+void THArray<T>::Zero() //TODO what to do if T is NOT default_constructible ?
 {
 	if constexpr (std::is_default_constructible<T>::value)
 	{
@@ -960,7 +966,7 @@ T& THArray<T>::GetValue(const uint Index) const
 }
 
 template<class T>
-uint THArray<T>::InsertValue(const uint Index, const T& Value)
+T& THArray<T>::InsertValue(const uint Index, const T& Value)
 {
 	Error(Index, FCount + 1);
 
@@ -983,7 +989,7 @@ uint THArray<T>::InsertValue(const uint Index, const T& Value)
 	FBegin[Index] = Value;
 	FCount++;
 
-	return Index;
+	return FBegin[Index];
 }
 
 template<class T>
@@ -1122,13 +1128,20 @@ int THArraySorted<T, Cmp>::InternalIndexOfFrom(const T& Value, const uint Start)
 {
 	if (Start >= this->FCount && this->FCount != 0)
 	{
-/*		char str[100];
-#ifdef WIN32 
+/*
+#ifdef WIN32
 		sprintf_s(str, 100, "Error in THArraySorted: Start index %i is out of bounds!", Start);
 #else
 		sprintf(str, "Error in THArraySorted: Start index %i is out of bounds!", Start);
 #endif*/
+
+#if __cplusplus >= 202002L
 		throw THArrayException(std::format("[THArraySorted] Start index {} is out of bounds!", Start));
+#else
+		//char str[100];
+		//sprintf(str, "Error in THArraySorted: Start index %i is out of bounds!", Start);
+		throw THArrayException(std::string("Error in THArraySorted: Start index ") + std::to_string(Start) + " is out of bounds!");
+#endif
 	}
 
 	if (this->FCount == 0) return THArray<T>::NPOS;
@@ -1194,7 +1207,7 @@ inline void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const uint 
 #else
 		sprintf(str, "Error in HArray: Element with index %i not found!", Value);
 #endif*/
-		throw THArrayException(std::format("Error in THArray: Element with index {} not found!", Value));
+		throw THArrayException(std::string("Error in THArray: Element with index ") + std::to_string(Value) +" not found!");
 	}
 }
 
@@ -1243,7 +1256,7 @@ inline void THArrayRaw::AddMany(const void* pValue, const uint Count)
 #else
 		sprintf(str, "AddMany(): invalid parameter 'Count'=%i !", Count);
 #endif  */
-		throw THArrayException(std::format("[AddMany] Invalid parameter 'Count'={} !", Count));
+		throw THArrayException(std::string("[AddMany] Invalid parameter 'Count'= ") + std::to_string(Count));
 	}
 
 	InsertMany(FCount, pValue, Count);
@@ -1582,6 +1595,21 @@ bool THash<I, V, Cmp>::operator>(const THash<I, V, Cmp>& a) const
 {
 	return (FAKeys > a.FAKeys) && (FAValues > a.FAValues);// && (a.FACompare == b.FACompare);
 }
+
+template <class I, class V, class Cmp>
+V& THash<I, V, Cmp>::operator[](const I& Key)  // this operator is used for writing values into hash
+{
+	int n = FAKeys.IndexOf(Key);
+	if (n >= 0)
+		return FAValues[static_cast<uint>(n)];
+	else
+	{
+		uint index = FAKeys.AddValue(Key);
+		FAValues.InsertValue(index, V()); // insert default value in the same position returned by keys
+		return FAValues[index];
+	}
+}
+
 
 /*
 template <class I, class V>

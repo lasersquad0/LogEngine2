@@ -18,7 +18,8 @@ class LoggerTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testLog2 );
   CPPUNIT_TEST(testLog3);
   CPPUNIT_TEST( testLog4 );
-  CPPUNIT_TEST( testLog5 );
+  CPPUNIT_TEST(testLogTwoSinksOneFileLock);
+  CPPUNIT_TEST(testLogTwoSinksOneFile);
   CPPUNIT_TEST( testLogMultiSink1 );
   CPPUNIT_TEST( testLogMultiSink2 );
   CPPUNIT_TEST( testLogMultiSink3 );
@@ -33,7 +34,8 @@ class LoggerTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testLogPerfromanceST1);
   CPPUNIT_TEST(testLogPerfromanceST2);
   CPPUNIT_TEST(testLogPerfromanceMT1);
- /* CPPUNIT_TEST( testLogRotation1 );*/
+  CPPUNIT_TEST(testLogPerfromanceLock1);
+  /* CPPUNIT_TEST( testLogRotation1 );*/
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();
@@ -44,7 +46,8 @@ public:
     void testLog2();
     void testLog3();
     void testLog4();
-    void testLog5();
+    void testLogTwoSinksOneFile();
+    void testLogTwoSinksOneFileLock();
     void testLogMultiSink1();
     void testLogMultiSink2(); 
     void testLogMultiSink3(); 
@@ -59,7 +62,8 @@ public:
     void testLogPerfromanceST1();
     void testLogPerfromanceST2();
     void testLogPerfromanceMT1();
-   // void testLogRotation1();
+    void testLogPerfromanceLock1();
+    // void testLogRotation1();
 };
 
 inline std::string cutLog(std::string str) // cut off time and thread information (which is not same time from time)

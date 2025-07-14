@@ -23,20 +23,20 @@ void TStreamTest::testMemoryStream1()
 {
 	TMemoryStream stream;
 
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, TSeekMode::smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, TSeekMode::smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(0, TSeekMode::smFromCurrent));
 
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, TSeekMode::smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, TSeekMode::smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(1, TSeekMode::smFromCurrent));
 
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(100, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(55, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-1, smFromEnd));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-10, smFromBegin));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(500, smFromCurrent));
-	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-500, smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(100, TSeekMode::smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(55, TSeekMode::smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-1, TSeekMode::smFromEnd));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-10, TSeekMode::smFromBegin));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(500, TSeekMode::smFromCurrent));
+	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekR(-500, TSeekMode::smFromCurrent));
 }
 
 void TStreamTest::testMemoryStream2()
@@ -45,6 +45,8 @@ void TStreamTest::testMemoryStream2()
 	const char* str = "1234567890"; // 10 symbols
 
 	stream.SetBuffer((uint8_t*)str, 10);
+
+	using enum TSeekMode;
 
 	CPPUNIT_ASSERT_EQUAL(5ull, stream.SeekR(5, smFromBegin));
 	CPPUNIT_ASSERT_EQUAL(6ull, stream.SeekR(6, smFromBegin));
@@ -82,6 +84,7 @@ void TStreamTest::testMemoryStream2()
 
 void TStreamTest::testMemoryStream3()
 {
+	using enum TSeekMode;
 	TMemoryStream stream;
 
 	CPPUNIT_ASSERT_EQUAL(0ull, stream.SeekW(0, smFromBegin));
@@ -102,6 +105,7 @@ void TStreamTest::testMemoryStream3()
 
 void TStreamTest::testMemoryStream4()
 {
+	using enum TSeekMode;
 	TMemoryStream stream;
 	const char* str = "1234567890"; // 10 symbols
 
@@ -211,7 +215,7 @@ void TStreamTest::testMemoryStream7()
 	CPPUNIT_ASSERT_EQUAL((char*)"abcdefghijklmnopqrstuvwxyz", (char*)buf);
 
 	memset(buf, 0, BUF_SZ + 1);
-	stream1.SeekR(0, smFromBegin);
+	stream1.SeekR(0, TSeekMode::smFromBegin);
 	CPPUNIT_ASSERT_EQUAL(BUF_SZ, stream1.Read(buf, BUF_SZ + 1));
 	CPPUNIT_ASSERT_EQUAL((char*)"abcdefghijklmnopqrstuvwxyz", (char*)buf);
 
@@ -237,7 +241,7 @@ void TStreamTest::testMemoryStream8()
 	CPPUNIT_ASSERT_EQUAL((char*)"abcdefghijklmnopqrstuvwxyz", (char*)buf);
 
 	memset(buf, 0, BUF_SZ);
-	stream1.SeekR(0, smFromBegin);
+	stream1.SeekR(0, TSeekMode::smFromBegin);
 	CPPUNIT_ASSERT_EQUAL(20, stream1.Read(buf, 20));
 	CPPUNIT_ASSERT_EQUAL((char*)"abcdefghijklmnopqrst", (char*)buf);
 
@@ -268,7 +272,7 @@ void TStreamTest::testMemoryStream9()
 	CPPUNIT_ASSERT_EQUAL(0, stream1.Read(buf, 1));
 	CPPUNIT_ASSERT_EQUAL((char*)"zbcdefghijklmnopqrstuvwxy", (char*)buf);
 	
-	stream1.SeekR(0, smFromBegin);
+	stream1.SeekR(0, TSeekMode::smFromBegin);
 	memset(buf, 0, BUF_SZ + 1); 
 	CPPUNIT_ASSERT_EQUAL(BUF_SZ - 1, stream1.Read(buf, BUF_SZ - 1));
 	CPPUNIT_ASSERT_EQUAL((char*)"abcdefghijklmnopqrstuvwxy", (char*)buf);
@@ -293,47 +297,46 @@ void TStreamTest::testMemoryStream10()
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"abcde", (const char*)buf);
 
-	stream1.SeekR(-5, smFromCurrent);
+	stream1.SeekR(-5, TSeekMode::smFromCurrent);
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"abcde", (const char*)buf);
 
-	stream1.SeekR(-6, smFromCurrent);
+	stream1.SeekR(-6, TSeekMode::smFromCurrent);
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"abcde", (const char*)buf);
 
-	stream1.SeekR(-4, smFromCurrent);
+	stream1.SeekR(-4, TSeekMode::smFromCurrent);
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"bcdef", (const char*)buf);
 
-	stream1.SeekR(-2, smFromBegin);
+	stream1.SeekR(-2, TSeekMode::smFromBegin);
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"abcde", (const char*)buf);
 
-	stream1.SeekR(1, smFromBegin);
+	stream1.SeekR(1, TSeekMode::smFromBegin);
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"bcdef", (const char*)buf);
 
-	stream1.SeekR(0, smFromBegin);
+	stream1.SeekR(0, TSeekMode::smFromBegin);
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"abcde", (const char*)buf);
 
-	stream1.SeekR(0, smFromEnd);
+	stream1.SeekR(0, TSeekMode::smFromEnd);
 	memset(buf, 0, BUF_SZ + 1);
 	CPPUNIT_ASSERT_EQUAL(0, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"", (const char*)buf);
 
-	stream1.SeekR(1, smFromEnd);
+	stream1.SeekR(1, TSeekMode::smFromEnd);
 	CPPUNIT_ASSERT_EQUAL(1, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"z", (const char*)buf);
 
-	stream1.SeekR(5, smFromEnd);
+	stream1.SeekR(5, TSeekMode::smFromEnd);
 	CPPUNIT_ASSERT_EQUAL(5, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"vwxyz", (const char*)buf);
 
-	stream1.SeekR(-5, smFromEnd);
+	stream1.SeekR(-5, TSeekMode::smFromEnd);
 	CPPUNIT_ASSERT_EQUAL(0, stream1.Read(buf, 5));
 	CPPUNIT_ASSERT_EQUAL((const char*)"vwxyz", (const char*)buf); // buf is not changed since previous call
-
 }
 
 void TStreamTest::testMemoryStream11()
@@ -427,34 +430,34 @@ void TStreamTest::testMemoryStream13()
 
 	CPPUNIT_ASSERT_THROW(stream2 << '!', IOException); // 16th symbol overflows buffer and generates an exception because we cannot extend external buffer
 
-	stream2.SeekW(0, smFromBegin); // rewind buffer, make it available for writing again
+	stream2.SeekW(0, TSeekMode::smFromBegin); // rewind buffer, make it available for writing again
 	stream2 << "XXX"; // no exception
 	stream2 << "MMMMMMMMMMMM"; // trying to write 15 symbols, still no exception
 
 	CPPUNIT_ASSERT_THROW(stream2 << '!', IOException); // 16th symbol overflows buffer and generates an exception 
 
-	stream2.SeekW(1, smFromBegin); // rewind buffer and offset it 1
+	stream2.SeekW(1, TSeekMode::smFromBegin); // rewind buffer and offset it 1
 	stream2 << "YYY"; // no exception
 	stream2 << "123456789AB"; // now trying to write 14 symbols, still no exception
 
 	CPPUNIT_ASSERT_THROW(stream2 << 'F', IOException); // 16th symbol overflows buffer and generates an exception 
 
-	stream2.SeekW(0, smFromEnd); 
+	stream2.SeekW(0, TSeekMode::smFromEnd);
 	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
 
-	stream2.SeekW(20, smFromBegin); // actually puts position to the end of buffer
+	stream2.SeekW(20, TSeekMode::smFromBegin); // actually puts position to the end of buffer
 	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
 
-	stream2.SeekW(1, smFromEnd); 
+	stream2.SeekW(1, TSeekMode::smFromEnd);
 	stream2 << "Y"; // no exception
 	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
 
-	stream2.SeekW(15, smFromEnd); // actually puts current position to the beginning of buffer
+	stream2.SeekW(15, TSeekMode::smFromEnd); // actually puts current position to the beginning of buffer
 	stream2 << "123"; // no exception
 	stream2 << "456789ABCDEF"; // now trying to write 14 symbols, still no exception
 	CPPUNIT_ASSERT_THROW(stream2 << '0', IOException); // 16th symbol overflows buffer
 
-	stream2.SeekW(20, smFromEnd); // actually puts current position to the beginning of buffer
+	stream2.SeekW(20, TSeekMode::smFromEnd); // actually puts current position to the beginning of buffer
 	stream2 << "123"; // no exception
 	stream2 << "456789ABCDEF"; // now trying to write 14 symbols, still no exception
 	CPPUNIT_ASSERT_THROW(stream2 << 'F', IOException); // 16th symbol overflows buffer

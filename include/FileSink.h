@@ -29,16 +29,19 @@ protected:
 	void sendMsg(const LogEvent& e) override
 	{
 		std::string str = this->FormatString(e); // FormatString adds '\n' to the end of string
-		//FStream->Seek(0, smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
+		//FStream->Seek(0, TSeekMode::smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
 		this->FBytesWritten += static_cast<ullong>(FStream->WriteLn(str));
 	}
 
+	// this constructor required by mostly for FileLockSink class to initialise FStream another way as it is done in public FileSink constructor
+	FileSink(const std::string& name) : BaseSink<Mutex>(name) { }
+
 public:
+
 	FileSink(const std::string& name, const std::string& fileName) : BaseSink<Mutex>(name)
 	{
-		FStream = new TFileStream(fileName);
-		FStream->Seek(0, smFromEnd); // move to the end of file 
-		//SetLayout(new PatternLayout());
+		FStream = new TFileStream(fileName, TFileMode::fmWrite, TSharingMode::shDenyWrite); // by default only current process can write to log file 
+		FStream->Seek(0, TSeekMode::smFromEnd); // move to the end of file 
 	}
 
 	~FileSink() override 
@@ -57,6 +60,28 @@ public:
 };
 
 template<class Mutex>
+class FileLockSink : public FileSink<Mutex>
+{
+protected:
+	void sendMsg(const LogEvent& e) override
+	{
+		std::string str = this->FormatString(e); // FormatString adds '\n' to the end of string
+		this->FStream->Lock();
+		this->FStream->Seek(0, TSeekMode::smFromEnd); // Because Lock changes current file position, we have to call Seek after Lock() to move position back to the end of log file.
+		this->FBytesWritten += static_cast<ullong>(this->FStream->WriteLn(str));
+		this->FStream->Unlock();
+	}
+public:
+	FileLockSink(const std::string& name, const std::string& fileName) : FileSink<Mutex>(name)
+	{
+		this->FStream = new TFileStream(fileName, TFileMode::fmWrite, TSharingMode::shDenyNo); // by default only current process can write to log file 
+		this->FStream->Seek(0, TSeekMode::smFromEnd); // move to the end of file 
+	}
+
+	//using FileSink<Mutex>::FileSink;
+};
+
+template<class Mutex>
 class StdoutSink : public BaseSink<Mutex>
 {
 public:
@@ -68,6 +93,7 @@ public:
 		std::cout << str << EndLine;
 	}
 };
+
 
 template<class Mutex>
 class StderrSink : public BaseSink<Mutex>

@@ -10,15 +10,37 @@
 #define FILESTREAM_H
 
 #include <string.h> // for strlen() under Linux
+#include <sys/stat.h>
 #include <string>
 #include <exception>
 #include <locale>
+#include <share.h>
+
 #include "Common.h"
 
 LOGENGINE_NS_BEGIN
 
-enum TFileMode { fmRead, fmWrite, fmReadWrite, fmWriteTrunc };
-enum TSeekMode { smFromBegin, smFromEnd, smFromCurrent };
+enum TFileMode:int { fmRead, fmWrite, fmReadWrite, fmWriteTrunc };
+enum TSharingMode:int { shDefault, shDenyNo, shDenyRead, shDenyWrite, shDenyReadWrite };
+enum class TSeekMode { smFromBegin, smFromEnd, smFromCurrent };
+
+
+#if defined (__BORLANDC__)
+#define _SH_DENYRW SH_DENYRW
+#define _SH_DENYWR SH_DENYWR
+#define _SH_DENYRD SH_DENYRD
+#define _SH_DENYNO SH_DENYNO
+#endif
+
+
+// this is my special sharing mode
+#define _SH_DEFAULT 0
+
+//TSharingMode is array index here
+static const int SharingModes[] { _SH_DEFAULT, _SH_DENYNO, _SH_DENYRD, _SH_DENYWR, _SH_DENYRW };
+
+//TFileMode is array index here
+static const int DefaultSharingModes[] { _SH_DENYNO, _SH_DENYWR, _SH_DENYWR, _SH_DENYWR };
 
 #define IO_EXCEPTION_PREFIX "IOException : "
 
@@ -46,7 +68,7 @@ public:
 	virtual ~TStream() {}
 	virtual int Read(void* Buffer, size_t Size) = 0;
 	virtual size_t Write(const void* Buffer, const size_t Size) = 0;
-	virtual size_t Length() = 0;
+	virtual size_t Length() const = 0;
 	virtual off_t Seek(const off_t Offset, const TSeekMode sMode) = 0;
 	//virtual int ReadChar();
 	//virtual int ReadWChar();
@@ -174,7 +196,7 @@ public:
 	~TMemoryStream() override { if (FNeedFree) free(FMemory); }
 	int Read(void* Buffer, size_t Size) override;
 	size_t Write(const void* Buffer, const size_t Size) override;
-	size_t Length() override { return FSize; }
+	size_t Length() const override { return FSize; }
 	pos_type SeekR(const off_t Offset, const TSeekMode sMode);
 	pos_type SeekW(const off_t Offset, const TSeekMode sMode);
 
@@ -183,14 +205,15 @@ public:
 };
 
 
-class TFileStream :public TStream
+class TFileStream: public TStream
 {
 private:
 	std::string FFileName;
 	TFileMode FFileMode;
+	TSharingMode FSharingMode;
 	int hf = 0;  // file handle
 public:
-	TFileStream(const std::string& FileName, const TFileMode fMode = fmWrite);
+	TFileStream(const std::string& FileName, const TFileMode fMode = TFileMode::fmWrite, const TSharingMode sMode = TSharingMode::shDefault);
 	~TFileStream() override;
 	int Read(void* Buffer, size_t Size) override;
 	size_t Write(const void* Buffer, const size_t Size) override;
@@ -198,8 +221,10 @@ public:
 	size_t WriteLn(const std::string& str);
 	size_t WriteLn(const void* Buffer, const size_t Size);
 	size_t WriteCRLF(void);
-	size_t Length() override;
-	void Flush();
+	size_t Length() const override;
+	void Lock();
+	void Unlock();
+	void Flush() const;
 
 	/* Moves the current position in the file.
 	 * When sMode=smFromEnd the current position moves _back_ (to the beginning).

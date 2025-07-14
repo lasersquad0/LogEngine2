@@ -284,7 +284,7 @@ void LoggerTest::testLog4()
 }
 
 // test case: when two file sinks try to write into the same file. in this case exception is thrown for the second sink.
-void LoggerTest::testLog5()
+void LoggerTest::testLogTwoSinksOneFile()
 {
 	FileSinkST *fs1;
 	CPPUNIT_ASSERT_NO_THROW(fs1 = new FileSinkST("filesink1", LOG_FILES_FOLDER "testLog5.log"));
@@ -292,8 +292,33 @@ void LoggerTest::testLog5()
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5.log"), IOException);
 
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
-	//line below does NOT throw an exception because existing logger will be returned
+	// line below does NOT throw an exception because existing logger will be returned
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
+	// and one more time try first file name
+	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5_2", LOG_FILES_FOLDER "testLog5.log"), IOException);
+
+	delete fs1;
+
+	// now file is NOT locked, NO THROW
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5_2", LOG_FILES_FOLDER "testLog5.log"));
+
+}
+
+// test case: when two file sinks try to write into the same file. in this case exception is thrown for the second sink.
+void LoggerTest::testLogTwoSinksOneFileLock()
+{
+	FileSinkST* fs1;
+	CPPUNIT_ASSERT_NO_THROW(fs1 = new FileLockSinkST("filelocksink1", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"));
+	CPPUNIT_ASSERT_THROW(new FileSinkST("filelocksink2", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"), IOException);
+	CPPUNIT_ASSERT_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"), IOException);
+
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock_2.log"));
+	//line below does NOT throw an exception because existing logger will be returned
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock_2.log"));
+	// and one more time
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock_2.log"));
+    // and one more time try first file name, logger name should be different here
+	CPPUNIT_ASSERT_THROW(GetFileLogger("testLogTwoSinksOneFileLock2", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"), IOException);
 
 	delete fs1;
 }
@@ -766,6 +791,41 @@ void LoggerTest::testLogPerfromanceMT1()
 	delete[] arr;
 }
 
+// file logger, async=false, MT- threading support is ON
+void LoggerTest::testLogPerfromanceLock1()
+{
+	// for clear benchmarking we generate strings to log to before starting a timer
+	const int MESS_NUM = 1'000'000;
+	auto arr = new std::string[MESS_NUM];
+	for (size_t i = 0; i < MESS_NUM; i++)
+	{
+		if (i % 2 == 0)
+			arr[i] = "Log message #" + std::to_string(i);
+		else
+			arr[i] = "Long information message for benchmarking purposes #" + std::to_string(i);
+	}
+
+	// remove previous file if any
+	std::string fileName = LOG_FILES_FOLDER "BenchmarkLock1.log";
+	remove(fileName.c_str());
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	Logger& logger = GetLogger("perfomanceLock1"); // get "empty" logger (logger without any sinks)
+	std::shared_ptr<FileLockSinkST> sink(new FileLockSinkST("filelocksink", fileName));
+	logger.AddSink(sink);
+	logger.SetAsyncMode(false);
+
+	for (size_t i = 0; i < MESS_NUM; i++)
+	{
+		logger.Info(arr[i]);
+	}
+
+	auto stop = std::chrono::high_resolution_clock::now();
+	std::cout << std::format(" Writing {:L} messages to log file. Time (sync, LockST): {}", MESS_NUM, MillisecToStr<std::string>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count()));
+
+	delete[] arr;
+}
 
 /*
 

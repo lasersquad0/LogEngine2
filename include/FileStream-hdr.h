@@ -7,6 +7,7 @@
  */
 
 #include <sys/stat.h>
+#include <sys/locking.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
@@ -19,6 +20,7 @@
 #endif
 
 #include <cassert>
+#include "windows.h"
 #include "FileStream.h"
 
 
@@ -167,9 +169,9 @@ LOGENGINE_INLINE TMemoryStream::pos_type TMemoryStream::SeekR(const off_t Offset
 {
 	switch (sMode)
 	{
-	case smFromBegin:  FRPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return FRPos;  //(Offset < 0) ? 0 : (Offset > FSize) ? FSize : Offset; return static_cast<off_t>(FRPos);
-	case smFromEnd:    FRPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return FRPos; //(Offset > FSize) ? 0 : FSize - Offset; return static_cast<off_t>(FRPos);
-	case smFromCurrent:FRPos = CHECK_RANGE_OFF_T(FRPos, FSize,  Offset); return FRPos;   //(static_cast<off_t>(FRPos) + Offset < 0) ? 0 : (FRPos + Offset > FSize) ? FSize : FRPos + Offset; return static_cast<off_t>(FRPos);
+	case TSeekMode::smFromBegin:  FRPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return FRPos;  //(Offset < 0) ? 0 : (Offset > FSize) ? FSize : Offset; return static_cast<off_t>(FRPos);
+	case TSeekMode::smFromEnd:    FRPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return FRPos; //(Offset > FSize) ? 0 : FSize - Offset; return static_cast<off_t>(FRPos);
+	case TSeekMode::smFromCurrent:FRPos = CHECK_RANGE_OFF_T(FRPos, FSize,  Offset); return FRPos;   //(static_cast<off_t>(FRPos) + Offset < 0) ? 0 : (FRPos + Offset > FSize) ? FSize : FRPos + Offset; return static_cast<off_t>(FRPos);
 	//default:
 	//	return -1l;
 	}
@@ -181,9 +183,9 @@ LOGENGINE_INLINE TMemoryStream::pos_type TMemoryStream::SeekW(const off_t Offset
 {
 	switch (sMode)
 	{
-	case smFromBegin:  FWPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return FWPos;
-	case smFromEnd:    FWPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return FWPos;
-	case smFromCurrent:FWPos = CHECK_RANGE_OFF_T(FWPos, FSize,  Offset); return FWPos;
+	case TSeekMode::smFromBegin:  FWPos = CHECK_RANGE_OFF_T(0,     FSize,  Offset); return FWPos;
+	case TSeekMode::smFromEnd:    FWPos = CHECK_RANGE_OFF_T(FSize, FSize, -Offset); return FWPos;
+	case TSeekMode::smFromCurrent:FWPos = CHECK_RANGE_OFF_T(FWPos, FSize,  Offset); return FWPos;
 	//default:
 	//	return -1l;
 	}
@@ -222,28 +224,44 @@ LOGENGINE_INLINE void TMemoryStream::UnsetBuffer()
 #define myread _read
 #define mywrite _write
 #define myclose _close
+#define myflush _commit
+
+#ifdef __BORLANDC__
+#define mylocking locking
 #else
+#define mylocking _locking
+#endif
+
+#else
+
 #define mylseek lseek
 #define myread read
 #define mywrite write
-#define myclose close
+#define myclose clos
+#define myflush fsync
 #endif
 
 
-LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
+LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode, const TSharingMode sMode)
 {
 	FFileName = FileName;
 	FFileMode = fMode;
+	FSharingMode = sMode;
 	hf = 0;
+
 
 #if defined(WIN32) && !defined(__BORLANDC__)
 	errno_t res = 0;
+	int activeMode;
+	if (sMode == TSharingMode::shDefault) activeMode = DefaultSharingModes[fMode];
+	else activeMode = SharingModes[sMode];
+
 	switch (fMode)
 	{
-	case fmRead:      res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE); break;
-	case fmWrite:     res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
-	case fmReadWrite: res = _sopen_s(&hf, FFileName.c_str(), O_RDWR | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
-	case fmWriteTrunc:res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT |O_TRUNC | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmRead:      res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY,           activeMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmWrite:     res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, activeMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmReadWrite: res = _sopen_s(&hf, FFileName.c_str(), O_RDWR | O_CREAT | O_BINARY,   activeMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmWriteTrunc:res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT |O_TRUNC | O_BINARY, activeMode, _S_IREAD | _S_IWRITE); break;
 	}
 #else
 	switch (fMode)
@@ -281,7 +299,7 @@ LOGENGINE_INLINE TFileStream::~TFileStream()
 // Throws an exception in case of any error during reading
 LOGENGINE_INLINE int TFileStream::Read(void* Buffer, size_t Size)
 {
-	if (FFileMode == fmWrite || FFileMode == fmWriteTrunc)
+	if (FFileMode == TFileMode::fmWrite || FFileMode == TFileMode::fmWriteTrunc)
 		throw IOException("File opened in write-only mode. Can't read!");
 
 	int c = myread(hf, Buffer, static_cast<uint>(Size));
@@ -314,7 +332,7 @@ LOGENGINE_INLINE size_t TFileStream::Write(const void* Buffer, const size_t Size
 	if (Buffer == nullptr) return 0; // nothing to write
 	if (Size == 0) return 0;
 
-	if (FFileMode == fmRead)
+	if (FFileMode == TFileMode::fmRead)
 		throw IOException("File opened in read-only mode. Can't write!");
 
 	// mywrite returns -1 in case of an error
@@ -348,12 +366,11 @@ LOGENGINE_INLINE off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 	long c = -1;
 	switch (sMode)
 	{
-	case smFromBegin:   c = mylseek(hf, Offset, SEEK_SET); break;
-	case smFromEnd:     c = mylseek(hf, Offset, SEEK_END); break;
-	case smFromCurrent: c = mylseek(hf, Offset, SEEK_CUR); break;
+	case TSeekMode::smFromBegin:   c = mylseek(hf, Offset, SEEK_SET); break;
+	case TSeekMode::smFromEnd:     c = mylseek(hf, Offset, SEEK_END); break;
+	case TSeekMode::smFromCurrent: c = mylseek(hf, Offset, SEEK_CUR); break;
 	default:
 			throw IOException("Invalid TFileStream::Seek() mode.");
-
 	}
 
 	if (c == -1)
@@ -365,20 +382,54 @@ LOGENGINE_INLINE off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 	return c;
 }
 
-LOGENGINE_INLINE size_t TFileStream::Length()
+LOGENGINE_INLINE size_t TFileStream::Length() const
 {
 	struct stat st;
 	fstat(hf, &st);
 	return static_cast<size_t>(st.st_size);
 };
 
-LOGENGINE_INLINE void TFileStream::Flush()
+LOGENGINE_INLINE void TFileStream::Flush() const
 {
-#ifdef WIN32
-	_commit(hf);
-#else
-	fsync(hf);
-#endif
+	myflush(hf);
+}
+
+// SIDE EFFECT: Lock looses current file position, moves it to the beginning of the file
+LOGENGINE_INLINE void TFileStream::Lock()
+{
+	Seek(0, TSeekMode::smFromBegin);
+	BOOL res = mylocking(hf, LK_LOCK, MAXLONG); // _locking uses current position only for lock/unlock operations, that is why we need Seek() before _locking
+	if (res)
+	{
+		int ecode = errno;
+		std::string serr;
+
+		if (ecode == EINVAL) serr = "Wrong argument for _locking() function";
+		else if (ecode == EACCES) serr = "Locking violation (file already locked or unlocked).";
+		else if (ecode == EBADF) serr = "Invalid file descriptor.";
+		else serr = "Cannot lock file. Error in _locking() function.";
+		
+		throw IOException(serr);
+	}
+}
+
+// SIDE EFFECT: Unlock looses current file position, moves it to the beginning of the file
+LOGENGINE_INLINE void TFileStream::Unlock()
+{
+	Seek(0, TSeekMode::smFromBegin);
+	BOOL res = mylocking(hf, LK_UNLCK, MAXLONG);
+	if (res)
+	{
+		int ecode = errno;
+		std::string serr;
+		
+		if (ecode == EINVAL) serr = "Wrong argument for _locking() function";
+		else if (ecode == EACCES) serr = "Unlocking violation (file already locked or unlocked).";
+		else if (ecode == EBADF) serr = "Invalid file descriptor.";
+		else serr = "Cannot unlock file. Error in _locking() function.";
+
+		throw IOException(serr);
+	}
 }
 
 LOGENGINE_NS_END
