@@ -1,6 +1,9 @@
 # LogEngine2
 
-C++ logging library
+
+Author: Andrey Romanchenko (lasersquad@gmail.com)
+Web site: https://github.com/lasersquad0/LogEngine2
+Questions and feedback: https://github.com/lasersquad0/LogEngine2/discussions
 
 ## Overview
 LogEngine2 is the C++ library for easy and flexible logging.
@@ -10,14 +13,13 @@ Main advantages are:
  * simple
  * easy to use
  * platform independent 
+ * performance
  * small amount of source code.
 
 See ```testXXX.cpp``` files from [test/](test/) directory as examples of using logengine library in addition to [Usage samples](#usage-samples) below.
 See file [example.lfg](test/testFiles/example.lfg) for full description of LogEngine configuration parameters file.
 
-Bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2/issues. 
-
-Current maintainer: lasersquad@gmail.com.
+Questions and bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2/issues. 
 
 ## Install
 #### Microsoft Windows
