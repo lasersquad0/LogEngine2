@@ -2,7 +2,9 @@
 
 
 Author: Andrey Romanchenko (lasersquad@gmail.com)
+
 Web site: https://github.com/lasersquad0/LogEngine2
+
 Questions and feedback: https://github.com/lasersquad0/LogEngine2/discussions
 
 ## Overview
@@ -16,8 +18,8 @@ Main advantages are:
  * performance
  * small amount of source code.
 
-See ```testXXX.cpp``` files from [test/](test/) directory as examples of using logengine library in addition to [Usage samples](#usage-samples) below.
-See file [example.lfg](test/testFiles/example.lfg) for full description of LogEngine configuration parameters file.
+See ```testXXX.cpp``` files from [test/](test/) directory as examples of using LogEngine2 library in addition to [Usage samples](#usage-samples) below.
+See file [example.lfg](test/testFiles/example.lfg) for full description of LogEngine2 configuration parameters file.
 
 Questions and bug reports are welcome. Please use the Github bug tracking system at https://github.com/lasersquad0/LogEngine2/issues. 
 
