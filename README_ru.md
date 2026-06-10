@@ -117,7 +117,6 @@ void stdout_file_example()
 }
 ```
 
----
 #### Ротационный логгер, ротация лог файлов
 ```c++
 void rotating_file_example()
@@ -142,7 +141,6 @@ void rotating_file_example()
 }
 ```
 
----
 #### Два логгера с несколькими общими sinks, каждый sink имеет свой формат и log level.
 
 ```c++
@@ -176,7 +174,6 @@ void multi_sink_example()
 }
 ```
 
----
 #### Загрузка логгеров из файла конфигурации (*.lfg)
 ```c++
 // loads and constructs loggers and sinks from .lfg file.
