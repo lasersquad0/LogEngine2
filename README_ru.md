@@ -95,7 +95,7 @@ int main()
 }
 
 ```
----
+
 #### Создание логгеров типов: файловый логгер, stdout/stderr
 ```c++
 void stdout_file_example()
@@ -199,7 +199,6 @@ void lfg_example()
 }
 ```
 
----
 #### Асинхронное логирование
 ```c++
 void async_example()
@@ -218,7 +217,6 @@ void async_example()
 }    
 ```
  
----
 #### Пользовательский callback логгер
 ```c++
 void callback_example() 
@@ -234,7 +232,7 @@ void callback_example()
 }
 
 ```
----
+
 ## Замеры производительности
 
 Below are some [benchmarks](bench/bench.cpp) done in Ubuntu 64 bit, Intel i7-4770 CPU @ 3.40GHz
