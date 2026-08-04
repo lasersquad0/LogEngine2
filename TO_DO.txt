@@ -3,7 +3,11 @@ TODO
 
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
 
-* implement stowatch class that works like this
+* THash2 - think whether we need to specify storage class type for I1 parameter (like it is done for THashBase)
+
+* Make THArrayStringFix as a template THArrayStringFix<64> with parameter - size in bytes. 
+
+* implement stopwatch class that works like this
     spdlog::stopwatch sw;    
     spdlog::debug("Elapsed {}", sw);
     spdlog::debug("Elapsed {:.3}", sw);       
