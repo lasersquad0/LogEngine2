@@ -362,10 +362,9 @@ protected:
 	uint	FCapacity; // number of element for which memory is allocated in the array, FCapacity >= FCount always
 	T*		FMemory;   // pointer to the allocated memory, in most cases - to the first element in the array
 	T*		FBegin;    // pointer to the first element in the array, may differ from FMemory in some cases
+	
 	uint	GetGrowDelta();
-
-	// Increase capacity to the next level (usually adding 25% to existing capacity)
-	void	Grow();
+	void	Grow(); // Increase capacity to the next level (usually adding 25% to existing capacity)
 	virtual void Error(const uint Value, const uint vmax) const { if (Value >= vmax) throw THArrayException("Element with index " + std::to_string(Value) + " not found!"); }
 	inline bool	EnoughCapacity(const uint numItems) { return FBegin + numItems <= FMemory + FCapacity; }
 	inline void	EnsureCapacity(const uint numItems) { if(!EnoughCapacity(numItems)) GrowTo(numItems); }
@@ -597,7 +596,7 @@ public:
 * THashBase uses type KT defined by third parameter to store Keys. This type can be any descendant of THArray<T>. 
 * By default KT=THArraySorted<I>. This class provides fast binary search to find keys.
 */
-template <class I, class V, class KT = THArraySorted<I, Compare<I>>, class VT = THArray<V> >
+template <class I, class V, class Cmp = Compare<I>, class KT = THArraySorted<I, Cmp>, class VT = THArray<V> >
 class THashBase
 {
 private:
@@ -642,12 +641,12 @@ protected:
 	//Cmp FACompare;
 public:
 	THashBase() {}
-	THashBase(const THashBase<I, V, KT, VT>& a);
+	THashBase(const THashBase<I, V, Cmp, KT, VT>& a);
 
 	// allows to initialize hash from initialiser list in code, e.g. THash<int, std::string> hash = { {1, "s1"}, {30, "s2"}, {1001, "s3"} };
 	THashBase(std::initializer_list<std::pair<I, V>> list);
 	
-	THashBase<I, V, KT, VT>& operator=(const THashBase<I, V, KT, VT>& other) = default;
+	THashBase<I, V, Cmp, KT, VT>& operator=(const THashBase<I, V, Cmp, KT, VT>& other) = default;
 	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); }
 	virtual ~THashBase() {}
 
@@ -656,8 +655,8 @@ public:
 	const_iterator cbegin(){ return const_iterator(this, 0); }
 	const_iterator cend()  { return const_iterator(this, Count()); }
 
-	bool operator==(const THashBase<I, V, KT, VT>& a) const;
-	bool operator> (const THashBase<I, V, KT, VT>& a) const;
+	bool operator==(const THashBase<I, V, Cmp, KT, VT>& a) const;
+	bool operator> (const THashBase<I, V, Cmp, KT, VT>& a) const;
 
 	// operator is used for reading value from hash  
 	const V& operator[](const I& Key) const { return GetValue(Key); } 
@@ -710,14 +709,14 @@ public:
 /*	void Minus(THash<I, V> in);	*/
 };
 
-template <class I, class V>
-using THash = THashBase<I, V>;
+template <class I, class V, class Cmp = Compare<I>>
+using THash = THashBase<I, V, Cmp>;
 
 template <class I, class V>
-using THashUnordered = THashBase<I, V, THArray<I>>;
+using THashUnordered = THashBase<I, V, Compare<I>, THArray<I>>;
 
 template <class I, class V>
-using THashRaw = THashBase<I, V, THArray<I>, THArrayRaw>;
+using THashRaw = THashBase<I, V, Compare<I>, THArray<I>, THArrayRaw>;
 
 //////////////////////////////////////////////////////////////////////
 //  THash2 Class Interface
@@ -727,16 +726,16 @@ using THashRaw = THashBase<I, V, THArray<I>, THArrayRaw>;
 * Keys can be any type, indexes can be any type too.
 * Comparator Cmp used to order I1 and I2 Keys in THash2 for fater search (binary search used to find keys)
 */
-template <class I1, class I2, class V, class Cmp = Compare<I1>>
+template <class I1, class I2, class V, class CmpI1 = Compare<I1>, class CmpI2 = Compare<I2>>
 class THash2
 {
 public:
 	using KeyType = I1;
-	using KeysArray = THArraySorted<I1, Cmp>;
-	using ValuesHash = THash<I2, V>; //THash<I2, V, Cmp>;
+	using KeysArray = THArraySorted<I1, CmpI1>;
+	using ValuesHash = THash<I2, V, CmpI2>;
 	using ValuesArray = THArray<ValuesHash>;
 protected:
-	THashBase<I1, ValuesHash, THArraySorted<I1, Cmp>> FHash;
+	THashBase<I1, ValuesHash, CmpI1, THArraySorted<I1, CmpI1>> FHash;
 	uint FCount = 0;
 	uint InternalGetCount();
 public:
@@ -798,7 +797,7 @@ public:
 typedef THArray<std::string> THArrayString;
 typedef THArray<int>* PHArrayInt;
 typedef THashBase<std::string, std::string> TStringHash;
-typedef THashBase<std::string, std::string, THArraySorted<std::string, CompareStringNCase>> TStringHashNCase;
+typedef THashBase<std::string, std::string, CompareStringNCase> TStringHashNCase;
 // Splits string to array of strings using Delim as delimiter
 //void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n');
 std::string toString(const THArrayString& array);
@@ -897,7 +896,7 @@ void THArray<T>::SetCapacity(const uint Value)
 	{
 		newMemory = new T[Value]; //TODO here is default constructor is called for each item in array. May be time consuming.
 		for (uint i = 0; i < valuemin(Value, FCount); i++)
-			newMemory[i] = FBegin[i]; 
+			newMemory[i] = FBegin[i]; //TODO we create new objects by calling def constructors and then we owerwrite them with data from 'old' array
 	}
 
 	delete[] FMemory;
@@ -1137,7 +1136,7 @@ T	THArray<T>::PopFront()
 }
 
 template<class T>
-inline void THArray<T>::Swap(const uint Index1, const uint Index2)
+void THArray<T>::Swap(const uint Index1, const uint Index2)
 {
 	Error(Index1, FCount);
 	Error(Index2, FCount);
@@ -1626,35 +1625,35 @@ inline T* THArrayAuto<T>::GetValuePointer(const int Index)
 //  THash Class Implementation
 //////////////////////////////////////////////////////////////////////
 
-template <class I, class V, class KT, class VT>
-THashBase<I, V, KT, VT>::THashBase(std::initializer_list<std::pair<I, V> > list)
+template <class I, class V, class Cmp, class KT, class VT>
+THashBase<I, V, Cmp, KT, VT>::THashBase(std::initializer_list<std::pair<I, V> > list)
 {
 	for (const auto& pair : list) 
 		SetValue(pair.first, pair.second);
 }
 
-template <class I, class V, class KT, class VT>
-THashBase<I, V, KT, VT>::THashBase(const THashBase<I, V, KT, VT>& a)
+template <class I, class V, class Cmp, class KT, class VT>
+THashBase<I, V, Cmp, KT, VT>::THashBase(const THashBase<I, V, Cmp, KT, VT>& a)
 {
 	FAKeys = a.FAKeys;
 	FAValues = a.FAValues;
 	//FACompare = a.FACompare;
 }
 
-template <class I, class V, class KT, class VT>
-bool THashBase<I, V, KT, VT>::operator==(const THashBase<I, V, KT, VT>& a) const
+template <class I, class V, class Cmp, class KT, class VT>
+bool THashBase<I, V, Cmp, KT, VT>::operator==(const THashBase<I, V, Cmp, KT, VT>& a) const
 {
 	return (FAKeys == a.FAKeys) && (FAValues == a.FAValues);// && (FACompare == a.FACompare);
 }
 
-template <class I, class V, class KT, class VT>
-bool THashBase<I, V, KT, VT>::operator>(const THashBase<I, V, KT, VT>& a) const
+template <class I, class V, class Cmp, class KT, class VT>
+bool THashBase<I, V, Cmp, KT, VT>::operator>(const THashBase<I, V, Cmp, KT, VT>& a) const
 {
 	return (FAKeys > a.FAKeys) && (FAValues > a.FAValues);// && (a.FACompare == b.FACompare);
 }
 
-template <class I, class V, class KT, class VT>
-V& THashBase<I, V, KT, VT>::operator[](const I& Key)  // this operator is used for writing values into hash
+template <class I, class V, class Cmp, class KT, class VT>
+V& THashBase<I, V, Cmp, KT, VT>::operator[](const I& Key)  // this operator is used for writing values into hash
 {
 	int n = FAKeys.IndexOf(Key);
 	if (n >= 0)
@@ -1682,8 +1681,8 @@ void THash<I,V>::Reverse()
 }
 */
 
-template <class I, class V, class KT, class VT>
-bool THashBase<I, V, KT, VT>::IfExists(const I& Key) const
+template <class I, class V, class Cmp, class KT, class VT>
+bool THashBase<I, V, Cmp, KT, VT>::IfExists(const I& Key) const
 {
 	return (FAKeys.IndexOf(Key) >= 0);
 	//if (FAKeys.IndexOf(Key) != DA_NPOS)
@@ -1692,8 +1691,8 @@ bool THashBase<I, V, KT, VT>::IfExists(const I& Key) const
 	//	return false;
 }
 
-template <class I, class V, class KT, class VT>
-void THashBase<I, V, KT, VT>::Delete(const I& Key)
+template <class I, class V, class Cmp, class KT, class VT>
+void THashBase<I, V, Cmp, KT, VT>::Delete(const I& Key)
 {
 	int n = FAKeys.IndexOf(Key);
 	if (n >= 0)
@@ -1703,8 +1702,8 @@ void THashBase<I, V, KT, VT>::Delete(const I& Key)
 	}
 }
 
-template <class I, class V, class KT, class VT>
-void THashBase<I, V, KT, VT>::SetValue(const I& Key, const V& Value)
+template <class I, class V, class Cmp, class KT, class VT>
+void THashBase<I, V, Cmp, KT, VT>::SetValue(const I& Key, const V& Value)
 {
 	int n = FAKeys.IndexOf(Key);
 	if (n >= 0)
@@ -1716,8 +1715,8 @@ void THashBase<I, V, KT, VT>::SetValue(const I& Key, const V& Value)
 	}
 }
 
-template <class I, class V, class KT, class VT>
-V& THashBase<I, V, KT, VT>::GetValue(const I& Key) const
+template <class I, class V, class Cmp, class KT, class VT>
+V& THashBase<I, V, Cmp, KT, VT>::GetValue(const I& Key) const
 {
 	int n = FAKeys.IndexOf(Key);
 	if (n < 0)
@@ -1726,8 +1725,8 @@ V& THashBase<I, V, KT, VT>::GetValue(const I& Key) const
 	return FAValues[static_cast<uint>(n)];
 }
 
-template <class I, class V, class KT, class VT>
-V* THashBase<I, V, KT, VT>::GetValuePointer(const I& Key) const
+template <class I, class V, class Cmp, class KT, class VT>
+V* THashBase<I, V, Cmp, KT, VT>::GetValuePointer(const I& Key) const
 {
 	int n = FAKeys.IndexOf(Key);
 	if (n < 0)
@@ -1757,15 +1756,15 @@ void THash<I,V>::Minus(THash<I, V> in)
 //  THash2 Class Implementation
 //////////////////////////////////////////////////////////////////////
 
-template <class I1, class I2, class V, class Cmp>
-THash2<I1, I2, V, Cmp>::THash2(std::initializer_list<std::tuple<I1, I2, V> > list)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+THash2<I1, I2, V, CmpI1, CmpI2>::THash2(std::initializer_list<std::tuple<I1, I2, V> > list)
 {
 	for (const auto& triple : list)
 		SetValue(std::get<0>(triple), std::get<1>(triple), std::get<2>(triple));
 }
 
-template <class I1, class I2, class V, class Cmp>
-uint THash2<I1, I2, V, Cmp>::InternalGetCount()
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+uint THash2<I1, I2, V, CmpI1, CmpI2>::InternalGetCount()
 {
 	uint result = 0;
 
@@ -1786,8 +1785,8 @@ uint THash2<I1, I2, V, Cmp>::InternalGetCount()
 	return result;
 }
 
-template <class I1, class I2, class V, class Cmp>
-void THash2<I1, I2, V, Cmp>::SetValue(const I1& Key1, const ValuesHash& Value)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+void THash2<I1, I2, V, CmpI1, CmpI2>::SetValue(const I1& Key1, const ValuesHash& Value)
 {
 	FHash.SetValue(Key1, Value);
 	FCount = InternalGetCount();
@@ -1796,8 +1795,8 @@ void THash2<I1, I2, V, Cmp>::SetValue(const I1& Key1, const ValuesHash& Value)
 // special method when Key2 and Value are empty or do not exist
 // in this case we create Key1 empty section only
 // nothing is done if Key1 section already exist in THash2
-template <class I1, class I2, class V, class Cmp>
-void THash2<I1, I2, V, Cmp>::SetValue(const I1& Key1)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+void THash2<I1, I2, V, CmpI1, CmpI2>::SetValue(const I1& Key1)
 {
 	if (FHash.GetValuePointer(Key1) == nullptr)
 	{
@@ -1809,8 +1808,8 @@ void THash2<I1, I2, V, Cmp>::SetValue(const I1& Key1)
 	// do nothing if Key1 already exist in THash2
 }
 
-template <class I1, class I2, class V, class Cmp>
-void THash2<I1, I2, V, Cmp>::SetValue(const I1& Key1, const I2& Key2, const V& Value)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+void THash2<I1, I2, V, CmpI1, CmpI2>::SetValue(const I1& Key1, const I2& Key2, const V& Value)
 {
 	ValuesHash* InsH = FHash.GetValuePointer(Key1);
 
@@ -1830,8 +1829,8 @@ void THash2<I1, I2, V, Cmp>::SetValue(const I1& Key1, const I2& Key2, const V& V
 	}
 }
 
-template <class I1, class I2, class V, class Cmp>
-V& THash2<I1, I2, V, Cmp>::GetValue(const I1& Key1, const I2& Key2)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+V& THash2<I1, I2, V, CmpI1, CmpI2>::GetValue(const I1& Key1, const I2& Key2)
 {
 	ValuesHash* h = FHash.GetValuePointer(Key1);
 	if (h == nullptr)
@@ -1839,16 +1838,16 @@ V& THash2<I1, I2, V, Cmp>::GetValue(const I1& Key1, const I2& Key2)
 	return h->GetValue(Key2);
 }
 
-template<class I1, class I2, class V, class Cmp>
-inline V* THash2<I1, I2, V, Cmp>::GetValuePointer(const I1& Key1, const I2& Key2)
+template<class I1, class I2, class V, class CmpI1, class CmpI2>
+inline V* THash2<I1, I2, V, CmpI1, CmpI2>::GetValuePointer(const I1& Key1, const I2& Key2)
 {
 	auto p = FHash.GetValuePointer(Key1);
 	if (p == nullptr) return nullptr;
 	return p->GetValuePointer(Key2);
 }
 
-template <class I1, class I2, class V, class Cmp>
-void THash2<I1, I2, V, Cmp>::Delete(const I1& Key1, const I2& Key2)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+void THash2<I1, I2, V, CmpI1, CmpI2>::Delete(const I1& Key1, const I2& Key2)
 {
 	ValuesHash* TempH = FHash.GetValuePointer(Key1);
 	if (TempH != nullptr)
@@ -1862,8 +1861,8 @@ void THash2<I1, I2, V, Cmp>::Delete(const I1& Key1, const I2& Key2)
 		hash.SetValue(Key1, TempH);*/
 }
 
-template <class I1, class I2, class V, class Cmp>
-void THash2<I1, I2, V, Cmp>::Delete(const I1& Key1)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+void THash2<I1, I2, V, CmpI1, CmpI2>::Delete(const I1& Key1)
 {
 	ValuesHash* h = FHash.GetValuePointer(Key1);
 	int c = 0;
@@ -1874,8 +1873,8 @@ void THash2<I1, I2, V, Cmp>::Delete(const I1& Key1)
 	FCount -= c; //InternalGetCount();
 }
 
-template <class I1, class I2, class V, class Cmp>
-bool THash2<I1, I2, V, Cmp>::IfExists(const I1& Key1, const I2& Key2)
+template <class I1, class I2, class V, class CmpI1, class CmpI2>
+bool THash2<I1, I2, V, CmpI1, CmpI2>::IfExists(const I1& Key1, const I2& Key2)
 {
 	if (!FHash.IfExists(Key1))
 		return false;
@@ -1910,7 +1909,7 @@ void THash2<I1,I2,V>::Minus(THash2<I1, I2, V>& in)
 */
 
 // split string into array of strings using Delim as delimiter
-template<class STRING>
+/*template<class STRING>
 void StringToArray(const STRING& str, THArray<STRING>& arr, const typename STRING::value_type Delim = '\n')
 {
 	// make sure that STRING is one of instantiations of std::string
@@ -1937,12 +1936,14 @@ void StringToArray(const STRING& str, THArray<STRING>& arr, const typename STRIN
 		if (s.length() > 0)
 			arr.AddValue(s);
 	}
-}
+}*/
 
+// put all array items into a single sting one-by-one without any delimiters
 inline std::string toString(const THArrayString& array)
 {
 	std::string res;
-	res.reserve(100ull * array.Count()); // to reduce number of memory re-allocations we assume that each string in array has 100 characters
+	res.reserve(100ull * array.Count()); // to reduce number of memory re-allocations we assume that each string in the array has 100 characters
+	
 	for (uint i = 0; i < array.Count(); i++)
 	{
 		res.append(array[i]);
@@ -1953,7 +1954,7 @@ inline std::string toString(const THArrayString& array)
 
 // template "instantiation" for char* or char[x] parameters
 // e.g. StringToArray("aa;bb;cc", arr, ';');
-inline void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n')
+/*inline void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n')
 {
 	StringToArray<std::string>(str, arr, Delim);
 	/*
@@ -1978,6 +1979,6 @@ inline void StringToArray(const std::string& str, THArrayString& arr, const char
 		if (s.length() > 0)
 			arr.AddValue(s);
 	}*/
-}
+//}
 
 #endif //DYNAMIC_ARRAYS_H
