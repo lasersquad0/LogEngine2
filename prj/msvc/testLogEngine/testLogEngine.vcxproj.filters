@@ -39,9 +39,6 @@
     <ClCompile Include="..\..\..\test\testUtils.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
-    <ClCompile Include="Shared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\testIniReader.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
@@ -56,14 +53,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="testLogEngine.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\test\testLine.h">
       <Filter>Tests</Filter>
     </ClInclude>
@@ -136,21 +125,6 @@
     <ClInclude Include="..\..\..\test\testConfigFile.h">
       <Filter>Tests</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\Common-hdr.h">
-      <Filter>Header Files\LogEngine2 headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\FileStream-hdr.h">
-      <Filter>Header Files\LogEngine2 headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\LogEngine-hdr.h">
-      <Filter>Header Files\LogEngine2 headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\Pattern-hdr.h">
-      <Filter>Header Files\LogEngine2 headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\Properties-hdr.h">
-      <Filter>Header Files\LogEngine2 headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\Properties.h">
       <Filter>Header Files\LogEngine2 headers</Filter>
     </ClInclude>
@@ -169,9 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\testLogEngine.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Toolbar.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
