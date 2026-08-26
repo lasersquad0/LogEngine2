@@ -8,6 +8,8 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include "MyTestProgressListener.h"
 
+// We use Console test runner here because cppunit mftUi test runner declared as deprecated and removed from cppunit package.
+
 int main()
 {
     CppUnit::TestResult controller;
