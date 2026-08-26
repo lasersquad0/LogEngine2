@@ -13,19 +13,19 @@
 
 std::string DisplaySystemVersion()
 {
-    OSVERSIONINFOEX osvi;
+    OSVERSIONINFOEXA osvi;
     BOOL bOsVersionInfoEx;
 
     // Try calling GetVersionEx using the OSVERSIONINFOEX structure.
     // If that fails, try using the OSVERSIONINFO structure.
-    ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
-    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
 
-    if (!(bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO*)&osvi)))
+    if (!(bOsVersionInfoEx = GetVersionExA((OSVERSIONINFOA*)&osvi)))
     {
         // If OSVERSIONINFOEX doesn't work, try OSVERSIONINFO.
-        osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-        if (!GetVersionEx((OSVERSIONINFO*)&osvi))
+        osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
+        if (!GetVersionExA((OSVERSIONINFOA*)&osvi))
             return "";
     }
 
@@ -109,14 +109,14 @@ std::string DisplaySystemVersion()
             char szProductType[80];
             DWORD dwBufLen;
 
-            RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\ProductOptions", 0, KEY_QUERY_VALUE, &hKey);
-            RegQueryValueEx(hKey, "ProductType", nullptr, nullptr, (LPBYTE)szProductType, &dwBufLen);
+            RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\ProductOptions", 0, KEY_QUERY_VALUE, &hKey);
+            RegQueryValueExA(hKey, "ProductType", nullptr, nullptr, (LPBYTE)szProductType, &dwBufLen);
             RegCloseKey(hKey);
-            if (lstrcmpi("WINNT", szProductType) == 0)
+            if (lstrcmpiA("WINNT", szProductType) == 0)
                 ver.append("Professional ");
-            if (lstrcmpi("LANMANNT", szProductType) == 0)
+            if (lstrcmpiA("LANMANNT", szProductType) == 0)
                 ver.append("Server ");
-            if (lstrcmpi("SERVERNT", szProductType) == 0)
+            if (lstrcmpiA("SERVERNT", szProductType) == 0)
                 ver.append("Advanced Server ");
         }
 
@@ -126,6 +126,7 @@ std::string DisplaySystemVersion()
         //{
         #define BUF_SZ 100
         char buf[BUF_SZ];
+        
         sprintf_s(buf, BUF_SZ, "version %d.%d %s (Build %d)\n", 
                 osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.szCSDVersion, osvi.dwBuildNumber & 0xFFFF);
         ver.append(buf);
