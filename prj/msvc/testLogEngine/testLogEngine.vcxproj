@@ -137,7 +137,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug MDd|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v145</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <UseDebugLibraries>true</UseDebugLibraries>
     <EnableASAN>false</EnableASAN>
   </PropertyGroup>
@@ -154,7 +154,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v145</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <UseDebugLibraries>true</UseDebugLibraries>
     <EnableASAN />
   </PropertyGroup>
@@ -366,13 +366,14 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunitd.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunnerd.lib;$(ProjectDir)..\..\..\lib\LogEngine2dMDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunitd.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunnerd.lib;$(ProjectDir)..\..\..\lib\LogEngine2dMDd.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -463,13 +464,14 @@
       <MinimalRebuild>
       </MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunitd64.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunnerd.lib;$(ProjectDir)..\..\..\lib\LogEngine2d_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunitd64.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunnerd.lib;$(ProjectDir)..\..\..\lib\LogEngine2d_64.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -508,7 +510,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <MinimalRebuild />
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -544,7 +546,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\external\;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\external\;$(ProjectDir)..\..\..\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -559,17 +561,18 @@
       <ProgramDataBaseFileName>$(IntDir)$(TargetName)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <MinimalRebuild>
       </MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunit.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunner.lib;$(ProjectDir)..\..\..\lib\LogEngine2MDd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunit.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunner.lib;$(ProjectDir)..\..\..\lib\LogEngine2MDd.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
@@ -656,10 +659,11 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <MinimalRebuild>
       </MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -688,7 +692,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\external\cppunit\include; ..\..\..\external\cppunit\include\msvc6;..\..\..\include\logengine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\external\cppunit\include;$(ProjectDir)..\..\..\external\cppunit\include\msvc6;$(ProjectDir)..\..\..\include\logengine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -699,17 +703,18 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunitd.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunnerud.lib;$(ProjectDir)../../../lib/LogEngined2u.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunitd.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunnerud.lib;$(ProjectDir)../../../lib/LogEngined2u.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)/testLogEngine.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -748,17 +753,18 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>false</EnablePREfast>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\..\..\external\cppunit\lib\cppunitd.lib;..\..\..\external\cppunit\lib\testrunnerud.lib;../../../lib/LogEnginedu64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunitd.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunnerud.lib;$(ProjectDir)../../../lib/LogEnginedu64.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)/testLogEngine.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -798,16 +804,17 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunit.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunneru.lib;$(ProjectDir)../../../lib/LogEngine2u.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunit.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunneru.lib;$(ProjectDir)../../../lib/LogEngine2u.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)/testLogEngine.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/testLogEngine.pdb</ProgramDatabaseFile>
@@ -845,16 +852,17 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\..\..\external\cppunit\lib\cppunit.lib;..\..\..\external\cppunit\lib\testrunneru.lib;../../../lib/LogEngineu64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\external\cppunit\lib\cppunit.lib;$(ProjectDir)..\..\..\external\cppunit\lib\testrunneru.lib;$(ProjectDir)..\..\..\lib\LogEngineu64.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)/testLogEngine.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/testLogEngine.pdb</ProgramDatabaseFile>
@@ -1058,26 +1066,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MDd|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">true</ExcludedFromBuild>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">$(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">$(IntDir)%(Filename).dll</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release MDd|Win32'">$(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">$(IntDir)%(Filename).dll</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release MDd|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release MDd|Win32'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release MDd|Win32'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release MDd|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
@@ -1092,26 +1094,20 @@
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">$(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">$(IntDir)%(Filename).dll</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">custom build tool: %(Fullpath)  ......   $(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug MDd|Win32'">custom build tool: %(Fullpath)  ......   $(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">$(IntDir)%(Filename).dll</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug MDd|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug MDd|Win32'">Custom build tool executed: %(Fullpath)  .....   $(IntDir)%(Filename).dll</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug MDd|Win32'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug MDd|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
@@ -1133,11 +1129,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">true</ExcludedFromBuild>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Updating DLL %(FullPath)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Updating DLL %(FullPath)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
 </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
