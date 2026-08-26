@@ -2,7 +2,6 @@
 #include "Shared.h"
 #include "testProperties.h"
 #include "Properties.h"
-//#include "LogEngine.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEnginePropertiesTest );
 
