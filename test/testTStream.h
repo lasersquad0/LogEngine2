@@ -2,6 +2,7 @@
 #define TEST_TSTREAM_H
 
 #include "cppunit/extensions/HelperMacros.h"
+#include "FileStream.h"
 
 /*
  * A test case to test TMemoryStream and TFileStream classes
@@ -26,6 +27,8 @@ class TStreamTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testMemoryStream13);
     CPPUNIT_TEST_SUITE_END();
 public:
+    typedef LogEngine::TMemoryStream::pos_type pos_t;
+
     void setUp();
     void tearDown();
 
