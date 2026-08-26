@@ -194,8 +194,9 @@ public:
 
 class TMemoryStream : public TStream
 {
-private:
+public:
 	using pos_type = size_t;
+private:
 	uint8_t* FMemory = nullptr;
 	pos_type FSize = 0;
 	pos_type FRPos = 0;
@@ -203,6 +204,7 @@ private:
 	bool FNeedFree = true;
 
 	void ResetPos();
+	//TODO SeekR and SeekW have another return type than Seek(), shall we make them equal?
 	off_t Seek(const off_t, const TSeekMode) override { return -1; } // hide Seek, use SeekR and SeekW instead
 public:
 	TMemoryStream(uint BuffSize = DEFAULT_BUF_SIZE) { FMemory = new uint8_t[BuffSize]; }
