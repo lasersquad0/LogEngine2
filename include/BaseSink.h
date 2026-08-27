@@ -25,8 +25,6 @@ template<class Mutex>
 class BaseSink : public Sink
 {
 protected:
-	//std::string FName;
-	//Levels::LogLevel FLogLevel{ LL_DEFAULT };
 	Mutex FMutex;
 	Layout* FLayout{ nullptr };
 	ullong FMessageCounts[static_cast<int>(llnLogLevels)]{ 0,0,0,0,0,0 };
@@ -38,8 +36,6 @@ protected:
 public:
 	BaseSink(const std::string& name, const LogLevel ll = LL_DEFAULT) : Sink(name, ll), FLayout{ new PatternLayout() }
 	{
-		//for (uint i = 0; i < n_LogLevels; i++)
-		//	FMessageCounts[i] = 0;
 	}
 
 	//TODO add here constructor with PatternLayout parameter. Decide who should delete PatternLayout in this case.
