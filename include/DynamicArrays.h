@@ -1908,35 +1908,6 @@ void THash2<I1,I2,V>::Minus(THash2<I1, I2, V>& in)
 }
 */
 
-// split string into array of strings using Delim as delimiter
-/*template<class STRING>
-void StringToArray(const STRING& str, THArray<STRING>& arr, const typename STRING::value_type Delim = '\n')
-{
-	// make sure that STRING is one of instantiations of std::string
-	static_assert(std::is_base_of<std::basic_string<typename STRING::value_type, typename STRING::traits_type>, STRING>::value);
-
-	size_t i = 0;
-	size_t len = str.length();
-	STRING s;
-	s.reserve(len);
-
-	while (i < len)
-	{
-		s.clear();
-		while (i < len)
-		{
-			if (str[i] == Delim)
-			{
-				i++;
-				break;
-			}
-			s += str[i++];
-		}
-
-		if (s.length() > 0)
-			arr.AddValue(s);
-	}
-}*/
 
 // put all array items into a single sting one-by-one without any delimiters
 inline std::string toString(const THArrayString& array)
@@ -1951,34 +1922,5 @@ inline std::string toString(const THArrayString& array)
 
 	return res;
 }
-
-// template "instantiation" for char* or char[x] parameters
-// e.g. StringToArray("aa;bb;cc", arr, ';');
-/*inline void StringToArray(const std::string& str, THArrayString& arr, const char Delim = '\n')
-{
-	StringToArray<std::string>(str, arr, Delim);
-	/*
-	size_t i = 0;
-	size_t len = str.length();
-	std::string s;
-	s.reserve(len);
-
-	while (i < len)
-	{
-		s.clear();
-		while (i < len)
-		{
-			if (str[i] == Delim)
-			{
-				i++;
-				break;
-			}
-			s += str[i++];
-		}
-
-		if (s.length() > 0)
-			arr.AddValue(s);
-	}*/
-//}
 
 #endif //DYNAMIC_ARRAYS_H
