@@ -132,6 +132,10 @@ public:
 			*this << '\n';
 			this->Flush();
 		}
+		else
+		{
+			throw IOException("Manipulator is not supported!");
+		}
 		
 		return *this;
 	}
