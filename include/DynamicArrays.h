@@ -420,8 +420,8 @@ public:
 	
 	// Zeroes all data in the array
 	//template<typename U = T>
-	//typename std::enable_if<std::is_default_constructible<U>::value, void>::type
-	virtual void Zero();
+	//typename std::enable_if<std::is_default_constructible<U>::value, void>::type 
+	void Zero() requires std::default_initializable<T>;
 
 	// Increase capacity to the max(ToCount, increase_after_Grow()_call) elements.
     // if ToCount < Capacity then nothing is done 
@@ -487,7 +487,7 @@ public:
 	// Adds Count elements to the array. Elements are initialised by default constructor like T()
 	//template<typename U>
     //typename std::enable_if<std::is_default_constructible<U>::value, void>::type  
-	virtual void AddFillValues(const uint Count);
+	void AddFillValues(const uint Count) requires std::default_initializable<T>;
 
 	// the same as AddValue call. Usefull when array is used as stack
 	virtual void Push(const T& Value) { AddValue(Value); }
@@ -528,7 +528,7 @@ private:
 	// because adding of element may actually put it in any place in the middle depending on sorting rules
 	void	SetValue(const uint Index, const T& Value) = delete;
 	T&		Insert(const uint Index, const void* Value) override { return THArray<T>::Insert(Index, Value); }
-	void	AddFillValues(const uint Count) override { THArray<T>::AddFillValues(Count); }
+	void	AddFillValues(const uint Count) { THArray<T>::AddFillValues(Count); }
 	void	Push(const T& Value) override { THArray<T>::Push(Value); }
 	T		Pop()	   override { return THArray<T>::Pop(); }
 	T		PopFront() override { return THArray<T>::PopFront(); }
@@ -986,9 +986,7 @@ bool THArray<T>::operator>(const THArray<T>& a) const
 }
 
 template<class T>
-//template<typename U>
-//typename std::enable_if<std::is_default_constructible<U>::value, void>::type
-void THArray<T>::Zero() //TODO what to do if T is NOT default_constructible ?
+void THArray<T>::Zero() requires std::default_initializable<T> 
 {
 	if constexpr (std::is_default_constructible<T>::value)
 	{
@@ -1104,9 +1102,7 @@ int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const
 }
 
 template<class T>
-//template<typename U>
-//typename std::enable_if<std::is_default_constructible<U>::value, void>::type
-void THArray<T>::AddFillValues(const uint Count)
+void THArray<T>::AddFillValues(const uint Count) requires std::default_initializable<T>
 {
 	EnsureCapacity(FCount + Count);
 	//if ((FCount + Num) > FCapacity) GrowTo(FCount + Num);
@@ -1323,8 +1319,9 @@ inline uint THArrayRaw::Insert(const uint Index, const pointer pValue)
 
 	if (FCount >= FCapacity) Grow();
 
-	FCount++; //TODO place FCount++ after memmove and remove '-1' from memmove third parameter
-	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - static_cast<size_t>(Index) - 1) * FItemSize); // make free space
+	//FCount++; //TODO place FCount++ after memmove and remove '-1' from memmove third parameter
+	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - static_cast<size_t>(Index)) * FItemSize); // make free space
+	FCount++;
 	Update(Index, pValue);
 
 	return Index;
