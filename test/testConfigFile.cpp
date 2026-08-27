@@ -47,7 +47,7 @@ void ConfigFileTest::testConfigFile1()
 
     Logger& logger1 = GetLogger("1");
     CPPUNIT_ASSERT_EQUAL(0u, logger1.SinkCount());
-    CPPUNIT_ASSERT_EQUAL(Levels::llDebug, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llDebug, logger1.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
 
     Logger& logger2 = GetLogger("a");
@@ -82,7 +82,7 @@ void ConfigFileTest::testConfigFile3()
     CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
     Logger& logger = GetLogger("..");
-    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, logger.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llTrace, logger.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, logger.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(0u, logger.SinkCount());
 
@@ -95,12 +95,12 @@ void ConfigFileTest::testConfigFile4()
     CPPUNIT_ASSERT_EQUAL(2u, LoggersCount());
 
     Logger& logger1 = GetLogger("ABC");
-    CPPUNIT_ASSERT_EQUAL(Levels::llDebug, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llDebug, logger1.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(0u, logger1.SinkCount());
 
     Logger& logger2 = GetLogger("CdE");
-    CPPUNIT_ASSERT_EQUAL(Levels::llCritical, logger2.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llCritical, logger2.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(false, logger2.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(0u, logger2.SinkCount());
 
@@ -126,7 +126,7 @@ void ConfigFileTest::testConfigFile6()
     auto sink = logger1.GetSink("Siii");
     
     RotatingFileSinkST* sinkPtr = dynamic_cast<RotatingFileSinkST*>(sink.get());
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llError, sink->GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == sinkPtr); // check sink type
 }
 
@@ -142,7 +142,7 @@ void ConfigFileTest::testConfigFile7()
     CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
     auto sink = logger1.GetSink("SuperSink");
 
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llError, sink->GetLogLevel());
     RotatingFileSinkMT* rsink = dynamic_cast<RotatingFileSinkMT*>(sink.get());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == rsink); // check sink type
     CPPUNIT_ASSERT_EQUAL(std::string("sink.super.log"), rsink->GetFileName());
@@ -150,10 +150,10 @@ void ConfigFileTest::testConfigFile7()
     CPPUNIT_ASSERT_EQUAL(20*1024*1024ull, rsink->GetMaxLogSize()); 
     Layout* lay = /*dynamic_cast<PatternLayout*>*/(rsink->GetLayout());
     CPPUNIT_ASSERT_EQUAL(std::string(DefaultLinePattern), lay->GetPattern());
-    CPPUNIT_ASSERT_EQUAL(std::string("! %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
-    CPPUNIT_ASSERT_EQUAL(std::string("# %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));
-    CPPUNIT_ASSERT_EQUAL(std::string("*!* %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(Levels::llCritical));
-    CPPUNIT_ASSERT_EQUAL(std::string("*!* %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llInfo));
+    CPPUNIT_ASSERT_EQUAL(std::string("! %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(llError));
+    CPPUNIT_ASSERT_EQUAL(std::string("# %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(llWarning));
+    CPPUNIT_ASSERT_EQUAL(std::string("*!* %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(llCritical));
+    CPPUNIT_ASSERT_EQUAL(std::string("*!* %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%"), lay->GetPattern(llInfo));
 
 }
 
@@ -171,22 +171,22 @@ void ConfigFileTest::testConfigFile8()
     auto sink1 = logger1.GetSink("SuperFSink");
 
     Logger& logger2 = GetLogger("FLog2");
-    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, logger2.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llTrace, logger2.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(false, logger2.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(1u, logger2.SinkCount());
     auto sink2 = logger2.GetSink("SuperFSink");
     CPPUNIT_ASSERT_EQUAL(sink1, sink2);
 
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink1->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llError, sink1->GetLogLevel());
     FileSinkST* fsink = dynamic_cast<FileSinkST*>(sink1.get());
     CPPUNIT_ASSERT_EQUAL(true, sink1.get() == fsink); // check sink type
     CPPUNIT_ASSERT_EQUAL(std::string("sink super.log"), fsink->GetFileName());
     Layout* lay = fsink->GetLayout();
     CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern());
-    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
-    CPPUNIT_ASSERT_EQUAL(std::string("W %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llWarning));
-    CPPUNIT_ASSERT_EQUAL(std::string("C %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(Levels::llCritical));
-    CPPUNIT_ASSERT_EQUAL(std::string("I %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%"), lay->GetPattern(Levels::llInfo));
+    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(llError));
+    CPPUNIT_ASSERT_EQUAL(std::string("W %TIME% #%THREAD% %OSVERSION% %OS% %APPVERSION% %APPNAME% : %MSG%"), lay->GetPattern(llWarning));
+    CPPUNIT_ASSERT_EQUAL(std::string("C %TIME% #%THREAD% %APPNAME% %OS% %OSVERSION% %APPVERSION : %MSG%"), lay->GetPattern(llCritical));
+    CPPUNIT_ASSERT_EQUAL(std::string("I %TIME% #%THREAD% %APPVERSION% %OS% %OSVERSION% %APPNAME% : %MSG%"), lay->GetPattern(llInfo));
 
 }
 
@@ -241,7 +241,7 @@ void ConfigFileTest::testConfigFile12()
     CPPUNIT_ASSERT_EQUAL(1u, LoggersCount());
 
     Logger& logger = GetLogger("P");
-    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, logger.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llTrace, logger.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(false, logger.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(1u, logger.SinkCount());
  
@@ -251,7 +251,7 @@ void ConfigFileTest::testConfigFile12()
 
     auto sink = logger.GetSink("P");
 
-    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llTrace, sink->GetLogLevel());
     FileSinkST* fsink = dynamic_cast<FileSinkST*>(sink.get());
     CPPUNIT_ASSERT(fsink == nullptr);
     StringSinkST* ssink = dynamic_cast<StringSinkST*>(sink.get());
@@ -261,12 +261,12 @@ void ConfigFileTest::testConfigFile12()
     //CPPUNIT_ASSERT_EQUAL(std::string("pattern.log"), ssink->GetFileName());
     Layout* lay = sink->GetLayout();
     CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern());
-    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(Levels::llError));
-    CPPUNIT_ASSERT_EQUAL(std::string("[WARN] Mess:%Msg%%% Empty:%% Unknown:%%"), lay->GetPattern(Levels::llWarning));
-    CPPUNIT_ASSERT_EQUAL(std::string("%%%APPNAME% %%%APPVERSION% : %MSG%"), lay->GetPattern(Levels::llCritical));
-    CPPUNIT_ASSERT_EQUAL(std::string("%APPVERSION% %APPNAME% : %MSG%."), lay->GetPattern(Levels::llInfo));
-    CPPUNIT_ASSERT_EQUAL(std::string("[DEBUG] MesS:%MSg% Empty:%% unknown:% [/DEBUG]"), lay->GetPattern(Levels::llDebug));
-    CPPUNIT_ASSERT_EQUAL(std::string("[TRACE] Mess:%Msg% Empty:%% Unknown:%"), lay->GetPattern(Levels::llTrace));
+    CPPUNIT_ASSERT_EQUAL(std::string("ALL %TIME% #%THREAD% %OS% %OSVERSION% %APPNAME% %APPVERSION% : %MSG%"), lay->GetPattern(llError));
+    CPPUNIT_ASSERT_EQUAL(std::string("[WARN] Mess:%Msg%%% Empty:%% Unknown:%%"), lay->GetPattern(llWarning));
+    CPPUNIT_ASSERT_EQUAL(std::string("%%%APPNAME% %%%APPVERSION% : %MSG%"), lay->GetPattern(llCritical));
+    CPPUNIT_ASSERT_EQUAL(std::string("%APPVERSION% %APPNAME% : %MSG%."), lay->GetPattern(llInfo));
+    CPPUNIT_ASSERT_EQUAL(std::string("[DEBUG] MesS:%MSg% Empty:%% unknown:% [/DEBUG]"), lay->GetPattern(llDebug));
+    CPPUNIT_ASSERT_EQUAL(std::string("[TRACE] Mess:%Msg% Empty:%% Unknown:%"), lay->GetPattern(llTrace));
 
     logger.Debug("debug_message");
     std::string s = ssink->GetOutput();
@@ -307,7 +307,7 @@ void ConfigFileTest::testConfigFile13()
     CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
 
     auto sink = logger1.GetSink("logsink");
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llError, sink->GetLogLevel());
     auto rsink = dynamic_cast<RotatingFileSinkST*>(sink.get());
     CPPUNIT_ASSERT(rsink != nullptr);
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == rsink); // check sink type
@@ -333,7 +333,7 @@ void ConfigFileTest::testConfigFile14()
     CPPUNIT_ASSERT_EQUAL(1u, logger1.SinkCount());
 
     auto sink = logger1.GetSink("logsink");
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llError, sink->GetLogLevel());
     auto rsink = dynamic_cast<RotatingFileSinkST*>(sink.get());
     CPPUNIT_ASSERT(rsink != nullptr);
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == rsink); // check sink type
@@ -348,27 +348,27 @@ void ConfigFileTest::testConfigFile20()
     CPPUNIT_ASSERT_EQUAL(2u, LoggersCount());
 
     Logger& logger1 = GetLogger("MainLogger");
-    CPPUNIT_ASSERT_EQUAL(Levels::llDebug, logger1.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llDebug, logger1.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(false, logger1.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(2u, logger1.SinkCount());
     auto sink = logger1.GetSink("s1");
-    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llTrace, sink->GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSinkST*>(sink.get())); // check sink type
     sink = logger1.GetSink("s2");
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llError, sink->GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<StdoutSinkMT*>(sink.get())); // check sink type
 
     Logger& logger2 = GetLogger("Second");
-    CPPUNIT_ASSERT_EQUAL(Levels::llWarning, logger2.GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llWarning, logger2.GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, logger2.GetAsyncMode());
     CPPUNIT_ASSERT_EQUAL(3u, logger2.SinkCount());
 
     sink = logger2.GetSink("s3");
-    CPPUNIT_ASSERT_EQUAL(Levels::llTrace, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llTrace, sink->GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<FileSinkST*>(sink.get())); // check sink type
 
     sink = logger2.GetSink("s2");
-    CPPUNIT_ASSERT_EQUAL(Levels::llError, sink->GetLogLevel());
+    CPPUNIT_ASSERT_EQUAL(llError, sink->GetLogLevel());
     CPPUNIT_ASSERT_EQUAL(true, sink.get() == dynamic_cast<StdoutSinkMT*>(sink.get())); // check sink type
     
     sink = logger2.GetSink("rotating");

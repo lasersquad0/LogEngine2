@@ -49,9 +49,9 @@ int testThreadProc(void* param)
 	log->CritFmt("{} is executing {}.", GetThreadID(), "11");
 	log->ErrorFmt("{} is executing {}.", GetThreadID(), "22");
 	log->WarnFmt("{} is executing {}.", GetThreadID(), "33");
-	log->LogFmt(Levels::llInfo, "{} is executing {}.", GetThreadID(), "44");
-	log->LogFmt(Levels::llDebug, "{} is executing {}.", GetThreadID(), "55");
-	log->LogFmt(Levels::llTrace, "{} is executing {}.", GetThreadID(), "66");
+	log->LogFmt(llInfo, "{} is executing {}.", GetThreadID(), "44");
+	log->LogFmt(llDebug, "{} is executing {}.", GetThreadID(), "55");
+	log->LogFmt(llTrace, "{} is executing {}.", GetThreadID(), "66");
 
 	return 0;
 }
@@ -108,7 +108,7 @@ void ThreadLogTest::testAsyncLog1()
 	str += IntToStr(GetThreadID());
 	log.Info(str);
 
-	log.SetLogLevel(Levels::llDebug);
+	log.SetLogLevel(llDebug);
 	log.SetAsyncMode(true);
 
 	log.Crit("threaded crit #1");
