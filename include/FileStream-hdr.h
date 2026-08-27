@@ -85,7 +85,7 @@ void TStream::operator >>(wstring& Value)
 LOGENGINE_INLINE std::string TStream::ReadPString()
 {
 	std::string res;
-	uint i; //TODO shall i be size_t type?
+	size_t i;
 	*this >> i;    // reading string size
 	res.resize(i); // allocating space in string
 	Read(res.data(), i); // res.length());
