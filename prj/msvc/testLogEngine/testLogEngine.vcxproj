@@ -9,14 +9,6 @@
       <Configuration>Debug MDd</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug No Type Info Name|Win32">
-      <Configuration>Debug No Type Info Name</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug No Type Info Name|x64">
-      <Configuration>Debug No Type Info Name</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug Unicode|Win32">
       <Configuration>Debug Unicode</Configuration>
       <Platform>Win32</Platform>
@@ -67,16 +59,6 @@
     <ProjectName>testLogEngine2</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v145</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v145</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v145</PlatformToolset>
@@ -160,14 +142,6 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -274,14 +248,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">
-    <OutDir>.\DebugNoTypeInfoName\</OutDir>
-    <IntDir>.\DebugNoTypeInfoName\</IntDir>
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">
-    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -873,92 +839,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\ReleaseUnicode/testLogEngine.bsc</OutputFile>
     </Bscmake>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\DebugNoTypeInfoName/testLogEngine.tlb</TypeLibraryName>
-      <HeaderFileName />
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\external\cppunit\include; ..\..\..\external\cppunit\include\msvc6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;WIN32;CPPUNIT_USE_TYPEINFO_NAME=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader />
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\DebugNoTypeInfoName/testLogEngine.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\DebugNoTypeInfoName/</AssemblerListingLocation>
-      <ObjectFileName>.\DebugNoTypeInfoName/</ObjectFileName>
-      <ProgramDataBaseFileName>.\DebugNoTypeInfoName/</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>..\..\..\external\cppunit\lib\cppunitd.lib;..\..\..\external\cppunit\lib\testrunnerud.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\DebugNoTypeInfoName/testLogEngine.exe</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\DebugNoTypeInfoName/testLogEngine.pdb</ProgramDatabaseFile>
-      <SubSystem>Windows</SubSystem>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\DebugNoTypeInfoName/testLogEngine.bsc</OutputFile>
-    </Bscmake>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">
-    <Midl>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TypeLibraryName>.\DebugNoTypeInfoName/testLogEngine.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\external\cppunit\include; ..\..\..\external\cppunit\include\msvc6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;WIN32;CPPUNIT_USE_TYPEINFO_NAME=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\DebugNoTypeInfoName/testLogEngine.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\DebugNoTypeInfoName/</AssemblerListingLocation>
-      <ObjectFileName>.\DebugNoTypeInfoName/</ObjectFileName>
-      <ProgramDataBaseFileName>.\DebugNoTypeInfoName/</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>..\..\..\external\cppunit\lib\cppunitd.lib;..\..\..\external\cppunit\lib\testrunnerud.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\DebugNoTypeInfoName/testLogEngine.exe</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\DebugNoTypeInfoName/testLogEngine.pdb</ProgramDatabaseFile>
-      <SubSystem>Windows</SubSystem>
-    </Link>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\DebugNoTypeInfoName/testLogEngine.bsc</OutputFile>
-    </Bscmake>
-  </ItemDefinitionGroup>
+    </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\testIniReader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -1058,8 +939,6 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\external\cppunit\lib\testrunner.dll">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -1086,14 +965,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="..\..\..\external\cppunit\lib\testrunnerd.dll">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">$(IntDir)%(Filename).dll</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">$(IntDir)%(Filename).dll</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">copy %(FullPath) $(IntDir)%(Filename).dll
-</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">$(IntDir)%(Filename).dll;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Custom build tool execute: "%(FullPath)" ....  "$(IntDir)%(Filename).dll"</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">copy "%(FullPath)" "$(IntDir)%(Filename).dll"</Command>
@@ -1120,8 +991,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="..\..\..\external\cppunit\lib\testrunneru.dll">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -1141,8 +1010,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="..\..\..\external\cppunit\lib\testrunnerud.dll">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug No Type Info Name|x64'">true</ExcludedFromBuild>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Updating DLL %(FullPath)</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Updating DLL %(FullPath)</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">copy %(FullPath) $(IntDir)%(Filename).dll
