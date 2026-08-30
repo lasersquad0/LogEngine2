@@ -482,7 +482,7 @@ public:
 	virtual int IndexOf(const T& Value) const { return IndexOfFrom(Value, 0); }
 
 	// the same is IndexOf but seach is started from element from index Start
-	virtual int IndexOfFrom(const T& Value, const uint Start) const;
+	virtual int IndexOfFrom(const T& Value, const uint Start) const;// requires std::equality_comparable<T>;
 	
 	// Adds Count elements to the array. Elements are initialised by default constructor like T()
 	//template<typename U>
@@ -833,16 +833,6 @@ THArray<T>::THArray(std::initializer_list<T> list) :THArray()
 		AddValue(item);
 }
 
-//template<class T>
-//void THArray<T>::Error(const uint Value, const uint vmax) const
-//{
-//	if (Value >= vmax)
-//	{
-//		//throw THArrayException(std::format("Error in THArray: Element with index {} not found!", Value));
-//		throw THArrayException("Error in THArray: Element with index " + IntToStr(Value) + " not found!");
-//	}
-//}
-
 // calculate grow delta value depending on current array size
 template<class T>
 uint THArray<T>::GetGrowDelta()
@@ -860,7 +850,7 @@ uint THArray<T>::GetGrowDelta()
 	}
 }
 
-/// Grow allocated memory using a special algorithm 
+// Grow allocated memory using a special algorithm 
 template<class T>
 void THArray<T>::Grow()
 {
@@ -872,14 +862,9 @@ void THArray<T>::Grow()
 template<class T>
 void THArray<T>::GrowTo(const uint ToCount)
 {
-	//if (ToCount <= FCapacity) return; 
 	if (EnoughCapacity(ToCount)) return;
 
 	uint Delta = GetGrowDelta();
-
-	//if ((FCapacity + Delta) < ToCount)
-	//	Delta = ToCount - FCapacity;
-	//SetCapacity(FCapacity + Delta);
 
 	if (FBegin + ToCount > FMemory + FCapacity + Delta)
 		SetCapacity(ToCount);
@@ -1093,7 +1078,7 @@ int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const
 }
 
 template<class T>
-int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const
+int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const //requires std::equality_comparable<T>
 {
 	for (uint i = Start; i < FCount; i++)
 		if (FBegin[i] == Value)
