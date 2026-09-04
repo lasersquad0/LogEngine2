@@ -604,7 +604,7 @@ void LoggerTest::testLogStrategyBakNumber()
 	stat(fileName.c_str(), &st);
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
-	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
+	logger.Info("L"); // existing log file will be renamed to new name with index '1' in name
 	CPPUNIT_ASSERT_EQUAL(14ull, rsink->GetBytesWritten());
 	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
@@ -628,7 +628,7 @@ void LoggerTest::testLogStrategyBakNumber()
 	stat(fileName.c_str(), &st);
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 
-	logger.Info("L"); // existing log file will be renamed to new name with time stamp 
+	logger.Info("L"); // existing log file will be renamed to new name with index '2' in name
 	CPPUNIT_ASSERT_EQUAL(14ull, rsink->GetBytesWritten());
 	//CPPUNIT_ASSERT_EQUAL((ullong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
@@ -642,13 +642,15 @@ void LoggerTest::testLogStrategyBakNumber()
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llTrace]);
 }
 
-//TODO add test for BytesWritten() statistics
 void LoggerTest::testLogStatistic()
 {
 	Logger& log = GetLogger("testLogStatistic");
 	log.SetLogLevel(llTrace);
 	std::shared_ptr<FileSinkMT> fsink(new FileSinkMT("fsink", LOG_FILES_FOLDER "testLogStatistic.log"));
 	fsink->SetLogLevel(llTrace);
+	auto layout = new PatternLayout();
+	layout->SetPattern("%TIME% : %MSG%");
+	fsink->SetLayout(layout);
 	log.AddSink(fsink);
 
 	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llCritical]);
@@ -657,6 +659,7 @@ void LoggerTest::testLogStatistic()
 	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llInfo]);
 	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llDebug]);
 	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(0ull, fsink->GetBytesWritten());
 
 	log.Crit("C");
 	log.Error("E");
@@ -674,6 +677,7 @@ void LoggerTest::testLogStatistic()
 	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llInfo]);
 	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llDebug]);
 	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(126ull, fsink->GetBytesWritten());
 
 	for (size_t i = 0; i < 1001; i++)
 	{
@@ -686,6 +690,8 @@ void LoggerTest::testLogStatistic()
 	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llInfo]);
 	CPPUNIT_ASSERT_EQUAL(1ull, fsink->GetMessageCounts()[llDebug]);
 	CPPUNIT_ASSERT_EQUAL(1002ull, fsink->GetMessageCounts()[llTrace]);
+	CPPUNIT_ASSERT_EQUAL(21147ull, fsink->GetBytesWritten());
+
 }
 
 void LoggerTest::testGetFileLogger()
