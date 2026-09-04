@@ -23,6 +23,8 @@
 
 LOGENGINE_NS_BEGIN
 
+#pragma comment(lib, "version.lib") 
+
 #define APPNAME_PROPERTY  "AppName"
 #define APPVERSION_PROPERTY "AppVersion"
 
