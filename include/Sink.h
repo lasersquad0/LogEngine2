@@ -81,15 +81,9 @@ public:
 	**/
 	virtual ullong* GetMessageCounts() = 0;
 	
-	LogLevel GetLogLevel() const 
-	{ 
-		return FLogLevel.load(); 
-	}
+	LogLevel GetLogLevel() const { return FLogLevel.load(); }
 	
-	void SetLogLevel(LogLevel ll) 
-	{
-		FLogLevel.store(ll); 
-	}
+	void SetLogLevel(LogLevel ll) {	FLogLevel.store(ll); }
 
 	/**
 	 * Get the name of this sink. The name identifies the sink.
