@@ -1,10 +1,10 @@
-#ifndef THREAD_LOG_TESTS_HEADER
-#define THREAD_LOG_TESTS_HEADER
+#ifndef _TEST_THREAD_LOGGER_H_
+#define _TEST_THREAD_LOGGER_H_
 
 #include <cppunit/extensions/HelperMacros.h>
 
 /* 
- * A test case to test LogEngine ThreadLog class
+ * A test case to test LogEngine Logger class in multithreading environment
  *
  */
 
@@ -26,4 +26,4 @@ public:
     void testNONThreadLogMeasureTime1();
 };
 
-#endif //THREAD_LOG_TESTS_HEADER
+#endif //_TEST_THREAD_LOGGER_H_
