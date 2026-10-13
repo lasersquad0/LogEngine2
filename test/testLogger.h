@@ -18,6 +18,7 @@ class LoggerTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testLog2 );
   CPPUNIT_TEST( testLog3 );
   CPPUNIT_TEST( testLog4 );
+  CPPUNIT_TEST( testLogLocale );
   CPPUNIT_TEST( testLogTwoSinksOneFileLock );
   CPPUNIT_TEST( testLogTwoSinksOneFile );
   CPPUNIT_TEST( testLogDuplicateSinks1 );
@@ -46,6 +47,7 @@ public:
     void testLog2();
     void testLog3();
     void testLog4();
+    void testLogLocale();
     void testLogTwoSinksOneFile();
     void testLogTwoSinksOneFileLock();
     void testLogDuplicateSinks1();
