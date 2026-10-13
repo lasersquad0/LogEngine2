@@ -41,9 +41,6 @@ LOGENGINE_INLINE std::string Pattern::Format(const LogEvent& event, Properties& 
 // forward declaration of one global function from LogEngine.h instead of including entire LogEngine.h
 std::string GetProperty(const std::string& name, const std::string& defaultValue = "");
 
-#define MACRO_SEP '%'
-#define MACRO_SEP_STR "%"
-
 /*
 LOGENGINE_INLINE void Pattern::parsePattern2(const std::string& pattern)
 {
