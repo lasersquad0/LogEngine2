@@ -226,11 +226,11 @@ LOGENGINE_INLINE void TMemoryStream::UnsetBuffer()
 #define myclose _close
 #define myflush _commit
 
-#ifdef __BORLANDC__
-#define mylocking locking
-#else
+//#ifdef __BORLANDC__
+//#define mylocking locking
+//#else
 #define mylocking _locking
-#endif
+//#endif
 
 #else
 
@@ -250,7 +250,7 @@ LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFi
 	hf = 0;
 
 
-#if defined(WIN32) && !defined(__BORLANDC__)
+#if defined(WIN32) //&& !defined(__BORLANDC__)
 	errno_t res = 0;
 	int activeMode;
 
