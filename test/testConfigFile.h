@@ -1,10 +1,10 @@
-#if !defined(TEST_CONFIGFILE)
-#define TEST_CONFIGFILE
+#ifndef _TEST_CONFIGFILE_H_
+#define _TEST_CONFIGFILE_H_
 
 #include <cppunit/extensions/HelperMacros.h>
 
 /*
- * A test case to test LogEngine Properties class
+ * A test case to test loading configuration from .lfg ini files
  *
  */
 
@@ -58,4 +58,4 @@ public:
     void testConfigFile21();
 };
 
-#endif //TEST_CONFIGFILE
+#endif //_TEST_CONFIGFILE_H_
