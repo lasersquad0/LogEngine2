@@ -399,9 +399,10 @@ LOGENGINE_INLINE std::string FormatCurrDateTime(const std::string& FormatStr)
 	return ss;
 }
 
-LOGENGINE_INLINE std::string DelCRLF(std::string str) // str passed by value here intentionally
+// remove any leading and traling \n and \r
+// str passed by value here intentionally
+LOGENGINE_INLINE std::string DelCRLF(std::string str) //TODO think how to optimise this function to avoid unnesessary string copying
 {
-	// remove any leading and traling \n and \r, just in case.
 	size_t strBegin = str.find_first_not_of("\r\n");
 	if (strBegin == std::string::npos) return "";
 	
@@ -412,23 +413,12 @@ LOGENGINE_INLINE std::string DelCRLF(std::string str) // str passed by value her
 	str.erase(0, strBegin);
 
 	return str;
-
-/*	int j = 0;
-	std::string res;
-	res.resize(S.length());
-	for(uint i = 0; i < S.length(); i++)
-	{
-		if(S[i] != '\n' && S[i] != '\r')
-			res[j++] = S[i];
-		res[j] = '\0';
-	}
-	//res = res.erase(strlen(res.c_str()));
-	return res; */
 }
 
-LOGENGINE_INLINE std::string TrimSPCRLF(std::string str) // str passed by value here intentionally
-{
-	// remove any leading and traling spaces, tabs and \n, \r.
+// remove any leading and traling spaces, tabs, \n and \r.
+// str passed by value here intentionally
+LOGENGINE_INLINE std::string TrimSPCRLF(std::string str) 
+{	
 	size_t strBegin = str.find_first_not_of(" \t\r\n");
 	if (strBegin == std::string::npos) return "";
 
@@ -441,9 +431,10 @@ LOGENGINE_INLINE std::string TrimSPCRLF(std::string str) // str passed by value 
 	return str;
 }
 
-LOGENGINE_INLINE std::string Trim(std::string str) // str passed by value here intentionally
+// remove any leading and traling spaces tabs.
+// str passed by value here intentionally
+LOGENGINE_INLINE std::string Trim(std::string str) 
 {
-	// remove any leading and traling spaces tabs.
 	size_t strBegin = str.find_first_not_of(" \t");
 	if (strBegin == std::string::npos) return "";
 	
@@ -456,18 +447,20 @@ LOGENGINE_INLINE std::string Trim(std::string str) // str passed by value here i
 	return str;
 }
 
-LOGENGINE_INLINE std::string TrimLeft(std::string str) // str passed by value here intentionally
+// remove any leading spaces and tabs
+// str passed by value here intentionally
+LOGENGINE_INLINE std::string TrimLeft(std::string str) 
 {
-	// remove any leading spaces and tabs
 	size_t strBegin = str.find_first_not_of(" \t");
 	str.erase(0, strBegin);
 
 	return str;
 }
 
-LOGENGINE_INLINE std::string TrimRight(std::string str) // str passed by value here intentionally
+// remove any trailing spaces and tabs
+// str passed by value here intentionally
+LOGENGINE_INLINE std::string TrimRight(std::string str)
 {
-	// remove any trailing spaces and tabs
 	size_t strEnd = str.find_last_not_of(" \t");
 	str.erase(strEnd + 1/*, str.size() - strEnd*/);
 
