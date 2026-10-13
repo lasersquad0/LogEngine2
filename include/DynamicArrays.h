@@ -336,16 +336,19 @@ private:
 		THArrayIterator(const THArrayIterator& it) : FCont(it.FCont), FPtr(it.FPtr) {}
 
 		// Define various operators here for proper THArrayIterator work
-		bool operator!=(const THArrayIterator& other) const { return FCont != other.FCont || FPtr != other.FPtr; }
-		bool operator==(const THArrayIterator& other) const { return FCont == other.FCont && FPtr == other.FPtr; }
+		//bool operator!=(const THArrayIterator& other) const { return FCont != other.FCont || FPtr != other.FPtr; }
+		//bool operator==(const THArrayIterator& other) const { return FCont == other.FCont && FPtr == other.FPtr; }
+        auto operator<=>(const THArrayIterator& other) const = default;
+
 		reference operator*() const { return *FPtr; }
 		pointer operator->() const { return FPtr; }
 
 		THArrayIterator& operator++() { if (FPtr != FCont->FBegin + FCont->FCount) ++FPtr; return *this; } // Prefix increment
-		THArrayIterator operator++(int) { THArrayIterator tmp = *this; ++(*this); return tmp; } // Postfix increment. Return value here should NOT be a reference.
+		THArrayIterator  operator++(int) { THArrayIterator tmp = *this; ++(*this); return tmp; } // Postfix increment. Return value here should NOT be a reference.
 		THArrayIterator& operator--() { if (FPtr != FCont->FBegin) --FPtr; return *this; } // prefix decrement
-		THArrayIterator operator--(int) { THArrayIterator tmp = *this; --(*this); return tmp; } // return value here should NOT be a reference.
-		THArrayIterator& operator+=(const difference_type add) { FPtr = InRange(FPtr + add); return *this; }
+		THArrayIterator  operator--(int) { THArrayIterator tmp = *this; --(*this); return tmp; } // return value here should NOT be a reference.
+		THArrayIterator& operator+=(const difference_type add)    { FPtr = InRange(FPtr + add);    return *this; }
+        THArrayIterator& operator-=(const difference_type deduct) { FPtr = InRange(FPtr - deduct); return *this; }
 
 		difference_type operator-(const THArrayIterator& right) const { return FPtr - right.FPtr; }
 		THArrayIterator operator-(const difference_type diff) const { return THArrayIterator(FCont, InRange(FPtr - diff)); }
@@ -948,10 +951,12 @@ THArray<T>& THArray<T>::operator=(const THArray<T>& a)
 template<class T>
 bool THArray<T>::operator==(const THArray<T>& a) const
 {
-	if (FCount == a.FCount)
-		return memcmp(FBegin, a.FBegin, FCount * sizeof(T)) == 0; //TODO if T is not simple type memcmp might not work properly due to vtable pointer
-	else
-		return false;
+	if (FCount != a.FCount) return false;
+
+    for (uint i = 0; i < FCount; i++)
+		if (FBegin[i] != a[i]) return false;
+    //	return memcmp(FBegin, a.FBegin, FCount * sizeof(T)) == 0; //TODO if T is not simple type memcmp might not work properly due to vtable pointer
+    return true;
 }
 
 template <class T>
