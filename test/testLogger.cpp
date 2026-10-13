@@ -144,7 +144,7 @@ void LoggerTest::testLog2()
 void LoggerTest::testLog3()
 {
 	//TODO implement version of test compatible with BORLANDC
-#if defined(WIN32) && !defined(__BORLANDC__) 
+//#if defined(WIN32) && !defined(__BORLANDC__) 
 	Logger& logg = GetLogger("testLog3");
 	std::shared_ptr<StringSinkST>sink1(new StringSinkST("strsink1"));
 	std::shared_ptr<StringSinkST>sink2(new StringSinkST("strsink2"));
@@ -204,7 +204,7 @@ void LoggerTest::testLog3()
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
 	CPPUNIT_ASSERT_EQUAL(std::string("ItestLog2info 1.2.RT.4.5.1"), CutLogLine(s1));
 	CPPUNIT_ASSERT_EQUAL(std::string("ItestLog2info 1.2.RT.4.5.1"), CutLogLine(s2));
-#endif
+//#endif
 }
 
 // testing logger with StringSink 
@@ -281,6 +281,45 @@ void LoggerTest::testLog4()
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
 	CPPUNIT_ASSERT_EQUAL(std::string(" testLog4warning test7"), CutLogLine(s1));
 	CPPUNIT_ASSERT_EQUAL(std::string(" testLog4warning test7"), CutLogLine(s2));
+}
+
+struct MyGroupSeparator : std::numpunct<char>
+{
+	char do_thousands_sep() const override { return '\''; } // thousands separator
+	std::string do_grouping() const override { return "\3"; } // group by 3
+};
+
+// testing logger with StringSink 
+void LoggerTest::testLogLocale()
+{
+	std::locale logLoc(std::cout.getloc(), new MyGroupSeparator);
+
+	Logger& logg = GetLogger("testLoggerWithLocale");
+	logg.Imbue(logLoc);
+	std::shared_ptr<StringSinkST> sink1(new StringSinkST("strsink1"));
+	logg.AddSink(sink1);
+	logg.SetLogLevel(llDebug);
+
+	std::string s1;
+
+	logg.CritFmt("test locale formatting {:L} {}", 123456, "somestring");
+	s1 = sink1->GetOutput();
+	CPPUNIT_ASSERT_EQUAL(std::string("*test locale formatting 123'456 somestring"), CutLogLine(s1));
+	
+	sink1->Clear();
+	logg.ErrorFmt("test {:L} {:L}", 123456789, 555555);
+	s1 = sink1->GetOutput();
+	CPPUNIT_ASSERT_EQUAL(std::string("Etest 123'456'789 555'555"), CutLogLine(s1));
+	
+	sink1->Clear();
+	logg.InfoFmt("testI {} {:L}", 111222, 987654321);
+	s1 = sink1->GetOutput();
+	CPPUNIT_ASSERT_EQUAL(std::string("ItestI 111222 987'654'321"), CutLogLine(s1));
+	
+	sink1->Clear();
+	logg.DebugFmt("testD {:L} {:L}", 1234.567, 333111.222);
+	s1 = sink1->GetOutput();
+	CPPUNIT_ASSERT_EQUAL(std::string("DtestD 1'234.567 333'111.222"), CutLogLine(s1));
 }
 
 // test case: when two file sinks try to write into the same file. in this case exception is thrown for the second sink.
@@ -425,6 +464,7 @@ void LoggerTest::testLogDuplicateSinks3()
 
 	logger.Debug("MSG#3: should appear in both console and file one time each");
 }
+
 void LoggerTest::testLogStrategyNone()
 {
 	std::string fileName = LOG_FILES_FOLDER "testStrategyNone.log";
@@ -479,7 +519,6 @@ void LoggerTest::testLogStrategyNone()
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llDebug]);
 	CPPUNIT_ASSERT_EQUAL(0ull, rsink->GetMessageCounts()[llTrace]);
 }
-
 
 void LoggerTest::testLogStrategySingle()
 {
