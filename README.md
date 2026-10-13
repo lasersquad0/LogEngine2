@@ -54,6 +54,7 @@ For other systems see [INSTALL](INSTALL) text file for details.
  	* Log level mark or full/short level name 
  	* Application name and app version
  	* OS name and OS version
+ 	* Any custom placeholder that will be replaced by value passed by user 
 * Log filtering - log levels can be modified at runtime as well as compile time.
 * Log statistics
 * Includes convenient Dynamic Arrays classes that can be used separately from LogEngine2 library.
