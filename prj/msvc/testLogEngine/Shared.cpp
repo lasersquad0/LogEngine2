@@ -1,5 +1,20 @@
 
+#include "Common.h"
 #include "Shared.h"
+
+// str is passed by value intentionally
+std::string CutLogLine(std::string str)
+{
+	// # is a marker of ThreadID in log line pattern, because ':' can be present in TimeMacro as well (goes before ThreadMacro). 
+	// ':' is a divider before MsgMacro
+	size_t pos = str.find_first_of('#', 1);
+	if (pos == std::string::npos) return str;
+
+	pos = str.find_first_of(':', pos + 1);
+	if (pos == std::string::npos) return str;
+
+	return DelCRLF(str.erase(1ull, pos + 1));
+}
 
 /*
 std::string millisecToStr(long long ms)
