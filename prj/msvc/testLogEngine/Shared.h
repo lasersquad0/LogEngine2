@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <string.h>
 #include <string>
 #include <format>
 //#include <iostream>
@@ -16,6 +15,12 @@
 
 #define LOG_FILES_FOLDER "./logs/"
 
+// cut off time and thread information (differs from log line to long line)
+// to be able to properly compare log lines in tests 
+// str is passed by value intentionally
+std::string CutLogLine(std::string str);
+
+/*
 CPPUNIT_NS_BEGIN
 template<>
 struct assertion_traits<std::string>   // specialization for the std::string type
@@ -74,7 +79,7 @@ struct assertion_traits<char*>   // specialization for the char* type
 };
 
 CPPUNIT_NS_END
-
+*/
 
 template<class STRING>
 STRING MillisecToStr(uint64_t ms)
@@ -113,4 +118,3 @@ STRING MillisecToStr(uint64_t ms)
 	return result;
 }
 
-//std::string millisecToStr(long long ms);
