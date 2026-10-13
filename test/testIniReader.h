@@ -3,7 +3,7 @@
 #include "cppunit/extensions/HelperMacros.h"
 
 /*
- * A test case to test IniReader  class
+ * A test case to test IniReader class
  *
  */
 
