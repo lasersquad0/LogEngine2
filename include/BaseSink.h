@@ -30,9 +30,6 @@ protected:
 	ullong FMessageCounts[static_cast<int>(llnLogLevels)]{ 0,0,0,0,0,0 };
 	ullong FBytesWritten = 0; //TODO may be move to Sink class?
 
-	//bool shouldLog(const Levels::LogLevel ll) const { return FLogLevel >= ll; }
-	//virtual void sendMsg(const LogEvent& e) = 0;
-
 public:
 	BaseSink(const std::string& name, const LogLevel ll = LL_DEFAULT) : Sink(name, ll), FLayout{ new PatternLayout() }
 	{
@@ -46,21 +43,19 @@ public:
 		FLayout = nullptr;
 	}
 
-	//void Flush() override { /* does nothing here*/ } //moved to Sink class
-
-	void PubSendMsg(const LogEvent& e) override
+	void PubSendMsg(const LogEvent& le) override
 	{
 		std::lock_guard<Mutex> lock(FMutex);
 
-		if (!shouldLog(e.msgLevel)) return;
+		if (!shouldLog(le.msgLevel)) return;
 
-		sendMsg(e);
+		sendMsg(le);
 	}
 
-	std::string FormatString(const LogEvent& e) override
+	std::string FormatString(const LogEvent& le) override
 	{
-		std::string str = FLayout->Format(e, FProperties);
-		FMessageCounts[e.msgLevel]++;
+		std::string str = FLayout->Format(le, FProperties);
+		FMessageCounts[le.msgLevel]++;
 
 		return str;
 	}
