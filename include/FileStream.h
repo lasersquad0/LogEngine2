@@ -113,7 +113,7 @@ public:
 		}*/
 		else if constexpr (std::is_base_of<std::basic_string<typename W::value_type, typename W::traits_type>, W>::value)
 		{
-			Write(Value.data(), Value.size() * sizeof(W::value_type));
+			Write(Value.data(), Value.size() * sizeof(typename W::value_type));
 
 			// why do we write endline on each operator<< call????????
 			//W endL;
