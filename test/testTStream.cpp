@@ -184,19 +184,19 @@ void TStreamTest::testMemoryStream6()
 	
 	CPPUNIT_ASSERT_EQUAL(-1, stream1.Read(buf, 0));
 	CPPUNIT_ASSERT_EQUAL(1, stream1.Read(buf, 1));
-	CPPUNIT_ASSERT_EQUAL((char*)"3", (char*)buf);
+	CPPUNIT_ASSERT_EQUAL('3', buf[0]);
 
 	CPPUNIT_ASSERT_EQUAL(1, stream1.Read(buf, 1));
-	CPPUNIT_ASSERT_EQUAL((char*)"4", (char*)buf);
+	CPPUNIT_ASSERT_EQUAL('4', buf[0]);
 
 	CPPUNIT_ASSERT_EQUAL(2, stream1.Read(buf, 2));
-	CPPUNIT_ASSERT_EQUAL((char*)"56", (char*)buf); 
+	CPPUNIT_ASSERT_EQUAL(std::string("56"), std::string(buf)); 
 
 	CPPUNIT_ASSERT_EQUAL(4, stream1.Read(buf, 10));
-	CPPUNIT_ASSERT_EQUAL((char*)"7890", (char*)buf); 
+	CPPUNIT_ASSERT_EQUAL(std::string("7890"), std::string(buf)); 
 
 	CPPUNIT_ASSERT_EQUAL(0, stream1.Read(buf, 5)); // nothing read, EOF reached
-	CPPUNIT_ASSERT_EQUAL((char*)"7890", (char*)buf); 
+	CPPUNIT_ASSERT_EQUAL(std::string("7890"), std::string(buf)); 
 }
 
 void TStreamTest::testMemoryStream7()
@@ -210,7 +210,7 @@ void TStreamTest::testMemoryStream7()
 	memset(buf, 0, BUF_SZ + 1);
 
 	CPPUNIT_ASSERT_EQUAL(BUF_SZ, stream1.Read(buf, BUF_SZ));
-	CPPUNIT_ASSERT_EQUAL((const char*)"abcdefghijklmnopqrstuvwxyz", (const char*)buf);
+	CPPUNIT_ASSERT_EQUAL((char*)"abcdefghijklmnopqrstuvwxyz", (char*)buf);
 
 	CPPUNIT_ASSERT_EQUAL(0, stream1.Read(buf, BUF_SZ));
 	CPPUNIT_ASSERT_EQUAL((char*)"abcdefghijklmnopqrstuvwxyz", (char*)buf);
