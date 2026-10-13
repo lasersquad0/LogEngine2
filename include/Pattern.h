@@ -40,6 +40,8 @@ LOGENGINE_NS_BEGIN
 #define OSMacro		      "%OS%"
 #define OSVersionMacro	  "%OSVERSION%"
 
+#define MACRO_SEP '%'
+#define MACRO_SEP_STR "%"
 
 static std::string GetPropertyValue(Properties* props, Logger* logger, const std::string& paramName, const std::string& defValue)
 {
@@ -69,7 +71,7 @@ public:
 class LoggerNameHolder : public Holder
 {
 public:
-	std::string Format(const LogEvent& event, Properties&) override { return event.logger->GetName(); }
+	std::string Format(const LogEvent& event, Properties&) override { return event.logger? event.logger->GetName(): ""; }
 };
 
 class LogLevelHolder : public Holder
@@ -201,8 +203,16 @@ class LiteralHolder : public Holder
 private:
 	std::string FValue;
 public:
-	LiteralHolder(const std::string& value) { FValue = value; }
-	std::string Format(const LogEvent&, Properties&) override { return FValue; }
+	LiteralHolder(const std::string& value): FValue(value) { assert(value.size() > 0); }
+	std::string Format(const LogEvent&, Properties& props) override 
+	{
+		// unknown macros are considered as LiterralHolder.
+		// check if literal looks like a macro and substitute it by value from properties if exists
+		if ( (FValue[0] == MACRO_SEP) && (FValue[FValue.size() - 1] == MACRO_SEP) )
+			return props.GetString(FValue.substr(1, FValue.size() - 2), FValue);
+		else
+			return FValue; 
+	}
 };
 
 class OSHolder : public Holder
@@ -211,6 +221,24 @@ public:
 	std::string Format(const LogEvent&, Properties&) override
 	{
 #ifdef WIN32
+		HKEY hKey;
+		if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+		{
+			char buffer[256];
+			DWORD size = sizeof(buffer);
+			DWORD type = REG_SZ;
+
+			if (RegQueryValueEx(hKey, "ProductName", NULL, &type, (LPBYTE)buffer, &size) == ERROR_SUCCESS)
+			{
+				RegCloseKey(hKey);
+				return buffer;
+			}
+			RegCloseKey(hKey);
+		}
+
+		return "Windows";
+
+/*
 		DWORD OSMajorVer = 6, OSMinorVer = 3, SPMajorVer = 0, SPMinorVer = 0;
 		DWORD result;
 
@@ -218,6 +246,7 @@ public:
 			return "Error getting OS info";
 		else
 			return IntToStr(OSMajorVer) + "." + IntToStr(OSMinorVer) + " SP " + IntToStr(SPMajorVer) + "." + IntToStr(SPMinorVer) + " " + IntToStr(result);
+			*/
 #else
 		return "OSHolder";
 #endif	
@@ -301,6 +330,7 @@ public:
 class Pattern
 {
 protected:
+	// table of pairs Macro name -> class handler for this macro
 	inline static const THashOwner FDefHolders
 	{ {LoggerNameMacro, new LoggerNameHolder()}, {LogLevelMacro, new LogLevelHolder()}, {MessageMacro, new MessageHolder()},
 	  {DateMacro, new DateHolder()}, {TimeMacro, new TimeHolder()}, {DateTimeMacro, new DateTimeHolder()},
