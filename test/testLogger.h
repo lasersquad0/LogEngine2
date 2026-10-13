@@ -1,12 +1,12 @@
-#ifndef _LOG_TESTS_HEADER_
-#define _LOG_TESTS_HEADER_
+#ifndef _TEST_LOGGER_H_
+#define _TEST_LOGGER_H_
 
 #include <string>
 #include <cppunit/extensions/HelperMacros.h>
-#include "Common.h"
+
 
 /* 
- * A test case to test LogEngine Log class
+ * A test case to test LogEngine Logger class
  *
  */
 
@@ -66,16 +66,6 @@ public:
     // void testLogRotation1();
 };
 
-inline std::string cutLog(std::string str) // cut off time and thread information (which is not same time from time)
-{
-    // # is a marker of ThreadID in log line pattern, because ':' can be present in TimeMacro as well (goes before ThreadMacro). 
-    // ':' is a divider before MsgMacro
-    size_t pos = str.find_first_of('#', 1);
-    pos = str.find_first_of(':', pos +  1);
 
-    if (pos == std::string::npos) return str;
 
-    return DelCRLF(str.erase((size_t)1, pos+1));
-}
-
-#endif // _LOG_TESTS_HEADER_
+#endif // _TEST_LOGGER_H_
