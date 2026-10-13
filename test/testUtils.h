@@ -1,10 +1,10 @@
-#ifndef UTIL_TESTS_HEADER
-#define UTIL_TESTS_HEADER
+#ifndef _TEST_UTILS_H_
+#define _TEST_UTILS_H_
 
 #include "cppunit/extensions/HelperMacros.h"
 
 /* 
- * A test case to test LogEngine utils 
+ * A test case to test LogEngine utils functions 
  *
  */
 
@@ -81,4 +81,4 @@ public:
     void testDelCRLF3();
 };
 
-#endif // UTIL_TESTS_HEADER
+#endif // _TEST_UTILS_H_
