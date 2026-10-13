@@ -22,7 +22,7 @@ static struct tm getFixedTime()
 	timeb tm;
 	tm.millitm = 222;
 	tm.time = 555;
-#if defined WIN32 && !defined __BORLANDC__
+#if defined WIN32 //&& !defined __BORLANDC__
 	struct tm tmt;
 	localtime_s(&tmt, &tm.time);
 	return tmt;
