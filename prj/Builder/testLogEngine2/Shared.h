@@ -1,21 +1,28 @@
 #pragma once
 
 #include <string>
-#include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <format>
+//#include <iostream>
+//#include <sys/types.h>
+//#include <sys/stat.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #ifdef WIN32
-#define TEST_FILES_FOLDER "..\\..\\..\\test\\testFiles\\"
+#define TEST_FILES_FOLDER "..\\..\\..\\..\\..\\test\\testFiles\\"
 #else
 #define TEST_FILES_FOLDER "testFiles/"
 #endif
 
 #define LOG_FILES_FOLDER "./logs/"
 
+// cut off time and thread information (differs from log line to long line)
+// to be able to properly compare log lines in tests 
+// str is passed by value intentionally
+std::string CutLogLine(std::string str);
+
+
 CPPUNIT_NS_BEGIN
-template<>
+/*template<>
 struct assertion_traits<std::string>   // specialization for the std::string type
 {
 	static bool equal(const std::string& x, const std::string& y)
@@ -28,7 +35,9 @@ struct assertion_traits<std::string>   // specialization for the std::string typ
 		return x;
 	}
 };
+*/
 
+// these two specializations needed for CPPUNIT_ASSERT_EQUAL to properly compare two char* parameters
 template<>
 struct assertion_traits<const char*>   // specialization for the char* type
 {
@@ -73,4 +82,41 @@ struct assertion_traits<char*>   // specialization for the char* type
 
 CPPUNIT_NS_END
 
-std::string millisecToStr(long long ms);
+
+template<class STRING>
+STRING MillisecToStr(uint64_t ms)
+{
+	// make sure that STRING is one of instantiations of std::string
+	static_assert(std::is_base_of<std::basic_string<typename STRING::value_type, typename STRING::traits_type>, STRING>::value);
+
+	uint32_t milliseconds = ms % 1000;
+	uint32_t seconds = (ms / 1000) % 60;
+	uint32_t minutes = (ms / 60000) % 60;
+	uint32_t hours = (ms / 3600000) % 24;
+
+	STRING result;
+
+	if constexpr (std::is_same_v<typename STRING::value_type, char>)
+	{
+		if (hours > 0)
+			result = std::format("{} hours {} minutes {} seconds {} ms", hours, minutes, seconds, milliseconds);
+		else if (minutes > 0)
+			result = std::format("{} minutes {} seconds {} ms", minutes, seconds, milliseconds);
+		else
+			result = std::format("{} seconds {} ms", seconds, milliseconds);
+	}
+	else if constexpr (std::is_same_v<typename STRING::value_type, wchar_t>)
+	{
+		if (hours > 0)
+			result = std::format(L"{} hours {} minutes {} seconds {} ms", hours, minutes, seconds, milliseconds);
+		else if (minutes > 0)
+			result = std::format(L"{} minutes {} seconds {} ms", minutes, seconds, milliseconds);
+		else
+			result = std::format(L"{} seconds {} ms", seconds, milliseconds);
+	}
+	else
+		result = "UNKNOWN STRING TYPE";
+
+	return result;
+}
+
