@@ -15,7 +15,7 @@ static struct tm getFixedTime()
 	timeb tm;
 	tm.millitm = 111;
 	tm.time = 444;
-#if defined WIN32 && !defined __BORLANDC__
+#if defined WIN32 //&& !defined __BORLANDC__
 	struct tm tmt;
 	localtime_s(&tmt, &tm.time);
 	return tmt;
@@ -205,7 +205,7 @@ void LineTest::testLine15()
 	LogEvent event(nullptr, "message", llError, 1, FixedTime);
 	
 	std::string res = line.Format(event);
-	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.26100.8875"), res);
+	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.26100.9444"), res);
 }
 
 void LineTest::testLine16()
@@ -240,7 +240,7 @@ void LineTest::testLine18()
 	LogEvent event(nullptr, "msgggg", llError, 1, FixedTime);
 
 	std::string res = line.Format(event);
-	CPPUNIT_ASSERT_EQUAL(std::string("testLine18 6.3 SP 0.0 4 msgggg"), res);
+	CPPUNIT_ASSERT_EQUAL(std::string("testLine18 Windows 10 Enterprise msgggg"), res);
 }
 
 void LineTest::testLine19()
