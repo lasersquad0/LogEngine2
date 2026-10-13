@@ -9,7 +9,6 @@
 #if !defined(PATTERNLAYOUT_H)
 #define PATTERNLAYOUT_H
 
-//#include <vector>
 #include "Common.h"
 #include "Layout.h"
 #include "Pattern.h"
@@ -25,10 +24,12 @@ protected:
 	// actual pattern values
 	Pattern MessagePatterns[llnLogLevels]{ Pattern{DefaultLinePattern}, Pattern{DefaultCritPattern}, Pattern{DefaultErrorPattern},
 		          Pattern{DefaultWarningPattern}, Pattern{DefaultInfoPattern}, Pattern{DefaultDebugPattern}, Pattern{DefaultTracePattern} };
-	Pattern AppName{ DefaultAppName };
-	Pattern AppVersion{ DefaultAppVersion };
-	Pattern StartAppLine{ DefaultStartAppLine };
-	Pattern StopAppLine{ DefaultStopAppLine };
+	//TODO there is not way to print these 4 patterns as for now
+	// think how the could be applied
+	//Pattern AppName{ DefaultAppName };
+	//Pattern AppVersion{ DefaultAppVersion };
+	//Pattern StartAppLine{ DefaultStartAppLine };
+	//Pattern StopAppLine{ DefaultStopAppLine };
 	//Pattern SeparatorLine{ DefaultSeparatorLine };
 
 public:
@@ -38,20 +39,12 @@ public:
 	std::string GetPattern(LogLevel level) override { return MessagePatterns[level].GetPattern(); }
 	std::string GetPattern() override { return MessagePatterns[llOff].GetPattern(); }
 	
-	/*virtual void SetCritPattern (const std::string& pattern) { MessagePatterns[Levels::llCritical].SetPattern(pattern);}
-	virtual void SetErrorPattern(const std::string& pattern) { MessagePatterns[Levels::llError].SetPattern(pattern);   }
-	virtual void SetWarnPattern (const std::string& pattern) { MessagePatterns[Levels::llWarning].SetPattern(pattern); }
-	virtual void SetInfoPattern (const std::string& pattern) { MessagePatterns[Levels::llInfo].SetPattern(pattern);    }
-	virtual void SetDebugPattern(const std::string& pattern) { MessagePatterns[Levels::llDebug].SetPattern(pattern);   }
-	virtual void SetTracePattern(const std::string& pattern) { MessagePatterns[Levels::llTrace].SetPattern(pattern);   }
-	*/
-
-	virtual void SetStartAppLinePattern(const std::string& pattern) { StartAppLine.SetPattern(pattern); }
-	virtual void SetStopAppLinePattern(const std::string& pattern) { StopAppLine.SetPattern(pattern); }
-	virtual void SetAppName(const std::string& aname) { AppName.SetPattern(aname); }
+	//virtual void SetStartAppLinePattern(const std::string& pattern) { StartAppLine.SetPattern(pattern); }
+	//virtual void SetStopAppLinePattern(const std::string& pattern) { StopAppLine.SetPattern(pattern); }
+	//virtual void SetAppName(const std::string& aname) { AppName.SetPattern(aname); }
 
 	// set pattern for specified LogLevel only
-	void SetPattern(const std::string& pattern, LogLevel level) override { MessagePatterns[level].SetPattern(pattern); }
+	void SetPattern(LogLevel level, const std::string& pattern) override { MessagePatterns[level].SetPattern(pattern); }
 
 	// set the same pattern for all lines: Crit, Error, Warn, Info, Debug, Trace
 	void SetPattern(const std::string& pattern) override
