@@ -8,7 +8,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #ifdef WIN32
-#define TEST_FILES_FOLDER "..\\..\\..\\test\\testFiles\\"
+#define TEST_FILES_FOLDER "..\\..\\..\\..\\..\\test\\testFiles\\"
 #else
 #define TEST_FILES_FOLDER "testFiles/"
 #endif
@@ -20,9 +20,9 @@
 // str is passed by value intentionally
 std::string CutLogLine(std::string str);
 
-/*
+
 CPPUNIT_NS_BEGIN
-template<>
+/*template<>
 struct assertion_traits<std::string>   // specialization for the std::string type
 {
 	static bool equal(const std::string& x, const std::string& y)
@@ -35,7 +35,9 @@ struct assertion_traits<std::string>   // specialization for the std::string typ
 		return x;
 	}
 };
+*/
 
+// these two specializations needed for CPPUNIT_ASSERT_EQUAL to properly compare two char* parameters
 template<>
 struct assertion_traits<const char*>   // specialization for the char* type
 {
@@ -79,7 +81,7 @@ struct assertion_traits<char*>   // specialization for the char* type
 };
 
 CPPUNIT_NS_END
-*/
+
 
 template<class STRING>
 STRING MillisecToStr(uint64_t ms)
