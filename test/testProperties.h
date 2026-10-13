@@ -1,5 +1,5 @@
-#if !defined(_TEST_PROPERTIES_)
-#define _TEST_PROPERTIES_
+#ifndef _TEST_PROPERTIES_H_
+#define _TEST_PROPERTIES_H_
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -44,4 +44,4 @@ public:
     void testProperties12();
 };
 
-#endif //_TEST_PROPERTIES_
+#endif //_TEST_PROPERTIES_H_
