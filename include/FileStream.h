@@ -144,7 +144,7 @@ public:
 	int ReadChar()
 	{
 		typename R::value_type c;
-		if (Read(&c, sizeof(c)) == sizeof(R::value_type))
+		if (Read(&c, sizeof(c)) == sizeof(typename R::value_type))
 			return c;
 		else
 			return -1;
