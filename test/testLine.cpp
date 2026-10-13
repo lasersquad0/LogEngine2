@@ -10,7 +10,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(LineTest);
 
 using namespace LogEngine;
 
-struct tm getFixedTime()
+static struct tm getFixedTime()
 {
 	timeb tm;
 	tm.millitm = 111;
@@ -25,12 +25,12 @@ struct tm getFixedTime()
 }
 
 
-void LineTest::setUp ()
+void LineTest::setUp()
 {
 	FixedTime = getFixedTime();
 }
 
-void LineTest::tearDown ()
+void LineTest::tearDown()
 {
 	ShutdownLoggers();
     // free memory allocated in setUp, do other things
@@ -66,7 +66,7 @@ void LineTest::testLine3()
 void LineTest::testLine4()
 {
 	Pattern line("%DATE%");
-	LogEvent event(nullptr, "MSG", llTrace, 1, FixedTime);
+	LogEvent event(nullptr, "MSG2", llTrace, 1, FixedTime);
 	
 	std::string res = line.Format(event);
 	CPPUNIT_ASSERT_EQUAL(std::string("01/01/70"), res);
@@ -79,7 +79,6 @@ void LineTest::testLine4()
 	props.SetValue("%DATE%", "%d %b %Y"); // setup date format for log line
 	res = line.Format(event, props);
 	CPPUNIT_ASSERT_EQUAL(std::string("01 Jan 1970"), res);
-
 }
 
 void LineTest::testLine5()
@@ -149,10 +148,10 @@ void LineTest::testLine10()
 void LineTest::testLine11()
 {
 	Pattern line("Line%DATE%mama%MSG%%TIME%");
-	LogEvent event(nullptr, "MSG", llInfo, 1, FixedTime);
+	LogEvent event(nullptr, "MSGX", llInfo, 1, FixedTime);
 	
 	std::string res = line.Format(event);
-	CPPUNIT_ASSERT_EQUAL(std::string("Line01/01/70mamaMSG03:07:24"), res);
+	CPPUNIT_ASSERT_EQUAL(std::string("Line01/01/70mamaMSGX03:07:24"), res);
 	LogEvent event2(nullptr, "789", llError, 1, FixedTime);
 	
 	Properties props;
