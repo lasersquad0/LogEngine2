@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{4C782382-3868-482C-9105-0642B8BA9AEC}</ProjectGuid>
-        <ProjectVersion>20.3</ProjectVersion>
+        <ProjectVersion>20.4</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
@@ -175,14 +175,11 @@
             <BuildOrder>18</BuildOrder>
             <IgnorePath>true</IgnorePath>
         </LibFiles>
-        <CppCompile Include="Main.cpp">
-            <BuildOrder>11</BuildOrder>
-        </CppCompile>
         <None Include="MyTestProgressListener.h">
             <BuildOrder>2</BuildOrder>
         </None>
         <CppCompile Include="Shared.cpp">
-            <BuildOrder>9</BuildOrder>
+            <BuildOrder>22</BuildOrder>
         </CppCompile>
         <None Include="Shared.h">
             <BuildOrder>10</BuildOrder>
@@ -202,6 +199,9 @@
         <CppCompile Include="..\..\..\src\FileStream.cpp">
             <BuildOrder>16</BuildOrder>
         </CppCompile>
+        <CppCompile Include="..\..\..\src\LogEngine.cpp">
+            <BuildOrder>21</BuildOrder>
+        </CppCompile>
         <CppCompile Include="..\..\..\src\LogEvent.cpp">
             <BuildOrder>17</BuildOrder>
         </CppCompile>
@@ -214,18 +214,36 @@
         <CppCompile Include="..\..\..\src\PatternLayout.cpp">
             <BuildOrder>20</BuildOrder>
         </CppCompile>
-        <None Include="..\..\..\test\testLine.cpp">
-            <Exclude>True</Exclude>
+        <CppCompile Include="..\..\..\src\Properties.cpp">
+            <BuildOrder>22</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testConfigFile.cpp">
+            <BuildOrder>23</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testIniReader.cpp">
+            <BuildOrder>18</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testLine.cpp">
             <BuildOrder>3</BuildOrder>
-        </None>
-        <None Include="..\..\..\test\testLog.cpp">
-            <Exclude>True</Exclude>
-            <BuildOrder>4</BuildOrder>
-        </None>
-        <None Include="..\..\..\test\testProperties.cpp">
-            <Exclude>True</Exclude>
-            <BuildOrder>6</BuildOrder>
-        </None>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testLogger.cpp">
+            <BuildOrder>19</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testPatternLayout.cpp">
+            <BuildOrder>20</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testProperties.cpp">
+            <BuildOrder>20</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testRunner.cpp">
+            <BuildOrder>25</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testThreadLog.cpp">
+            <BuildOrder>24</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\test\testTStream.cpp">
+            <BuildOrder>25</BuildOrder>
+        </CppCompile>
         <CppCompile Include="..\..\..\test\testUtils.cpp">
             <BuildOrder>9</BuildOrder>
         </CppCompile>
@@ -304,6 +322,16 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile Condition="'$(DynamicRTL)'=='true'" LocalName="$(BDS)\bin64\libc++-370.dll" Class="DependencyModule">
+                    <Platform Name="Win64x">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile Condition="'$(DynamicRTL)'=='true'" LocalName="$(BDS)\bin64\libunwind-370.dll" Class="DependencyModule">
+                    <Platform Name="Win64x">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile Condition="'$(UsingDelphiRTL)'=='true'" LocalName="$(BDS)\bin\borlndmm.dll" Class="DependencyModule">
                     <Platform Name="Win32">
                         <Overwrite>true</Overwrite>
@@ -337,7 +365,28 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile Condition="'$(UsingDelphiRTL)'=='true'" LocalName="$(BDS)\binarm64ec\borlndmm.dll" Class="DependencyModule">
+                    <Platform Name="WinARM64EC">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'!='true'" LocalName="$(BDS)\binarm64ec\cc64370.dll" Class="DependencyModule">
+                    <Platform Name="WinARM64EC">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'=='true'" LocalName="$(BDS)\binarm64ec\cc64370mt.dll" Class="DependencyModule">
+                    <Platform Name="WinARM64EC">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="..\..\..\external\cppunit\lib\cppunit64-bcb.lib" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win64x">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\external\cppunit\lib\cppunit64-bcb.lib" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win64x">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -347,6 +396,12 @@
                 <DeployFile LocalName="..\..\..\external\cppunit\lib\cppunit64.a" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\external\cppunit\lib\cppunit64.lib" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\external\cppunit\lib\cppunit64d-bcb.lib" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win64x">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\external\cppunit\lib\cppunit64d-bcb.lib" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win64x">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -366,9 +421,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName=".\Win64x\Debug\testLogEngine.pdb" Configuration="Debug" Class="DebugSymbols">
+                <DeployFile LocalName=".\Win64x\Release\testLogEngine.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win64x">
-                        <RemoteName>testLogEngine.pdb</RemoteName>
+                        <RemoteName>testLogEngine.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -962,6 +1017,9 @@
                     <Platform Name="Win64x">
                         <Operation>1</Operation>
                     </Platform>
+                    <Platform Name="WinARM64EC">
+                        <Operation>1</Operation>
+                    </Platform>
                 </DeployClass>
                 <DeployClass Name="ProjectiOSDeviceDebug">
                     <Platform Name="iOSDevice32">
@@ -1004,6 +1062,10 @@
                         <RemoteDir>Assets</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
+                    <Platform Name="WinARM64EC">
+                        <RemoteDir>Assets</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
                 </DeployClass>
                 <DeployClass Name="UWP_CppLogo44">
                     <Platform Name="Win32">
@@ -1015,6 +1077,10 @@
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="Win64x">
+                        <RemoteDir>Assets</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                    <Platform Name="WinARM64EC">
                         <RemoteDir>Assets</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -1231,6 +1297,7 @@
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win64x" Name="$(PROJECTNAME)"/>
+                <ProjectRoot Platform="WinARM64EC" Name="$(PROJECTNAME)"/>
             </Deployment>
             <Platforms>
                 <Platform value="Win32">False</Platform>
