@@ -46,7 +46,7 @@ public:
 		FLayout = nullptr;
 	}
 
-	//void Flush() override { /* does nothing here*/ }
+	//void Flush() override { /* does nothing here*/ } //moved to Sink class
 
 	void PubSendMsg(const LogEvent& e) override
 	{
@@ -79,7 +79,7 @@ public:
 	void SetPattern(const std::string& pattern, LogLevel ll) override
 	{
 		std::lock_guard<Mutex> lock(FMutex);
-		FLayout->SetPattern(pattern, ll);
+		FLayout->SetPattern(ll, pattern);
 	}
 
 	// sets log line pattern for all log lines
@@ -89,14 +89,14 @@ public:
 		FLayout->SetPattern(pattern);
 	}
 
-	// sets log line pattern for the specified by parameter 'll' log line
+	// this is a way to "revert back" to default pattern for the specified log level
 	void SetDefaultPattern(LogLevel ll) override
 	{
 		std::lock_guard<Mutex> lock(FMutex);
 		FLayout->SetDefaultPattern(ll);
 	}
 
-	// sets log line pattern for all log lines
+	// this is a way to "revert back" to default patterns
 	void SetDefaultPattern() override
 	{
 		std::lock_guard<Mutex> lock(FMutex);
