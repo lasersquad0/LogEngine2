@@ -421,12 +421,12 @@ LOGENGINE_INLINE void InitFromFile(const std::string& fileName)
 					sink->SetLogLevel(LLfromString(reader.GetValue(sinkSectName, LOGLEVEL_PARAM, LL_DEFAULT_NAME, 0)));
 					PatternLayout* lay = new PatternLayout();
 					lay->SetPattern(reader.GetValue(sinkSectName, PATTERNALL_PARAM, DefaultLinePattern, 0));
-					if (reader.HasValue(sinkSectName, CRITPATTERN_PARAM))  lay->SetCritPattern(reader.GetValue(sinkSectName, CRITPATTERN_PARAM));
-					if (reader.HasValue(sinkSectName, ERRORPATTERN_PARAM)) lay->SetErrorPattern(reader.GetValue(sinkSectName, ERRORPATTERN_PARAM));
-					if (reader.HasValue(sinkSectName, WARNPATTERN_PARAM))  lay->SetWarnPattern(reader.GetValue(sinkSectName, WARNPATTERN_PARAM));
-					if (reader.HasValue(sinkSectName, INFOPATTERN_PARAM))  lay->SetInfoPattern(reader.GetValue(sinkSectName, INFOPATTERN_PARAM));
-					if (reader.HasValue(sinkSectName, DEBUGPATTERN_PARAM)) lay->SetDebugPattern(reader.GetValue(sinkSectName, DEBUGPATTERN_PARAM));
-					if (reader.HasValue(sinkSectName, TRACEPATTERN_PARAM)) lay->SetTracePattern(reader.GetValue(sinkSectName, TRACEPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, CRITPATTERN_PARAM))  lay->SetPattern(llCritical, reader.GetValue(sinkSectName, CRITPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, ERRORPATTERN_PARAM)) lay->SetPattern(llError,    reader.GetValue(sinkSectName, ERRORPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, WARNPATTERN_PARAM))  lay->SetPattern(llWarning,  reader.GetValue(sinkSectName, WARNPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, INFOPATTERN_PARAM))  lay->SetPattern(llInfo,     reader.GetValue(sinkSectName, INFOPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, DEBUGPATTERN_PARAM)) lay->SetPattern(llDebug,    reader.GetValue(sinkSectName, DEBUGPATTERN_PARAM));
+					if (reader.HasValue(sinkSectName, TRACEPATTERN_PARAM)) lay->SetPattern(llTrace,    reader.GetValue(sinkSectName, TRACEPATTERN_PARAM));
 
 					sink->SetLayout(lay);
 					sink->FillProperties(reader.GetSection(sinkSectName));
