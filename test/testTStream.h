@@ -1,5 +1,5 @@
-#if !defined(TEST_TSTREAM_H)
-#define TEST_TSTREAM_H
+#ifndef _TEST_TSTREAM_H_
+#define _TEST_TSTREAM_H_
 
 #include "cppunit/extensions/HelperMacros.h"
 #include "FileStream.h"
@@ -49,4 +49,4 @@ public:
 
 
 
-#endif //TEST_TSTREAM_H
+#endif //_TEST_TSTREAM_H_
