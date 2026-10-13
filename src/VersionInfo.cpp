@@ -11,6 +11,26 @@
 #ifdef _WIN32
 #include <windows.h>
 
+std::string GetWindowsProductName() 
+{
+    HKEY hKey;
+    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS) 
+    {
+        char buffer[256];
+        DWORD size = sizeof(buffer);
+        DWORD type = REG_SZ;
+
+        if (RegQueryValueEx(hKey, "ProductName", NULL, &type, (LPBYTE)buffer, &size) == ERROR_SUCCESS) 
+        {
+            RegCloseKey(hKey);
+            return buffer;
+        }
+        RegCloseKey(hKey);
+    }
+
+    return "Windows";
+}
+
 std::string DisplaySystemVersion()
 {
     OSVERSIONINFOEXA osvi;
