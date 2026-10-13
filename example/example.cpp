@@ -45,12 +45,12 @@ int main(int, char *[])
         // Runtime log levels
 
         // set log level for logger and for all its sinks 
-        logger.SetLogLevel(LogEngine::Levels::llInfo);
+        logger.SetLogLevel(LogEngine::llInfo);
         logger.Debug("This message should not be displayed!");
-        logger.SetLogLevel(LogEngine::Levels::llTrace, false); // set log level for logger only
+        logger.SetLogLevel(LogEngine::llTrace, false); // set log level for logger only
         logger.Debug("This message should not be displayed due to log level in sink!");
         // set log level for logger and for all its sinks
-        logger.SetLogLevel(LogEngine::Levels::llTrace);
+        logger.SetLogLevel(LogEngine::llTrace);
         logger.Debug("This message should be displayed..");
 
         logger.SetPattern("%LOGLEVE% %LOGLEVEL% %DATETIME% %LOGLEVEL% [%THREAD%] %MSG%");
@@ -104,10 +104,10 @@ void DefaultLoggerExample()
 {
     // log level is llInfo by default
     LogEngine::Info("[Default logger] It is stdout logger.");
-    LogEngine::Log("[Default logger] Warning message.", LogEngine::Levels::llWarning);
+    LogEngine::Log("[Default logger] Warning message.", LogEngine::llWarning);
     LogEngine::Debug("[Default logger] Here is Debug message, will not be displayed");
 
-    LogEngine::LogFmt(LogEngine::Levels::llError, "[Default logger] #1 This is formatted message {} {}", "arg1", 5);
+    LogEngine::LogFmt(LogEngine::llError, "[Default logger] #1 This is formatted message {} {}", "arg1", 5);
     LogEngine::WarnFmt("[Default logger] #2 This is formatted message {} {}", 4*7, "argX");
 }
 
@@ -209,21 +209,21 @@ void MultiSinkExample()
     
     // we need shared_ptr for Sinks here for proper freeing Sink objects when they shared between several loggers. 
     std::shared_ptr<Sink> consoleSink(new StdoutSinkST("console_sink"));
-    consoleSink->SetLogLevel(Levels::llWarning);
+    consoleSink->SetLogLevel(llWarning);
     consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
 
     std::shared_ptr<Sink> fileSink(new FileSinkST("file_sink", LOG_FILES_DIR "multisink.txt"));
-    fileSink->SetLogLevel(Levels::llTrace);
+    fileSink->SetLogLevel(llTrace);
 
     Logger logger("multi_sink", { consoleSink, fileSink });
-    logger.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
+    logger.SetLogLevel(llDebug, false); // change log level for logger only.
     logger.Warn("This should appear in both console and file");
     logger.Info("This message should not appear in the console, only in the file");
 
     // two sinks are shared between two loggers
     // logger2 contains two sinks because duplicates
     Logger logger2("multi_sink2", { consoleSink, fileSink, consoleSink, fileSink });
-    logger2.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
+    logger2.SetLogLevel(llDebug, false); // change log level for logger only.
     logger2.Warn("This should appear two times in both console and file");
     logger2.Info("This message should not appear in the console, only in the file two times");
 }
