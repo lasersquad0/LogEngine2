@@ -45,7 +45,8 @@ private:
 	SinkList FSinks;
 	bool FAsync = false;
 	Properties FProperties;
-	void InternalLog(const LogEvent& le) { SendToAllSinks(le); }
+	std::locale FLocale;
+	void internalLog(const LogEvent& le) { SendToAllSinks(le); }
 
 public:
 	//TODO shall we add FQueue capacity size to constructor parameters?
@@ -79,6 +80,7 @@ public:
 	}
 	
 	std::string GetName() { return FName; }
+	void Imbue(std::locale& loc) { FLocale = loc; }
 
 	bool GetAsyncMode() { return FAsync; }
 	void SetAsyncMode(bool amode)
@@ -225,13 +227,13 @@ public:
 		// TODO think how to pass all args into SendToAllSinks and create final string there
 		if (FAsync)
 		{
-			LogEvent* event = new LogEvent(this, std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
+			LogEvent* event = new LogEvent(this, std::vformat(FLocale, fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
 			FQueue.PushElement(event);
 		}
 		else
 		{
-			LogEvent ev(this, std::vformat(fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
-			InternalLog(ev);
+			LogEvent ev(this, std::vformat(FLocale, fmt.get(), std::make_format_args(args...)), ll, GetThreadID(), GetCurrDateTime());
+			internalLog(ev);
 		}
 	}
 //#else
@@ -381,7 +383,7 @@ public:
 		else
 		{
 			LogEvent ev(this, msg, ll, GetThreadID(), GetCurrDateTime());
-			InternalLog(ev);
+			internalLog(ev);
 		}
 	}
 
@@ -460,7 +462,7 @@ public:
 			if (current_msg)
 			{
 				LogEvent* event = current_msg;
-				logger->InternalLog(*event);
+				logger->internalLog(*event);
 				delete event;
 			}
 
