@@ -98,7 +98,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v145</PlatformToolset>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -131,7 +131,7 @@
     <EnableASAN>
     </EnableASAN>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -839,7 +839,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\ReleaseUnicode/testLogEngine.bsc</OutputFile>
     </Bscmake>
-    </ItemDefinitionGroup>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\testIniReader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -863,6 +863,7 @@
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\testPatternLayout.cpp" />
     <ClCompile Include="..\..\..\test\testProperties.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">true</ExcludedFromBuild>
@@ -892,6 +893,7 @@
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\BaseSink.h" />
@@ -917,6 +919,7 @@
     <ClInclude Include="..\..\..\test\testLine.h" />
     <ClInclude Include="..\..\..\test\testConfigFile.h" />
     <ClInclude Include="..\..\..\test\testLogger.h" />
+    <ClInclude Include="..\..\..\test\testPatternLayout.h" />
     <ClInclude Include="..\..\..\test\testProperties.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>

@@ -51,6 +51,12 @@
     <ClCompile Include="..\..\..\test\testRunner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Shared.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\testPatternLayout.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\test\testLine.h">
@@ -139,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\Version.h">
       <Filter>Header Files\LogEngine2 headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\testPatternLayout.h">
+      <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
