@@ -86,7 +86,7 @@ template<class Mutex>
 class StdoutSink : public BaseSink<Mutex>
 {
 public:
-	StdoutSink(const std::string& name) : BaseSink<Mutex>(name) { /*SetLayout(new PatternLayout());*/ }
+	StdoutSink(const std::string& name) : BaseSink<Mutex>(name) { }
 
 	void sendMsg(const LogEvent& e) override
 	{
@@ -112,7 +112,7 @@ template<class Mutex>
 class StderrSink : public BaseSink<Mutex>
 {
 public:
-	StderrSink(const std::string& name) : BaseSink<Mutex>(name) { /*SetLayout(new PatternLayout());*/ }
+	StderrSink(const std::string& name) : BaseSink<Mutex>(name) { }
 
 	void sendMsg(const LogEvent& e) override
 	{
@@ -127,7 +127,7 @@ class StringSink : public BaseSink<Mutex>
 private:
 	std::ostringstream output;
 public:
-	StringSink(const std::string& name) : BaseSink<Mutex>(name) { /*SetLayout(new PatternLayout());*/ }
+	StringSink(const std::string& name) : BaseSink<Mutex>(name) { }
 
 	void sendMsg(const LogEvent& e) override
 	{
