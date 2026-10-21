@@ -47,13 +47,14 @@ LogEngine2 — логируй просто и в тоже время гибко.
   * Обычные лог-файлы
   * Ротируемые лог-файлы
   * Логирование в консоль (stdio и stderr)
-  * Символьная строка
+  * Строка символов
 * Настраиваемые шаблоны для строк, которые могут включать информацию:
   * Дата и/или время
   * Идентификатор потока (thread id)
   * Маркер уровня логирования или полное/сокращённое название уровня
   * Имя приложения и версия приложения
   * Название ОС и версия ОС
+  * Placeholders определенные пользователем
 * Фильтрация логов — уровни логирования могут быть изменены как во время выполнения, так и во время компиляции
 * Статистика логирования
 * Включает удобные классы динамических массивов, которые могут использоваться отдельно от библиотеки LogEngine2
@@ -80,12 +81,12 @@ int main()
     // Runtime log levels
     
     // set log level for logger and for all its sinks
-    logger.SetLogLevel(LogEngine::Levels::llInfo);  
+    logger.SetLogLevel(LogEngine::llInfo);  
     logger.Debug("This message should not be displayed!");
-    logger.SetLogLevel(LogEngine::Levels::llTrace, false); // set log level for logger only
+    logger.SetLogLevel(LogEngine::llTrace, false); // set log level for logger only
     logger.Debug("This message should not be displayed due to log level in sink!");
      // set log level for logger and for all its sinks
-    logger.SetLogLevel(LogEngine::Levels::llTrace); 
+    logger.SetLogLevel(LogEngine::llTrace); 
     logger.Debug("This message should be displayed..");
 
     logger.SetPattern("%LOGLEVE% %LOGLEVEL% %DATETIME% %LOGLEVEL% [%THREAD%] %MSG%");
@@ -151,24 +152,24 @@ void multi_sink_example()
     // we need shared_ptr for Sinks here for proper freeing Sink objects 
     // when they shared between several loggers. 
     std::shared_ptr<Sink> consoleSink(new StdoutSink("console_sink"));
-    consoleSink->SetLogLevel(Levels::llWarning);
+    consoleSink->SetLogLevel(llWarning);
     consoleSink->SetPattern("[multi_sink_example] [%loglevel% %TIME% #%thread%] %Msg%");
 
     std::shared_ptr<Sink> fileSink(new FileSink("file_sink", "multisink.txt"));
-    fileSink->SetLogLevel(Levels::llTrace);
+    fileSink->SetLogLevel(llTrace);
 
     Logger logger("multi_sink", { consoleSink, fileSink });
     // or we can create global logger 
     // Logger& logger = GetMultiLogger("multi_sink_logger", { consoleSink, fileSink });
 		
-    logger.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
+    logger.SetLogLevel(llDebug, false); // change log level for logger only.
     logger.Warn("This should appear in both console and file");
     logger.Info("This message should not appear in the console, only in the file");
 
     // two sinks are shared between two loggers
     // logger2 contains two sinks because duplicates
     Logger logger2("multi_sink2", { consoleSink, fileSink, consoleSink, fileSink });
-    logger2.SetLogLevel(Levels::llDebug, false); // change log level for logger only.
+    logger2.SetLogLevel(llDebug, false); // change log level for logger only.
     logger2.Warn("This should appear two times in both console and file");
     logger2.Info("This message should not appear in the console, only in the file two times");
 }
