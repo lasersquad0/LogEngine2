@@ -115,19 +115,6 @@ public:
 		return FMessageCounts;
 	}
 
-	/*Levels::LogLevel GetLogLevel() const { return FLogLevel; }
-	void SetLogLevel(Levels::LogLevel ll)
-	{
-		std::lock_guard<Mutex> lock(FMutex);
-		FLogLevel = ll;
-	}
-       */
-	/**
-	 * Get the name of this sink. The name identifies the sink.
-	 * @returns the name of the sink.
-	 **/
-	 //const std::string& GetName() const { return FName; }
-
 };
 
 
