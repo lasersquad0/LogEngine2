@@ -80,7 +80,7 @@ public:
 	}
 	
 	std::string GetName() { return FName; }
-	void Imbue(std::locale& loc) { FLocale = loc; }
+	void Imbue(const std::locale& loc) { FLocale = loc; }
 
 	bool GetAsyncMode() { return FAsync; }
 	void SetAsyncMode(bool amode)
