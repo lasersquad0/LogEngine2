@@ -17,7 +17,10 @@
 #include "Properties.h"
 
 #ifdef WIN32
+#define NOMINMAX // this is to remove defines min, max in windows headers because they conflict with std::min std::max 
 #include <windows.h>
+#else
+#include <sys/utsname.h>
 #endif
 
 
@@ -248,7 +251,18 @@ public:
 			return IntToStr(OSMajorVer) + "." + IntToStr(OSMinorVer) + " SP " + IntToStr(SPMajorVer) + "." + IntToStr(SPMinorVer) + " " + IntToStr(result);
 			*/
 #else
-		return "OSHolder";
+		std::string result;
+		char buffer[256];
+
+		FILE* pipe = popen("uname -a", "r");
+		if (!pipe) return "Linux";
+
+		while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+			result += buffer;
+
+		pclose(pipe);
+
+		return result;
 #endif	
 	}
 };
@@ -285,7 +299,18 @@ public:
 		FVersionCache = o.str();
 		return FVersionCache;
 #else
-		FVersionCache = "<OSVERSION>";
+		struct utsname uts;
+		if (uname(&uts) == -1) return "OSVERSION"; 
+
+		// Собираем в порядке, аналогичном выводу uname -a
+		FVersionCache += uts.sysname;   // Linux
+		FVersionCache += " ";
+		FVersionCache += uts.release;   // версия ядра
+		FVersionCache += " ";
+		FVersionCache += uts.version;   // версия системы (может содержать пробелы)
+		// В Linux uname -a также выводит "GNU/Linux", это можно добавить вручную
+		FVersionCache += " GNU/Linux";
+		
 		return FVersionCache;
 #endif
 	}
