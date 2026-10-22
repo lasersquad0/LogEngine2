@@ -9,9 +9,9 @@
 #ifndef DYNAMIC_ARRAYS_H
 #define DYNAMIC_ARRAYS_H
 
+#include <string.h> //required for memset
 #include <exception> 
 #include <string>
-//#include <format>
 #include "Compare.h"
 
 #define valuemin(v1,v2) (((v1)<(v2))?(v1):(v2))
