@@ -191,11 +191,18 @@ std::string DisplaySystemVersion()
 
 std::string DisplaySystemVersion(const char* filename)
 {
-    system("uname -a");
+    std::string result;
+    char buffer[256];
 
-    std::string ldd_cmd("ldd ");
-    ldd_cmd.append(filename);
-    system(ldd_cmd.c_str());
+    FILE* pipe = popen("uname -a", "r");
+    if (!pipe) return "Linux";
+
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        result += buffer;
+
+    pclose(pipe);
+
+    return result;
 }
 
 #endif /* _WIN32 */
