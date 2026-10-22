@@ -21,7 +21,7 @@
 #include "Logger.h"
 #include "RotatingFileSink.h"
 #include "IniReader.h"
-#include "version.h"
+#include "Version.h"
 
 LOGENGINE_NS_BEGIN
 
@@ -94,7 +94,6 @@ void Info(const std::string& msg);
 void Debug(const std::string& msg);
 void Trace(const std::string& msg);
 
-//#if defined(WIN32) && _HAS_CXX20==1 && !defined(__BORLANDC__)
 template<class... Args>
 void LogFmt(LogLevel ll, const std::format_string<Args...> fmt, Args&&... args)
 {
