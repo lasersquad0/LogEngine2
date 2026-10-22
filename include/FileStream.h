@@ -9,13 +9,15 @@
 #ifndef FILESTREAM_H
 #define FILESTREAM_H
 
-#include <string.h> // for strlen() under Linux
+//#include <string.h> // for strlen() under Linux
+#ifdef WIN32
+#include <share.h>
+#endif
+
 #include <sys/stat.h>
 #include <string>
 #include <exception>
 #include <locale>
-#include <share.h>
-
 #include "Common.h"
 
 LOGENGINE_NS_BEGIN
@@ -24,16 +26,9 @@ enum TFileMode:int { fmRead, fmWrite, fmReadWrite, fmWriteTrunc };
 enum TSharingMode:int { shDefault, shDenyNo, shDenyRead, shDenyWrite, shDenyReadWrite };
 enum class TSeekMode { smFromBegin, smFromEnd, smFromCurrent };
 
- /*
-#if defined (__BORLANDC__)
-#define _SH_DENYRW SH_DENYRW
-#define _SH_DENYWR SH_DENYWR
-#define _SH_DENYRD SH_DENYRD
-#define _SH_DENYNO SH_DENYNO
-#endif
- */
+#ifdef WIN32
 
-// this is my special sharing mode
+ // this is my special sharing mode
 #define _SH_DEFAULT 0
 
 //TSharingMode is array index here
@@ -41,6 +36,8 @@ static const int SharingModes[] { _SH_DEFAULT, _SH_DENYNO, _SH_DENYRD, _SH_DENYW
 
 //TFileMode is array index here
 static const int DefaultSharingModes[] { _SH_DENYNO, _SH_DENYWR, _SH_DENYWR, _SH_DENYWR };
+
+#endif
 
 #define IO_EXCEPTION_PREFIX "IOException : "
 
