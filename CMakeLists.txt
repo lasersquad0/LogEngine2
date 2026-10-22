@@ -17,11 +17,17 @@ project(${PROJECT_NAME} VERSION 1.0.5 LANGUAGES CXX)
 #add_executable(hello_world hello_world/hello.cpp)
 
 #настраиваем стандарты языка
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(LOGENGINE_LIB "LogEngine2Lib")
 #set(EXAMPLE_APP "LogEngine2Example")
+
+# Set minimal C++ version to C++20
+target_compile_features(LOGENGINE_LIB PRIVATE cxx_std_20)
+
+set(CMAKE_C_COMPILER gcc-13)
+set(CMAKE_CXX_COMPILER g++-13)
 
 message(STATUS "Binary directory: ${CMAKE_BINARY_DIR}")
 
