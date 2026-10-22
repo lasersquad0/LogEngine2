@@ -6,21 +6,18 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#include <sys/stat.h>
-#include <sys/locking.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <string.h>
 
 #ifdef WIN32
 #include <io.h>
+#include <sys/locking.h>
 #else
 #include <sys/io.h>
 #include <unistd.h>
 #endif
 
 #include <cassert>
-#include "windows.h"
 #include "FileStream.h"
 
 
@@ -226,19 +223,14 @@ LOGENGINE_INLINE void TMemoryStream::UnsetBuffer()
 #define myclose _close
 #define myflush _commit
 
-//#ifdef __BORLANDC__
-//#define mylocking locking
-//#else
-#define mylocking _locking
-//#endif
-
 #else
 
 #define mylseek lseek
 #define myread read
 #define mywrite write
-#define myclose clos
+#define myclose close
 #define myflush fsync
+
 #endif
 
 
@@ -249,22 +241,21 @@ LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFi
 	FSharingMode = sMode;
 	hf = 0;
 
-
-#if defined(WIN32) //&& !defined(__BORLANDC__)
+#if defined(WIN32)
 	errno_t res = 0;
-	int activeMode;
+	int activeShMode;
 
 	if (sMode == TSharingMode::shDefault) 
-		activeMode = DefaultSharingModes[fMode];
+		activeShMode = DefaultSharingModes[fMode];
 	else 
-		activeMode = SharingModes[sMode];
+		activeShMode = SharingModes[sMode];
 
 	switch (fMode)
 	{
-	case TFileMode::fmRead:      res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY,           activeMode, _S_IREAD | _S_IWRITE); break;
-	case TFileMode::fmWrite:     res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, activeMode, _S_IREAD | _S_IWRITE); break;
-	case TFileMode::fmReadWrite: res = _sopen_s(&hf, FFileName.c_str(), O_RDWR   | O_CREAT | O_BINARY, activeMode, _S_IREAD | _S_IWRITE); break;
-	case TFileMode::fmWriteTrunc:res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, activeMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmRead:      res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY,           activeShMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmWrite:     res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, activeShMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmReadWrite: res = _sopen_s(&hf, FFileName.c_str(), O_RDWR   | O_CREAT | O_BINARY, activeShMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmWriteTrunc:res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, activeShMode, _S_IREAD | _S_IWRITE); break;
 	}
 #else
 	switch (fMode)
@@ -398,10 +389,15 @@ LOGENGINE_INLINE void TFileStream::Flush() const
 }
 
 // SIDE EFFECT: Lock looses current file position, moves it to the beginning of the file
+// Lock() refuses access to the file for other PROCESSES. Other THREADs in the same process still can write to the locked areas.
 LOGENGINE_INLINE void TFileStream::Lock()
 {
 	Seek(0, TSeekMode::smFromBegin);
-	BOOL res = mylocking(hf, LK_LOCK, MAXLONG); // _locking uses current position only for lock/unlock operations, that is why we need Seek() before _locking
+#ifdef WIN32
+	int res = _locking(hf, LK_LOCK, std::numeric_limits<uint>::max()); // _locking uses current position only for lock/unlock operations, that is why we need Seek() before _locking
+#else
+	int res = lockf(hf, F_LOCK, 0); // len=0 means that rest of the file is locked (from current position to end of the file)
+#endif
 	if (res)
 	{
 		int ecode = errno;
@@ -417,10 +413,16 @@ LOGENGINE_INLINE void TFileStream::Lock()
 }
 
 // SIDE EFFECT: Unlock looses current file position, moves it to the beginning of the file
+// Lock() and Unlock() prevent access to the file from other PROCESSES. 
+// Other THREADs in the same process still can write to the locked areas.
 LOGENGINE_INLINE void TFileStream::Unlock()
 {
 	Seek(0, TSeekMode::smFromBegin);
-	BOOL res = mylocking(hf, LK_UNLCK, MAXLONG);
+#ifdef WIN32
+	int res = _locking(hf, LK_UNLCK, std::numeric_limits<uint>::max());
+#else
+	int res = lockf(hf, F_ULOCK, 0);
+#endif
 	if (res)
 	{
 		int ecode = errno;
