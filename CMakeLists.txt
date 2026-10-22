@@ -6,6 +6,9 @@
 #  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 #endif()
 
+set(CMAKE_C_COMPILER gcc-13)
+set(CMAKE_CXX_COMPILER g++-13)
+
 set(PROJECT_NAME "LogEngine2CMake")
 project(${PROJECT_NAME} VERSION 1.0.5 LANGUAGES CXX)
 
@@ -27,8 +30,6 @@ set(LOGENGINE_LIB "LogEngine2Lib")
 # Set minimal C++ version to C++20
 #target_compile_features(LOGENGINE_LIB PRIVATE cxx_std_20)
 
-set(CMAKE_C_COMPILER gcc-13)
-set(CMAKE_CXX_COMPILER g++-13)
 
 message(STATUS "Binary directory: ${CMAKE_BINARY_DIR}")
 
