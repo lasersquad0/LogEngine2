@@ -14,9 +14,9 @@ endif()
 set(PROJECT_NAME "LogEngine2CMake")
 project(${PROJECT_NAME} VERSION 1.0.5 LANGUAGES CXX)
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
-endif()
+#if (CMAKE_VERSION VERSION_GREATER 3.12)
+#  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
+#endif()
 
 #add_executable(LogEngine2222 hello_world/hello.cpp)
 
