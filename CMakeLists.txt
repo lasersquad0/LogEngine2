@@ -27,7 +27,7 @@ set(LOGENGINE_LIB "LogEngine2Lib")
 #target_compile_features(LOGENGINE_LIB PRIVATE cxx_std_20)
 
 set(CMAKE_C_COMPILER gcc-13)
-#set(CMAKE_CXX_COMPILER g++-13)
+set(CMAKE_CXX_COMPILER g++-13)
 
 message(STATUS "Binary directory: ${CMAKE_BINARY_DIR}")
 
