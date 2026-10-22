@@ -100,7 +100,6 @@ void LoggerTest::testLog1()
 // testing logger with StringSink 
 void LoggerTest::testLog2()
 {
-//#if defined(WIN32) && !defined(__BORLANDC__)
 	Logger& logg = GetLogger("testLog2");
 	std::shared_ptr<StringSinkMT> sink(new StringSinkMT("strsink"));
 	logg.AddSink(sink);
@@ -137,14 +136,11 @@ void LoggerTest::testLog2()
 	s = sink->GetOutput();
 	std::string ss = CutLogLine(s);
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("ItestLog2info 1.2.RT.4.5.1"), CutLogLine(s));
-//#endif
 }
 
 // testing logger with StringSink 
 void LoggerTest::testLog3()
 {
-	//TODO implement version of test compatible with BORLANDC
-//#if defined(WIN32) && !defined(__BORLANDC__) 
 	Logger& logg = GetLogger("testLog3");
 	std::shared_ptr<StringSinkST>sink1(new StringSinkST("strsink1"));
 	std::shared_ptr<StringSinkST>sink2(new StringSinkST("strsink2"));
@@ -204,7 +200,6 @@ void LoggerTest::testLog3()
 	CPPUNIT_ASSERT_EQUAL(s1, s2);
 	CPPUNIT_ASSERT_EQUAL(std::string("ItestLog2info 1.2.RT.4.5.1"), CutLogLine(s1));
 	CPPUNIT_ASSERT_EQUAL(std::string("ItestLog2info 1.2.RT.4.5.1"), CutLogLine(s2));
-//#endif
 }
 
 // testing logger with StringSink 
