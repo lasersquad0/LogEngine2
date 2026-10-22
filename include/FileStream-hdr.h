@@ -14,6 +14,7 @@
 #include <sys/locking.h>
 #else
 #include <sys/io.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #endif
 
