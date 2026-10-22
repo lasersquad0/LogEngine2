@@ -1,7 +1,4 @@
-﻿# CMakeList.txt : CMake project for CMakeProject, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -24,8 +21,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(LOGENGINE_LIB "LogEngine2Lib")
-set(EXAMPLE_APP "LogEngine2Example")
-
+#set(EXAMPLE_APP "LogEngine2Example")
 
 message(STATUS "Binary directory: ${CMAKE_BINARY_DIR}")
 
@@ -46,7 +42,7 @@ include_directories(${PROG_INCLUDE})
 
 #добавляем директории наших подпроектов в область видимости CMake 
 add_subdirectory("src")
-add_subdirectory("example")
+#add_subdirectory("example")
 
 # Add source to this project's executable.
 # add_executable (CMakeProject "CMakeProject.cpp" "CMakeProject.h")
