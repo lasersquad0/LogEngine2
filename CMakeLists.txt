@@ -38,7 +38,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/rbin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/dbin)
 
 #даем названия подпроектам 
-#set(PROG_LIBRARY "LogEngine2") 
+set(PROG_LIBRARY "LogEngine2") 
 
 #сораняем путь до директории include нашими хедарами 
 set(PROG_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
