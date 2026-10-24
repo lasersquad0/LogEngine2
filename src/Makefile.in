@@ -129,9 +129,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 liblogengine_la_LIBADD =
 am_liblogengine_la_OBJECTS = liblogengine_la-Compare.lo \
 	liblogengine_la-DynamicArrays.lo liblogengine_la-FileStream.lo \
-	liblogengine_la-LogEngine.lo liblogengine_la-LogEvent.lo \
-	liblogengine_la-Properties.lo liblogengine_la-functions.lo \
-	liblogengine_la-Line.lo liblogengine_la-SynchronizedQueue.lo
+	liblogengine_la-LogEvent.lo liblogengine_la-Pattern.lo \
+	liblogengine_la-PatternLayout.lo liblogengine_la-FileSink.lo \
+	liblogengine_la-Common.lo liblogengine_la-Logger.lo
 liblogengine_la_OBJECTS = $(am_liblogengine_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -156,15 +156,15 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/liblogengine_la-Compare.Plo \
+am__depfiles_remade = ./$(DEPDIR)/liblogengine_la-Common.Plo \
+	./$(DEPDIR)/liblogengine_la-Compare.Plo \
 	./$(DEPDIR)/liblogengine_la-DynamicArrays.Plo \
+	./$(DEPDIR)/liblogengine_la-FileSink.Plo \
 	./$(DEPDIR)/liblogengine_la-FileStream.Plo \
-	./$(DEPDIR)/liblogengine_la-Line.Plo \
-	./$(DEPDIR)/liblogengine_la-LogEngine.Plo \
 	./$(DEPDIR)/liblogengine_la-LogEvent.Plo \
-	./$(DEPDIR)/liblogengine_la-Properties.Plo \
-	./$(DEPDIR)/liblogengine_la-SynchronizedQueue.Plo \
-	./$(DEPDIR)/liblogengine_la-functions.Plo
+	./$(DEPDIR)/liblogengine_la-Logger.Plo \
+	./$(DEPDIR)/liblogengine_la-Pattern.Plo \
+	./$(DEPDIR)/liblogengine_la-PatternLayout.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -334,11 +334,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = liblogengine.la
-liblogengine_la_SOURCES = Compare.cpp DynamicArrays.cpp FileStream.cpp LogEngine.cpp LogEvent.cpp Properties.cpp\
- functions.cpp Line.cpp SynchronizedQueue.cpp
+liblogengine_la_SOURCES = Compare.cpp DynamicArrays.cpp FileStream.cpp LogEvent.cpp Pattern.cpp\
+ PatternLayout.cpp FileSink.cpp Common.cpp Logger.cpp
 
-liblogengine_la_CXXFLAGS = -Wall -Wno-reorder -I../include/logengine
-EXTRA_DIST = Compare.h DynamicArrays.h FileStream.h LogEngine.h LogEvent.h Properties.h functions.h Line.h SynchronizedQueue.h
+liblogengine_la_CXXFLAGS = -std=c++20 -Wall -Wno-reorder -I../include
 all: all-am
 
 .SUFFIXES:
@@ -417,15 +416,15 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-Common.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-Compare.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-DynamicArrays.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-FileSink.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-FileStream.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-Line.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-LogEngine.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-LogEvent.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-Properties.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-SynchronizedQueue.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-functions.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-Logger.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-Pattern.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblogengine_la-PatternLayout.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -475,13 +474,6 @@ liblogengine_la-FileStream.lo: FileStream.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-FileStream.lo `test -f 'FileStream.cpp' || echo '$(srcdir)/'`FileStream.cpp
 
-liblogengine_la-LogEngine.lo: LogEngine.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-LogEngine.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-LogEngine.Tpo -c -o liblogengine_la-LogEngine.lo `test -f 'LogEngine.cpp' || echo '$(srcdir)/'`LogEngine.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-LogEngine.Tpo $(DEPDIR)/liblogengine_la-LogEngine.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='LogEngine.cpp' object='liblogengine_la-LogEngine.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-LogEngine.lo `test -f 'LogEngine.cpp' || echo '$(srcdir)/'`LogEngine.cpp
-
 liblogengine_la-LogEvent.lo: LogEvent.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-LogEvent.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-LogEvent.Tpo -c -o liblogengine_la-LogEvent.lo `test -f 'LogEvent.cpp' || echo '$(srcdir)/'`LogEvent.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-LogEvent.Tpo $(DEPDIR)/liblogengine_la-LogEvent.Plo
@@ -489,33 +481,40 @@ liblogengine_la-LogEvent.lo: LogEvent.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-LogEvent.lo `test -f 'LogEvent.cpp' || echo '$(srcdir)/'`LogEvent.cpp
 
-liblogengine_la-Properties.lo: Properties.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-Properties.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-Properties.Tpo -c -o liblogengine_la-Properties.lo `test -f 'Properties.cpp' || echo '$(srcdir)/'`Properties.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-Properties.Tpo $(DEPDIR)/liblogengine_la-Properties.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Properties.cpp' object='liblogengine_la-Properties.lo' libtool=yes @AMDEPBACKSLASH@
+liblogengine_la-Pattern.lo: Pattern.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-Pattern.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-Pattern.Tpo -c -o liblogengine_la-Pattern.lo `test -f 'Pattern.cpp' || echo '$(srcdir)/'`Pattern.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-Pattern.Tpo $(DEPDIR)/liblogengine_la-Pattern.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Pattern.cpp' object='liblogengine_la-Pattern.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-Properties.lo `test -f 'Properties.cpp' || echo '$(srcdir)/'`Properties.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-Pattern.lo `test -f 'Pattern.cpp' || echo '$(srcdir)/'`Pattern.cpp
 
-liblogengine_la-functions.lo: functions.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-functions.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-functions.Tpo -c -o liblogengine_la-functions.lo `test -f 'functions.cpp' || echo '$(srcdir)/'`functions.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-functions.Tpo $(DEPDIR)/liblogengine_la-functions.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='functions.cpp' object='liblogengine_la-functions.lo' libtool=yes @AMDEPBACKSLASH@
+liblogengine_la-PatternLayout.lo: PatternLayout.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-PatternLayout.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-PatternLayout.Tpo -c -o liblogengine_la-PatternLayout.lo `test -f 'PatternLayout.cpp' || echo '$(srcdir)/'`PatternLayout.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-PatternLayout.Tpo $(DEPDIR)/liblogengine_la-PatternLayout.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='PatternLayout.cpp' object='liblogengine_la-PatternLayout.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-functions.lo `test -f 'functions.cpp' || echo '$(srcdir)/'`functions.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-PatternLayout.lo `test -f 'PatternLayout.cpp' || echo '$(srcdir)/'`PatternLayout.cpp
 
-liblogengine_la-Line.lo: Line.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-Line.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-Line.Tpo -c -o liblogengine_la-Line.lo `test -f 'Line.cpp' || echo '$(srcdir)/'`Line.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-Line.Tpo $(DEPDIR)/liblogengine_la-Line.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Line.cpp' object='liblogengine_la-Line.lo' libtool=yes @AMDEPBACKSLASH@
+liblogengine_la-FileSink.lo: FileSink.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-FileSink.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-FileSink.Tpo -c -o liblogengine_la-FileSink.lo `test -f 'FileSink.cpp' || echo '$(srcdir)/'`FileSink.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-FileSink.Tpo $(DEPDIR)/liblogengine_la-FileSink.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='FileSink.cpp' object='liblogengine_la-FileSink.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-Line.lo `test -f 'Line.cpp' || echo '$(srcdir)/'`Line.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-FileSink.lo `test -f 'FileSink.cpp' || echo '$(srcdir)/'`FileSink.cpp
 
-liblogengine_la-SynchronizedQueue.lo: SynchronizedQueue.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-SynchronizedQueue.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-SynchronizedQueue.Tpo -c -o liblogengine_la-SynchronizedQueue.lo `test -f 'SynchronizedQueue.cpp' || echo '$(srcdir)/'`SynchronizedQueue.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-SynchronizedQueue.Tpo $(DEPDIR)/liblogengine_la-SynchronizedQueue.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SynchronizedQueue.cpp' object='liblogengine_la-SynchronizedQueue.lo' libtool=yes @AMDEPBACKSLASH@
+liblogengine_la-Common.lo: Common.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-Common.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-Common.Tpo -c -o liblogengine_la-Common.lo `test -f 'Common.cpp' || echo '$(srcdir)/'`Common.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-Common.Tpo $(DEPDIR)/liblogengine_la-Common.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common.cpp' object='liblogengine_la-Common.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-SynchronizedQueue.lo `test -f 'SynchronizedQueue.cpp' || echo '$(srcdir)/'`SynchronizedQueue.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-Common.lo `test -f 'Common.cpp' || echo '$(srcdir)/'`Common.cpp
+
+liblogengine_la-Logger.lo: Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -MT liblogengine_la-Logger.lo -MD -MP -MF $(DEPDIR)/liblogengine_la-Logger.Tpo -c -o liblogengine_la-Logger.lo `test -f 'Logger.cpp' || echo '$(srcdir)/'`Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liblogengine_la-Logger.Tpo $(DEPDIR)/liblogengine_la-Logger.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Logger.cpp' object='liblogengine_la-Logger.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblogengine_la_CXXFLAGS) $(CXXFLAGS) -c -o liblogengine_la-Logger.lo `test -f 'Logger.cpp' || echo '$(srcdir)/'`Logger.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -650,15 +649,15 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/liblogengine_la-Compare.Plo
+		-rm -f ./$(DEPDIR)/liblogengine_la-Common.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-Compare.Plo
 	-rm -f ./$(DEPDIR)/liblogengine_la-DynamicArrays.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-FileSink.Plo
 	-rm -f ./$(DEPDIR)/liblogengine_la-FileStream.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-Line.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-LogEngine.Plo
 	-rm -f ./$(DEPDIR)/liblogengine_la-LogEvent.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-Properties.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-SynchronizedQueue.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-functions.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-Logger.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-Pattern.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-PatternLayout.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -704,15 +703,15 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/liblogengine_la-Compare.Plo
+		-rm -f ./$(DEPDIR)/liblogengine_la-Common.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-Compare.Plo
 	-rm -f ./$(DEPDIR)/liblogengine_la-DynamicArrays.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-FileSink.Plo
 	-rm -f ./$(DEPDIR)/liblogengine_la-FileStream.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-Line.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-LogEngine.Plo
 	-rm -f ./$(DEPDIR)/liblogengine_la-LogEvent.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-Properties.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-SynchronizedQueue.Plo
-	-rm -f ./$(DEPDIR)/liblogengine_la-functions.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-Logger.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-Pattern.Plo
+	-rm -f ./$(DEPDIR)/liblogengine_la-PatternLayout.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

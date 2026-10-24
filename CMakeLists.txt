@@ -9,26 +9,14 @@ endif()
 set(CMAKE_C_COMPILER gcc-13)
 set(CMAKE_CXX_COMPILER g++-13)
 
-#настраиваем стандарты языка
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#настраиваем глобальные стандарты языка
+#set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(PROJECT_NAME "LogEngine2CMake")
+set(PROJECT_NAME "LogEngine2GlobalCMake")
 project(${PROJECT_NAME} VERSION 1.0.5 LANGUAGES CXX)
 
-#if (CMAKE_VERSION VERSION_GREATER 3.12)
-#  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
-#endif()
-
-#add_executable(LogEngine2222 hello_world/hello.cpp)
-
-
-set(LOGENGINE_LIB "LogEngine2Lib")
 #set(EXAMPLE_APP "LogEngine2Example")
-
-# Set minimal C++ version to C++20
-#target_compile_features(LOGENGINE_LIB PRIVATE cxx_std_20)
-
 
 message(STATUS "Binary directory: ${CMAKE_BINARY_DIR}")
 
@@ -38,8 +26,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/rbin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/dbin)
 
-#даем названия подпроектам 
-set(PROG_LIBRARY "LogEngine2") 
 
 #сораняем путь до директории include нашими хедарами 
 set(PROG_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -49,7 +35,5 @@ include_directories(${PROG_INCLUDE})
 
 #добавляем директории наших подпроектов в область видимости CMake 
 add_subdirectory("src")
-#add_subdirectory("example")
+add_subdirectory("test")
 
-# Add source to this project's executable.
-# add_executable (CMakeProject "CMakeProject.cpp" "CMakeProject.h")
