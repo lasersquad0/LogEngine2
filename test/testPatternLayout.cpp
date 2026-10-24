@@ -2,8 +2,7 @@
 #ifdef WIN32
 #include <direct.h>
 #else
-#include <unistd.h>
-#include <stdarg.h>
+//#include <unistd.h>
 #endif 
 
 #include "Shared.h"
