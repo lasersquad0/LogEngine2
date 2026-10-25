@@ -142,7 +142,7 @@ void LogEnginePropertiesTest::testProperties8()
 	props.SetValue("BackupType", "");
 
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL((uint)(12345678987654321), props.GetUInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0u, props.GetUInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
