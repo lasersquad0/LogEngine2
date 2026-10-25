@@ -254,7 +254,7 @@ public:
 		std::string result;
 		char buffer[256];
 
-		FILE* pipe = popen("uname -a", "r");
+		FILE* pipe = popen("uname -s -n -r", "r");
 		if (!pipe) return "Linux";
 
 		while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
@@ -306,10 +306,10 @@ public:
 		FVersionCache += uts.sysname;   // Linux
 		FVersionCache += " ";
 		FVersionCache += uts.release;   // версия ядра
-		FVersionCache += " ";
-		FVersionCache += uts.version;   // версия системы (может содержать пробелы)
+		//FVersionCache += " ";
+		//FVersionCache += uts.version;   // версия системы (может содержать пробелы)
 		// В Linux uname -a также выводит "GNU/Linux", это можно добавить вручную
-		FVersionCache += " GNU/Linux";
+		//FVersionCache += " GNU/Linux";
 		
 		return FVersionCache;
 #endif

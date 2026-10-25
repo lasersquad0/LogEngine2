@@ -76,6 +76,7 @@ void PatternTest::testLog1()
 
 	event.msgLevel = llInfo;
 	str = layout.Format(event, props);
+	std::cout << str << std::endl;
 	CPPUNIT_ASSERT_EQUAL(std::string("%CUSTOM%  Windows 10 Enterprise"), CutLogLine(str));
 
 	event.msgLevel = llDebug;
