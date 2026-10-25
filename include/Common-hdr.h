@@ -409,7 +409,9 @@ LOGENGINE_INLINE std::string DelCRLF(std::string str) //TODO think how to optimi
 	size_t strEnd = str.find_last_not_of("\r\n");
 	assert(strEnd != std::string::npos);
 	
-	str.erase(strEnd + 1 /*, s.size() - strEnd*/);
+	if(strEnd != std::string::npos)
+		str.erase(strEnd + 1 /*, s.size() - strEnd*/);
+	
 	str.erase(0, strBegin);
 
 	return str;
