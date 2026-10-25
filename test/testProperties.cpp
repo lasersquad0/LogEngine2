@@ -83,7 +83,7 @@ void LogEnginePropertiesTest::testProperties4()
 
 	CPPUNIT_ASSERT_EQUAL(1u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(0ul, props.GetUInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0u, props.GetUInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
 }
@@ -98,8 +98,8 @@ void LogEnginePropertiesTest::testProperties5()
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(4, props.GetInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(1, props.GetInt("MaxLogSize"));
-	CPPUNIT_ASSERT_EQUAL(4ul, props.GetUInt("DetailLevel"));
-	CPPUNIT_ASSERT_EQUAL(1ul, props.GetUInt("MaxLogSize"));
+	CPPUNIT_ASSERT_EQUAL(4u, props.GetUInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(1u, props.GetUInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("Single"), props.GetString("BackupType"));
 }
 
@@ -129,7 +129,7 @@ void LogEnginePropertiesTest::testProperties7()
 	
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel")); //default value for int is used
-	CPPUNIT_ASSERT_EQUAL(0ul, props.GetUInt("DetailLevel")); //default value for int is used
+	CPPUNIT_ASSERT_EQUAL(0u, props.GetUInt("DetailLevel")); //default value for int is used
 	CPPUNIT_ASSERT_EQUAL(1, props.GetInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.GetString("BackupType"));
 }
@@ -142,7 +142,7 @@ void LogEnginePropertiesTest::testProperties8()
 	props.SetValue("BackupType", "");
 
 	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(0ul, props.GetUInt("DetailLevel"));
+	CPPUNIT_ASSERT_EQUAL(0u, props.GetUInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(0, props.GetInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
@@ -233,8 +233,8 @@ void LogEnginePropertiesTest::testProperties12()
 
 
 	CPPUNIT_ASSERT_EQUAL(6u, props.Count());
-	CPPUNIT_ASSERT_EQUAL(5ul, props.GetUInt("DetailLevel", 5ul)); // in file it is '-1'
-	CPPUNIT_ASSERT_EQUAL(1000ul, props.GetUInt("MaxLogSize", 1000ul)); // should be default value 100 while in file it is non digit value
+	CPPUNIT_ASSERT_EQUAL(5u, props.GetUInt("DetailLevel", 5u)); // in file it is '-1'
+	CPPUNIT_ASSERT_EQUAL(1000u, props.GetUInt("MaxLogSize", 1000u)); // should be default value 100 while in file it is non digit value
 	CPPUNIT_ASSERT_EQUAL(std::string("Nones"), props.GetString("BackupType")); // in file it is errorenos value
 	CPPUNIT_ASSERT_EQUAL(std::string("Exam\npleApp"), props.GetString("ApplicationName"));
 	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), props.GetString("Version"));
