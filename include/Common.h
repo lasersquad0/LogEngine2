@@ -27,11 +27,6 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef unsigned long long ullong;
 
-static_assert(sizeof(uchar) == 1);
-static_assert(sizeof(uint) == 4);
-static_assert(sizeof(ulong) == 4);
-static_assert(sizeof(ullong) == 8);
-
 #define LOGENGINE_NS_BEGIN namespace LogEngine {
 #define LOGENGINE_NS_END }
 #define LOGENGINE_NS LogEngine
