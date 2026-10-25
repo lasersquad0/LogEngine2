@@ -19,14 +19,13 @@
 #ifdef WIN32
 #define NOMINMAX // this is to remove defines min, max in windows headers because they conflict with std::min std::max 
 #include <windows.h>
+#pragma comment(lib, "version.lib") 
 #else
 #include <sys/utsname.h>
 #endif
 
 
 LOGENGINE_NS_BEGIN
-
-#pragma comment(lib, "version.lib") 
 
 #define APPNAME_PROPERTY  "AppName"
 #define APPVERSION_PROPERTY "AppVersion"
