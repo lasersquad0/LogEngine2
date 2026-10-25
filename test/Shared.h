@@ -14,7 +14,7 @@
 #ifdef WIN32
 #define TEST_FILES_FOLDER "..\\..\\..\\..\\..\\test\\testFiles\\"
 #else
-#define TEST_FILES_FOLDER "testFiles/"
+#define TEST_FILES_FOLDER "../../test/testFiles/"
 #endif
 
 #define LOG_FILES_FOLDER "./logs/"
