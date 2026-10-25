@@ -5,8 +5,10 @@
 #include <format>
 //#include <iostream>
 //#include <sys/types.h>
-#include <sys/stat.h> //for mkdir() under Linux
+#ifndef WIN32
+#include <sys/stat.h> //for mkdir()
 #include <unistd.h>
+#endif
 #include <cppunit/extensions/HelperMacros.h>
 
 #ifdef WIN32
