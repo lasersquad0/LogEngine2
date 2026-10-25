@@ -76,9 +76,12 @@ void PatternTest::testLog1()
 
 	event.msgLevel = llInfo;
 	str = layout.Format(event, props);
-	std::cout << str << std::endl;
+#ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("%CUSTOM%  Windows 10 Enterprise"), CutLogLine(str));
-
+#else
+	CPPUNIT_ASSERT_EQUAL(std::string("%CUSTOM% Linux CMDB - 182726 6.18.54.1 - microsoft - standard - WSL2"), CutLogLine(str));
+#endif
+	
 	event.msgLevel = llDebug;
 	str = layout.Format(event, props);
 	CPPUNIT_ASSERT_EQUAL(std::string("XXX 0.0.0.0 10.0.26100.9444 XXX"), CutLogLine(str));
@@ -114,7 +117,11 @@ void PatternTest::testLog2()
 
 	event.msgLevel = llInfo;
 	str = layout.Format(event, props);
+#ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Windows 10 Enterprise"), CutLogLine(str));
+#else
+	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  	Linux CMDB - 182726 6.18.54.1 - microsoft - standard - WSL2"), CutLogLine(str));
+#endif
 
 	event.msgLevel = llDebug;
 	str = layout.Format(event, props);
