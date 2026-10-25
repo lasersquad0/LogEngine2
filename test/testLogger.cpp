@@ -323,8 +323,12 @@ void LoggerTest::testLogTwoSinksOneFile()
 {
 	FileSinkST *fs1;
 	CPPUNIT_ASSERT_NO_THROW(fs1 = new FileSinkST("filesink1", LOG_FILES_FOLDER "testLog5.log"));
+// Linux does not have default file locking mechanisk like Windows does (no sharing flags like _SH_DENYWR, etc)
+#ifdef WIN32
  	CPPUNIT_ASSERT_THROW(new FileSinkST("filesink2", LOG_FILES_FOLDER "testLog5.log"), IOException);
-
+#else
+	CPPUNIT_ASSERT_NO_THROW(new FileSinkST("filesink2", LOG_FILES_FOLDER "testLog5.log"));
+#endif
 	CPPUNIT_ASSERT_EQUAL(false, LoggerExist("testLog5"));
 
 	// logger "testLog5" does not exist, but file "testLog5.log" is locked by file sink "filesink1" => exception thrown
@@ -354,8 +358,13 @@ void LoggerTest::testLogTwoSinksOneFileLock()
 {
 	FileSinkST* fs1;
 	CPPUNIT_ASSERT_NO_THROW(fs1 = new FileLockSinkST("filelocksink1", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"));
+#ifdef WIN32
 	CPPUNIT_ASSERT_THROW(new FileSinkST("filelocksink2", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"), IOException);
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"), IOException);
+#else
+	CPPUNIT_ASSERT_NO_THROW(new FileSinkST("filelocksink2", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"));
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"));
+#endif
 	
 	// anyway empty logger with name "testLogTwoSinksOneFileLock" has been created
 	CPPUNIT_ASSERT_EQUAL(true, LoggerExist("testLogTwoSinksOneFileLock"));
