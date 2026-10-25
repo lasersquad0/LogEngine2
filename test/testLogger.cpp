@@ -343,8 +343,14 @@ void LoggerTest::testLogTwoSinksOneFile()
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
 
 	CPPUNIT_ASSERT_EQUAL(false, LoggerExist("testLog5_2"));
+
 	// and one more time try first file name
+#ifdef WIN32
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5_2", LOG_FILES_FOLDER "testLog5.log"), IOException);
+#else
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5_2", LOG_FILES_FOLDER "testLog5.log"));
+#endif
+
 	CPPUNIT_ASSERT_EQUAL(true, LoggerExist("testLog5_2"));
 	delete fs1;
 
@@ -374,8 +380,13 @@ void LoggerTest::testLogTwoSinksOneFileLock()
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock_2.log"));
 	// and one more time
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLogTwoSinksOneFileLock", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock_2.log"));
-    // and one more time try first file name, logger name should be different here
+    
+	// and one more time try first file name, logger name should be different here
+#ifdef WIN32
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLogTwoSinksOneFileLock2", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"), IOException);
+#else
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLogTwoSinksOneFileLock2", LOG_FILES_FOLDER "testLogTwoSinksOneFileLock.log"));
+#endif
 
 	// anyway empty logger with name "testLogTwoSinksOneFileLock2" has been created
 	CPPUNIT_ASSERT_EQUAL(true, LoggerExist("testLogTwoSinksOneFileLock2"));
