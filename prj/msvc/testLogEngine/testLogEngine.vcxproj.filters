@@ -51,11 +51,11 @@
     <ClCompile Include="..\..\..\test\testRunner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shared.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\testPatternLayout.cpp">
       <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\Shared.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,12 +73,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\test\testUtils.h">
       <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="MyTestProgressListener.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\test\testIniReader.h">
       <Filter>Tests</Filter>
@@ -149,16 +143,12 @@
     <ClInclude Include="..\..\..\test\testPatternLayout.h">
       <Filter>Tests</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\testLogEngine.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\testLogEngine.rc2">
-      <Filter>Resource Files</Filter>
-    </None>
+    <ClInclude Include="..\..\..\test\MyTestProgressListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\Shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\external\cppunit\lib\testrunner.dll">

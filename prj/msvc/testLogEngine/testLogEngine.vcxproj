@@ -841,6 +841,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\test\Shared.cpp" />
     <ClCompile Include="..\..\..\test\testIniReader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug MDd|x64'">false</ExcludedFromBuild>
@@ -893,7 +894,6 @@
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\BaseSink.h" />
@@ -915,6 +915,8 @@
     <ClInclude Include="..\..\..\include\Sink.h" />
     <ClInclude Include="..\..\..\include\SynchronizedQueue.h" />
     <ClInclude Include="..\..\..\include\Version.h" />
+    <ClInclude Include="..\..\..\test\MyTestProgressListener.h" />
+    <ClInclude Include="..\..\..\test\Shared.h" />
     <ClInclude Include="..\..\..\test\testIniReader.h" />
     <ClInclude Include="..\..\..\test\testLine.h" />
     <ClInclude Include="..\..\..\test\testConfigFile.h" />
@@ -934,11 +936,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\test\testTStream.h" />
     <ClInclude Include="..\..\..\test\testUtils.h" />
-    <ClInclude Include="MyTestProgressListener.h" />
-    <ClInclude Include="Shared.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\testLogEngine.ico" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\external\cppunit\lib\testrunner.dll">
@@ -1032,7 +1029,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release MDd|x64'">true</ExcludedFromBuild>
     </CustomBuild>
-    <None Include="res\testLogEngine.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
