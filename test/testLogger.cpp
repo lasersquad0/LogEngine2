@@ -333,7 +333,11 @@ void LoggerTest::testLogTwoSinksOneFile()
 
 	// logger "testLog5" does not exist, but file "testLog5.log" is locked by file sink "filesink1" => exception thrown
 	// anyway empty logger with name "testLog5" has been created
+#ifdef WIN32
 	CPPUNIT_ASSERT_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5.log"), IOException);
+#else
+	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5.log"));
+#endif
 
 	CPPUNIT_ASSERT_EQUAL(true, LoggerExist("testLog5"));
 	CPPUNIT_ASSERT_NO_THROW(GetFileLogger("testLog5", LOG_FILES_FOLDER "testLog5_2.log"));
