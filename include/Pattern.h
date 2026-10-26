@@ -302,8 +302,8 @@ public:
 		if (uname(&uts) == -1) return "OSVERSION"; 
 
 		// Собираем в порядке, аналогичном выводу uname -a
-		FVersionCache += uts.sysname;   // Linux
-		FVersionCache += " ";
+		//FVersionCache += uts.sysname;   // Linux
+		//FVersionCache += " ";
 		FVersionCache += uts.release;   // версия ядра
 		//FVersionCache += " ";
 		//FVersionCache += uts.version;   // версия системы (может содержать пробелы)
