@@ -13,7 +13,11 @@ std::string CutLogLine(const std::string& str)
 	pos = str.find_first_of(':', pos + 1);
 	if (pos == std::string::npos) return str;
 
-	return DelCRLF(str.substr(pos + 1));
+	std::string res = str.substr(pos + 1);
+	std::cout << res << "Postfix1" << std::endl;
+	std::string res2 = DelCRLF(res);
+	std::cout << res2 << "Postfix2" << std::endl;
+	return res2;
 }
 
 
