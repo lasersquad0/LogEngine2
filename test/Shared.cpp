@@ -16,6 +16,7 @@ std::string CutLogLine(std::string str)
 	return DelCRLF(str.erase(1ull, pos + 1));
 }
 
+
 /*
 std::string millisecToStr(long long ms)
 {
