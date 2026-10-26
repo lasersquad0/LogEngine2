@@ -7,7 +7,7 @@
 */
 
 //#include <limits.h>
-#include <istream>
+#include <iostream>
 #include "Properties.h"
 
 
@@ -101,6 +101,7 @@ LOGENGINE_INLINE int Properties::GetInt(const std::string& property, int default
 		return defaultValue;
 	
 	auto res = strtol(value.c_str(), nullptr, 10);
+	std::cout << "GetInt() res=" << res << std::endl;
 	res = (res >= INT_MAX) ? defaultValue : res;
 	return (int)res;
 }

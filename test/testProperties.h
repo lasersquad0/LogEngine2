@@ -8,9 +8,9 @@
  *
  */
 
-class LogEnginePropertiesTest : public CPPUNIT_NS::TestFixture
+class PropertiesTest : public CPPUNIT_NS::TestFixture
 {
-  CPPUNIT_TEST_SUITE( LogEnginePropertiesTest );
+  CPPUNIT_TEST_SUITE( PropertiesTest );
 
   CPPUNIT_TEST( testProperties1 );
   CPPUNIT_TEST( testProperties2 );

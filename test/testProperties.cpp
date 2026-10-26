@@ -3,21 +3,21 @@
 #include "testProperties.h"
 #include "Properties.h"
 
-CPPUNIT_TEST_SUITE_REGISTRATION( LogEnginePropertiesTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( PropertiesTest );
 
 using namespace LogEngine;
 
-void LogEnginePropertiesTest::setUp ()
+void PropertiesTest::setUp ()
 {
 
 }
 
-void LogEnginePropertiesTest::tearDown ()
+void PropertiesTest::tearDown ()
 {
     // free memory allocated in setUp, do other things
 }
 
-void LogEnginePropertiesTest::testProperties1()
+void PropertiesTest::testProperties1()
 {
 	Properties props;
 	
@@ -31,7 +31,7 @@ void LogEnginePropertiesTest::testProperties1()
 	CPPUNIT_ASSERT(props.GetString("BackupType") == "None");
 }
 
-void LogEnginePropertiesTest::testProperties2()
+void PropertiesTest::testProperties2()
 {
 	Properties props;
 
@@ -61,7 +61,7 @@ void LogEnginePropertiesTest::testProperties2()
 	CPPUNIT_ASSERT_EQUAL(std::string("a a a"), Trim(" a a a  "));
 }
 
-void LogEnginePropertiesTest::testProperties3()
+void PropertiesTest::testProperties3()
 {
 	Properties props;
 	props.SetValue("DetailLevel", "");
@@ -75,7 +75,7 @@ void LogEnginePropertiesTest::testProperties3()
 	
 }
 
-void LogEnginePropertiesTest::testProperties4()
+void PropertiesTest::testProperties4()
 {
 	Properties props;
 	props.SetValue("DetailLevel", "1");
@@ -88,7 +88,7 @@ void LogEnginePropertiesTest::testProperties4()
 	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
 }
 
-void LogEnginePropertiesTest::testProperties5()
+void PropertiesTest::testProperties5()
 {
 	Properties props;
 	props.SetValue("DetailLevel", "4");
@@ -103,7 +103,7 @@ void LogEnginePropertiesTest::testProperties5()
 	CPPUNIT_ASSERT_EQUAL(std::string("Single"), props.GetString("BackupType"));
 }
 
-void LogEnginePropertiesTest::testProperties6()
+void PropertiesTest::testProperties6()
 {
 	Properties props;
 	props.SetValue("DetailLevel", "4");
@@ -116,7 +116,7 @@ void LogEnginePropertiesTest::testProperties6()
 	CPPUNIT_ASSERT_EQUAL(std::string("Timestamp"), props.GetString("BackupType"));
 }
 
-void LogEnginePropertiesTest::testProperties7()
+void PropertiesTest::testProperties7()
 {
 	//std::ifstream fin(TEST_FILES_FOLDER "test6.lfg"/*, std::ios::in*/);
 	//CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test6.lfg", !fin.fail());
@@ -134,7 +134,7 @@ void LogEnginePropertiesTest::testProperties7()
 	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.GetString("BackupType"));
 }
 
-void LogEnginePropertiesTest::testProperties8()
+void PropertiesTest::testProperties8()
 {
 	Properties props;
 	props.SetValue("DetailLevel", "12345678987654321"); // too large value
@@ -148,7 +148,7 @@ void LogEnginePropertiesTest::testProperties8()
 	CPPUNIT_ASSERT(props.GetString("BackupType").empty());
 }
 
-void LogEnginePropertiesTest::testProperties9()
+void PropertiesTest::testProperties9()
 {
 	Properties props;
 	props.SetValue("DetailLevel", "00000");
@@ -181,7 +181,7 @@ void LogEnginePropertiesTest::testProperties9()
 	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.GetString("InfoLine"));
 }
 
-void LogEnginePropertiesTest::testProperties10()
+void PropertiesTest::testProperties10()
 {
 	Properties props;
 	props.SetValue("DetailLevel", "0000011"); 
@@ -200,7 +200,7 @@ void LogEnginePropertiesTest::testProperties10()
 	CPPUNIT_ASSERT_EQUAL(std::string("c:\\temp\\ExampleApp11.log"), props.GetString("LogFileName"));
 }
 
-void LogEnginePropertiesTest::testProperties11()
+void PropertiesTest::testProperties11()
 {
     Properties props;
     props.SetValue("LogFileName", "DreamChatLog.log");
@@ -220,7 +220,7 @@ void LogEnginePropertiesTest::testProperties11()
     }
 }
 
-void LogEnginePropertiesTest::testProperties12()
+void PropertiesTest::testProperties12()
 {
 	Properties props;
 
