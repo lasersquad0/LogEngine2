@@ -120,9 +120,9 @@ void PatternTest::testLog2()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Windows 10 Enterprise"), CutLogLine(str));
 #else
-	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Linux CMDB-182726 6.18.54.1-microsoft-standard-WSL2"), CutLogLine(str));
 	std::cout << std::hex << str[47] << str[48] << str[49] << str[50] << std::endl;
 	std::cout << str[51] << std::endl;
+	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Linux CMDB-182726 6.18.54.1-microsoft-standard-WSL2"), CutLogLine(str));
 #endif
 
 	event.msgLevel = llDebug;
