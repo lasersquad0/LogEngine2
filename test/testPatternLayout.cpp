@@ -52,7 +52,7 @@ void PatternTest::testLog0()
 	LogEvent event(nullptr, "message", llCritical, 1, FixedTime);
 	Properties props;
 	std::string res = layout.Format(event, props);
-	CPPUNIT_ASSERT_EQUAL(std::string("*message"), CutLogLine(res));
+	CPPUNIT_ASSERT_EQUAL(std::string(" message"), CutLogLine(res));
 
 }
 
@@ -68,7 +68,7 @@ void PatternTest::testLog1()
 	LogEvent event(nullptr, "mess", llCritical, 1111, FixedTime);
 
 	std::string str = layout.Format(event, props);
-	CPPUNIT_ASSERT_EQUAL(std::string("*mess"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string(" mess"), CutLogLine(str));
 
 	event.msgLevel = llWarning;
 	str = layout.Format(event, props);
@@ -88,7 +88,7 @@ void PatternTest::testLog1()
 
 	event.msgLevel = llTrace;
 	str = layout.Format(event, props);
-	CPPUNIT_ASSERT_EQUAL(std::string("Tmess"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string(" mess"), CutLogLine(str));
 }
 
 void PatternTest::testLog2()
@@ -109,7 +109,7 @@ void PatternTest::testLog2()
 	LogEvent event(nullptr, "mess", llCritical, 1111, FixedTime);
 
 	std::string str = layout.Format(event, props);
-	CPPUNIT_ASSERT_EQUAL(std::string("*mess"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string(" mess"), CutLogLine(str));
 
 	event.msgLevel = llWarning;
 	str = layout.Format(event, props);
@@ -134,7 +134,7 @@ void PatternTest::testLog2()
 
 	event.msgLevel = llTrace;
 	str = layout.Format(event, props);
-	CPPUNIT_ASSERT_EQUAL(std::string("Tmess"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string(" mess"), CutLogLine(str));
 
 	event.msgLevel = llWarning;
 	props.SetValue("CUSTOM", "newCval");

@@ -102,7 +102,7 @@ LOGENGINE_INLINE int Properties::GetInt(const std::string& property, int default
 	
 	int res = atoi(value.c_str());
 	res = res == INT_MAX ? defaultValue : res;
-	return res;
+	return (int)res;
 }
 
 LOGENGINE_INLINE uint Properties::GetUInt(const std::string& property, uint defaultValue /*=0*/) const
@@ -115,7 +115,7 @@ LOGENGINE_INLINE uint Properties::GetUInt(const std::string& property, uint defa
 	if (!isUInt(value)) return defaultValue; // return defaultValue if string is NOT an integer
 
 	ulong res = strtoul(value.c_str(), nullptr, 0);
-	return res > UINT_MAX ? defaultValue : res;
+	return res > UINT_MAX ? defaultValue : (uint)res;
 }
 
 LOGENGINE_INLINE bool Properties::GetBool(const std::string& property, bool defaultValue /*=false*/) const
