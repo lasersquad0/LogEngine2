@@ -120,6 +120,7 @@ void PatternTest::testLog2()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Windows 10 Enterprise"), CutLogLine(str));
 #else
+	std::cout << std::endl;
 	std::cout << "len=" << str.size() <<std::endl;
 	std::cout << std::hex << std::showbase << (int)str[64] << (int)str[65] << (int)str[66] << (int)str[67] << std::endl;
 	std::cout << (int)str[68] << std::endl;
