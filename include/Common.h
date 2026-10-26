@@ -106,7 +106,7 @@ std::string DateTimeToStr(time_t t);
 std::string DateTimeToStr(struct tm const& t);
 
 // deletes all leading and trailing \n \r symbols from string
-std::string DelCRLF(const std::string str);
+std::string DelCRLF(const std::string& str);
 
 // removes all leading and trailing \n \r and space symbols from string
 std::string TrimSPCRLF(std::string str);

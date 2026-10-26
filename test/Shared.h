@@ -22,7 +22,7 @@
 // cut off time and thread information (differs from log line to long line)
 // to be able to properly compare log lines in tests 
 // str is passed by value intentionally
-std::string CutLogLine(std::string str);
+std::string CutLogLine(const std::string& str);
 
 
 CPPUNIT_NS_BEGIN

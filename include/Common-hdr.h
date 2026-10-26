@@ -400,13 +400,12 @@ LOGENGINE_INLINE std::string FormatCurrDateTime(const std::string& FormatStr)
 }
 
 // remove any leading and traling \n and \r
-// str passed by value here intentionally
-LOGENGINE_INLINE std::string DelCRLF(std::string str) //TODO think how to optimise this function to avoid unnesessary string copying
+LOGENGINE_INLINE std::string DelCRLF(const std::string& str)
 {
 	size_t strBegin = str.find_first_not_of("\r\n");
 	if (strBegin == std::string::npos) return "";
 	
-	size_t strEnd = str.find_last_not_of("\r\n");
+	size_t strEnd = str.find_last_not_of("\r\n"); // strEnd != npos always here
 	
 	//if(strEnd != std::string::npos)
 	//	str.erase(strEnd + 1 /*, s.size() - strEnd*/);
