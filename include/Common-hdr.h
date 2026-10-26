@@ -407,14 +407,11 @@ LOGENGINE_INLINE std::string DelCRLF(std::string str) //TODO think how to optimi
 	if (strBegin == std::string::npos) return "";
 	
 	size_t strEnd = str.find_last_not_of("\r\n");
-	assert(strEnd != std::string::npos);
 	
-	if(strEnd != std::string::npos)
-		str.erase(strEnd + 1 /*, s.size() - strEnd*/);
+	//if(strEnd != std::string::npos)
+	//	str.erase(strEnd + 1 /*, s.size() - strEnd*/);
 	
-	str.erase(0, strBegin);
-
-	return str;
+	return str.substr(strBegin, strEnd - strBegin + 1);
 }
 
 // remove any leading and traling spaces, tabs, \n and \r.
