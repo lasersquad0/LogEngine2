@@ -8,16 +8,12 @@ std::string CutLogLine(const std::string& str)
 	// # is a marker of ThreadID in log line pattern, because ':' can be present in TimeMacro as well (goes before ThreadMacro). 
 	// ':' is a divider before MsgMacro
 	size_t pos = str.find_first_of('#', 1);
-	if (pos == std::string::npos) return str;
+	if (pos == std::string::npos) return DelCRLF(str);
 
 	pos = str.find_first_of(':', pos + 1);
-	if (pos == std::string::npos) return str;
+	if (pos == std::string::npos) return DelCRLF(str);
 
-	std::string res = str.substr(pos + 1);
-	std::cout << res << "Postfix1" << std::endl;
-	std::string res2 = DelCRLF(res);
-	std::cout << res2 << "Postfix2" << std::endl;
-	return res2;
+	return DelCRLF(str.substr(pos + 1));
 }
 
 
