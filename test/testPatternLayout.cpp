@@ -121,7 +121,7 @@ void PatternTest::testLog2()
 	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Windows 10 Enterprise"), CutLogLine(str));
 #else
 	std::cout << std::hex << std::showbase << (int)str[64] << (int)str[65] << (int)str[66] << (int)str[67] << std::endl;
-	std::cout << (int)str[68] << (int)str[69] << (int)str[70] << std::endl;
+	std::cout << (int)str[68] << std::endl;
 	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Linux CMDB-182726 6.18.54.1-microsoft-standard-WSL2"), CutLogLine(str));
 #endif
 
