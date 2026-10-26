@@ -100,8 +100,8 @@ LOGENGINE_INLINE int Properties::GetInt(const std::string& property, int default
 	if(value.size() == 0)
 		return defaultValue;
 	
-	int res = atoi(value.c_str());
-	res = res == INT_MAX ? defaultValue : res;
+	auto res = strtol(value.c_str(), nullptr, 10);
+	res = (res >= INT_MAX) ? defaultValue : res;
 	return (int)res;
 }
 
@@ -114,8 +114,9 @@ LOGENGINE_INLINE uint Properties::GetUInt(const std::string& property, uint defa
 
 	if (!isUInt(value)) return defaultValue; // return defaultValue if string is NOT an integer
 
-	ulong res = strtoul(value.c_str(), nullptr, 0);
-	return res > UINT_MAX ? defaultValue : (uint)res;
+	ulong res = strtoul(value.c_str(), nullptr, 10);
+	//if (res == ULONG_MAX) return defaultValue; // overflow of unsigned long
+	return res >= UINT_MAX ? defaultValue : (uint)res; // we need unsigned int therefore check if it is in a valid range
 }
 
 LOGENGINE_INLINE bool Properties::GetBool(const std::string& property, bool defaultValue /*=false*/) const

@@ -184,7 +184,7 @@ void LogEnginePropertiesTest::testProperties9()
 void LogEnginePropertiesTest::testProperties10()
 {
 	Properties props;
-	props.SetValue("DetailLevel", "0000011");
+	props.SetValue("DetailLevel", "0000011"); 
 	props.SetValue("MaxLogSize", "101");
 	props.SetValue("BackupType", "TimeStamp");
 	props.SetValue("ApplicationName", "ExampleApp11");
