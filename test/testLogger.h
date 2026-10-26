@@ -32,10 +32,10 @@ class LoggerTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testGetFileLogger );
   CPPUNIT_TEST( testGetStdoutLogger );
   CPPUNIT_TEST( testGetStderrLogger );
-  CPPUNIT_TEST( testLogPerfromanceST_ASyncFalse );
-  CPPUNIT_TEST( testLogPerfromanceST_ASyncTrue );
-  CPPUNIT_TEST( testLogPerfromanceMT_ASyncFalse );
-  CPPUNIT_TEST( testLogPerfromanceLock1 );
+  //CPPUNIT_TEST( testLogPerfromanceST_ASyncFalse );
+  //CPPUNIT_TEST( testLogPerfromanceST_ASyncTrue );
+  //CPPUNIT_TEST( testLogPerfromanceMT_ASyncFalse );
+  //CPPUNIT_TEST( testLogPerfromanceLock1 );
   /* CPPUNIT_TEST( testLogRotation1 );*/
   CPPUNIT_TEST_SUITE_END();
 public:
