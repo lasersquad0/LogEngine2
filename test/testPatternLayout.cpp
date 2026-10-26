@@ -122,8 +122,9 @@ void PatternTest::testLog2()
 #else
 	std::cout << std::endl;
 	std::cout << "len=" << str.size() <<std::endl;
-	std::cout << std::hex << std::showbase << (int)str[64] << (int)str[65] << (int)str[66] << (int)str[67] << std::endl;
-	std::cout << (int)str[68] << std::endl;
+	std::cout << std::hex << std::showbase << (int)str[64] << (int)str[65] << (int)str[66] << (int)str[67] << (int)str[68] << std::endl;
+	std::string str2 = DelCRLF(str);
+	std::cout << str2 << "Postfix" << std::endl;
 	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Linux CMDB-182726 6.18.54.1-microsoft-standard-WSL2"), CutLogLine(str));
 #endif
 
