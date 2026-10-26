@@ -483,3 +483,53 @@ void UtilsTest::testDelCRLF4()
 	CPPUNIT_ASSERT_EQUAL(std::string("A\r\r\n\n\r\n\rb"), DelCRLF("A\r\r\n\n\r\n\rb"));
 	CPPUNIT_ASSERT_EQUAL(std::string("A\rN\nB\n\nD"), DelCRLF("A\rN\nB\n\nD\n"));
 }
+
+void UtilsTest::testTrimRight1()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimRight(""));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimRight(" "));
+	CPPUNIT_ASSERT_EQUAL(std::string("\r"), TrimRight("\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("\n"), TrimRight("\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimRight("	")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimRight("	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimRight("		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimRight("  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("\r\r"), TrimRight("\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimRight("AB"));
+	CPPUNIT_ASSERT_EQUAL(std::string("\rAB \n"), TrimRight("\rAB \n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimRight("AB	")); // tab
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimRight("AB	 "));  // tab + space
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimRight("AB		"));   // space + tab
+	CPPUNIT_ASSERT_EQUAL(std::string(" AB"), TrimRight(" AB ")); // space AB space 
+	CPPUNIT_ASSERT_EQUAL(std::string("	AB"), TrimRight("	AB	")); // tab AB tab
+	CPPUNIT_ASSERT_EQUAL(std::string(" A	B"), TrimRight(" A	B ")); // tab in the middle
+	CPPUNIT_ASSERT_EQUAL(std::string(" AB"), TrimRight(" AB"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" AB"), TrimRight(" AB        "));
+	CPPUNIT_ASSERT_EQUAL(std::string("    AB"), TrimRight("    AB				"));
+	CPPUNIT_ASSERT_EQUAL(std::string(" AB"), TrimRight(" AB				"));
+}
+
+void UtilsTest::testTrimLeft1()
+{
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimLeft(""));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimLeft(" "));
+	CPPUNIT_ASSERT_EQUAL(std::string("\r"), TrimLeft("\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("\n"), TrimLeft("\n"));
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimLeft("	")); // SP + tab
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimLeft("	 ")); // tab + SP
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimLeft("		")); // two tabs
+	CPPUNIT_ASSERT_EQUAL(std::string(""), TrimLeft("  ")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("\r\r"), TrimLeft("\r\r"));
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimLeft("AB"));
+	CPPUNIT_ASSERT_EQUAL(std::string("\rAB \n"), TrimLeft("\rAB \n"));
+	CPPUNIT_ASSERT_EQUAL(std::string("A	B "), TrimLeft(" A	B "));
+	CPPUNIT_ASSERT_EQUAL(std::string("AB	"), TrimLeft("	AB	")); // tab
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimLeft("	 AB"));  // tab + space
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimLeft("	AB"));   // space + tab
+	CPPUNIT_ASSERT_EQUAL(std::string("AB "), TrimLeft(" AB ")); // space AB space 
+	CPPUNIT_ASSERT_EQUAL(std::string("AB	"), TrimLeft("	AB	")); // tab AB tab
+	CPPUNIT_ASSERT_EQUAL(std::string("AB "), TrimLeft("AB "));
+	CPPUNIT_ASSERT_EQUAL(std::string("AB "), TrimLeft("     AB "));
+	CPPUNIT_ASSERT_EQUAL(std::string("AB    "), TrimLeft("			AB    "));
+	CPPUNIT_ASSERT_EQUAL(std::string("AB"), TrimLeft("			 AB"));
+}

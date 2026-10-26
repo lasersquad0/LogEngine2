@@ -39,6 +39,8 @@ class UtilsTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testTrimSPCRLF1);
   CPPUNIT_TEST(testTrimSPCRLF2);
   CPPUNIT_TEST(testTrimSPCRLF3);
+  CPPUNIT_TEST(testTrimRight1);
+  CPPUNIT_TEST(testTrimLeft1);
   CPPUNIT_TEST(testDelCRLF1);
   CPPUNIT_TEST(testDelCRLF2);
   CPPUNIT_TEST(testDelCRLF3);
@@ -77,6 +79,8 @@ public:
     void testTrimSPCRLF1();
     void testTrimSPCRLF2();
     void testTrimSPCRLF3();
+    void testTrimRight1();
+    void testTrimLeft1();
     void testDelCRLF1();
     void testDelCRLF2();
     void testDelCRLF3();
