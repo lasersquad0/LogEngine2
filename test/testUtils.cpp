@@ -477,8 +477,8 @@ void UtilsTest::testDelCRLF4()
 	CPPUNIT_ASSERT_EQUAL(std::string("A\n\rB"), DelCRLF("A\n\rB"));
 	CPPUNIT_ASSERT_EQUAL(std::string("A\n	"), DelCRLF("A\n	")); // tab after \n
 	CPPUNIT_ASSERT_EQUAL(std::string("A\n "), DelCRLF("A\n ")); // SP after \n
-	CPPUNIT_ASSERT_EQUAL(std::string("A \n\r B"), DelCRLF("A\n\r B")); // two tabs
-	CPPUNIT_ASSERT_EQUAL(std::string("A\r\nB"), DelCRLF("A\r\nB\r\n")); // two spaces
+	CPPUNIT_ASSERT_EQUAL(std::string("A \n\r B"), DelCRLF("A \n\r B")); 
+	CPPUNIT_ASSERT_EQUAL(std::string("A\r\nB"), DelCRLF("A\r\nB\r\n")); 
 	CPPUNIT_ASSERT_EQUAL(std::string("A\r\nB"), DelCRLF("\rA\r\nB"));
 	CPPUNIT_ASSERT_EQUAL(std::string("A\r\r\n\n\r\n\rb"), DelCRLF("A\r\r\n\n\r\n\rb"));
 	CPPUNIT_ASSERT_EQUAL(std::string("A\rN\nB\n\nD"), DelCRLF("A\rN\nB\n\nD\n"));
