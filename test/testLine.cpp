@@ -205,7 +205,12 @@ void LineTest::testLine15()
 	LogEvent event(nullptr, "message", llError, 1, FixedTime);
 	
 	std::string res = line.Format(event);
+
+#ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.26100.9444"), res);
+#else
+	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 6.18.54.1-microsoft-standard-WSL2"), res);
+#endif
 }
 
 void LineTest::testLine16()
