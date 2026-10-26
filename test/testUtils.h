@@ -42,6 +42,7 @@ class UtilsTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testDelCRLF1);
   CPPUNIT_TEST(testDelCRLF2);
   CPPUNIT_TEST(testDelCRLF3);
+  CPPUNIT_TEST(testDelCRLF4);
 
   CPPUNIT_TEST_SUITE_END();
 public:
@@ -79,6 +80,7 @@ public:
     void testDelCRLF1();
     void testDelCRLF2();
     void testDelCRLF3();
+    void testDelCRLF4();
 };
 
 #endif // _TEST_UTILS_H_
