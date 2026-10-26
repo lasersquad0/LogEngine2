@@ -261,7 +261,7 @@ public:
 
 		pclose(pipe);
 
-		return result;
+		return DelCRLF(result);
 #endif	
 	}
 };
@@ -301,13 +301,11 @@ public:
 		struct utsname uts;
 		if (uname(&uts) == -1) return "OSVERSION"; 
 
-		// Собираем в порядке, аналогичном выводу uname -a
 		//FVersionCache += uts.sysname;   // Linux
 		//FVersionCache += " ";
-		FVersionCache += uts.release;   // версия ядра
+		FVersionCache += uts.release;   // version of Linux core
 		//FVersionCache += " ";
-		//FVersionCache += uts.version;   // версия системы (может содержать пробелы)
-		// В Linux uname -a также выводит "GNU/Linux", это можно добавить вручную
+		//FVersionCache += uts.version;   // version of Linux system (can contain spaces)
 		//FVersionCache += " GNU/Linux";
 		
 		return FVersionCache;
