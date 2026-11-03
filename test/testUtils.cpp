@@ -3,6 +3,8 @@
 #include "Common.h"
 #include "testUtils.h"
 
+using namespace LogEngine;
+
 CPPUNIT_TEST_SUITE_REGISTRATION(UtilsTest);
 //CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( UtilsTest, "UtilsTest");
 
