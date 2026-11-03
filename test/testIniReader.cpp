@@ -9,6 +9,8 @@
 #include "testIniReader.h"
 #include "IniReader.h"
 
+using namespace LogEngine;
+
 CPPUNIT_TEST_SUITE_REGISTRATION(TIniReaderTest);
 //CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(TIniReaderTest, "TIniReaderTest");
 
