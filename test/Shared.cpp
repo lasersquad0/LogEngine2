@@ -2,6 +2,7 @@
 #include "Common.h"
 #include "Shared.h"
 
+using namespace LogEngine;
 
 std::string CutLogLine(const std::string& str)
 {
