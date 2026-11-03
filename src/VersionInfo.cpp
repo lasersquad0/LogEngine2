@@ -22,7 +22,7 @@ std::string GetWindowsProductName()
         DWORD size = sizeof(buffer);
         DWORD type = REG_SZ;
 
-        if (RegQueryValueEx(hKey, "ProductName", NULL, &type, (LPBYTE)buffer, &size) == ERROR_SUCCESS) 
+        if (RegQueryValueExA(hKey, "ProductName", nullptr, &type, (LPBYTE)buffer, &size) == ERROR_SUCCESS) 
         {
             RegCloseKey(hKey);
             return buffer;
