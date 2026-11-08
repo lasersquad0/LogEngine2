@@ -85,7 +85,7 @@ void PatternTest::testLog1()
 	event.msgLevel = llDebug;
 	str = layout.Format(event, props);
 #ifdef WIN32
-	CPPUNIT_ASSERT_EQUAL(std::string("XXX 0.0.0.0 10.0.26100.9444 XXX"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string("XXX 0.0.0.0 10.0.26100.9711 XXX"), CutLogLine(str));
 #else
 	CPPUNIT_ASSERT_EQUAL(std::string("XXX 0.0.0.0 6.18.54.1-microsoft-standard-WSL2 XXX"), CutLogLine(str));
 #endif
@@ -130,7 +130,7 @@ void PatternTest::testLog2()
 	event.msgLevel = llDebug;
 	str = layout.Format(event, props);
 #ifdef WIN32
-	CPPUNIT_ASSERT_EQUAL(std::string("XXX My 4.3.2.1 10.0.26100.9444 XXX"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string("XXX My 4.3.2.1 10.0.26100.9711 XXX"), CutLogLine(str));
 #else
 	CPPUNIT_ASSERT_EQUAL(std::string("XXX My 4.3.2.1 6.18.54.1-microsoft-standard-WSL2 XXX"), CutLogLine(str));
 #endif
