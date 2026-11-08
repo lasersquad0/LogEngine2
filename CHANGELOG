@@ -26,7 +26,11 @@ Description:
 [*] Pattern and Holder classes structure has re-worked to support custom placeholders in log line
 [*] When converting sink type from string an exception is thrown in case failed conversion instead of returning default sink type
 [*] LogEvent - added new field Logger - pointer to logger that generated this event.
-
+[+] LogEngine and testLogEngine project migrated to MS Visual Studio 2026.
+[*] Removed unneeded *-hdr.h and MFC files from Visual Studio project. Because cppunit does not support mfcUI any more.
+[*] Updated LogEngine tests according to changes in classes above.
+[*] Improved tests compatibility when run in 32bit configurations.
+[*] Log levels are moved out of Levels namespace. Now you can access levels this simplified way LogEngine::llInfo.
 
 2025-04-24 v1.05
 [+]LogEngine2 is now HEADER ONLY library. To use it as header only library define global symbol LOGENGINE_HEADER_ONLY and use #include "LogEgnine.h" in your source files where you need to use logging.
