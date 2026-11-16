@@ -427,26 +427,30 @@ void TStreamTest::testMemoryStream13()
 	std::string s;
 	stream2.SetBuffer((uint8_t*)s.data(), s.capacity()); // default capacity is 15
 	stream2 << "ZZZ";
-	stream2 << "HHHHHHHHHHHH"; // try to write 15 symbols
-
+	//stream2 << "HHHHHHHHHHHH"; // try to write 15 symbols
+    std::string ss(s.capacity() - 3, 'H'); // try to write s.capacity() symbols
+    stream2 << ss;
 	CPPUNIT_ASSERT_THROW(stream2 << '!', IOException); // 16th symbol overflows buffer and generates an exception because we cannot extend external buffer
 
 	stream2.SeekW(0, TSeekMode::smFromBegin); // rewind buffer, make it available for writing again
 	stream2 << "XXX"; // no exception
-	stream2 << "MMMMMMMMMMMM"; // trying to write 15 symbols, still no exception
+	//stream2 << "MMMMMMMMMMMM"; // trying to write 15 symbols, still no exception
+    ss.assign(s.capacity() - 3, 'M');
+    stream2 << ss; // trying to write 15 symbols, still no exception
 
-	CPPUNIT_ASSERT_THROW(stream2 << '!', IOException); // 16th symbol overflows buffer and generates an exception 
+	CPPUNIT_ASSERT_THROW(stream2 << '!', IOException); // 16th symbol overflows buffer and generates an exception
 
 	stream2.SeekW(1, TSeekMode::smFromBegin); // rewind buffer and offset it 1
 	stream2 << "YYY"; // no exception
-	stream2 << "123456789AB"; // now trying to write 14 symbols, still no exception
-
+	//stream2 << "123456789AB"; // now trying to write 14 symbols, still no exception
+    ss.assign(s.capacity() - 4, '1');
+    stream2 << ss;
 	CPPUNIT_ASSERT_THROW(stream2 << 'F', IOException); // 16th symbol overflows buffer and generates an exception 
 
 	stream2.SeekW(0, TSeekMode::smFromEnd);
 	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
 
-	stream2.SeekW(20, TSeekMode::smFromBegin); // actually puts position to the end of buffer
+	stream2.SeekW(23, TSeekMode::smFromBegin); // actually puts position to the end of buffer
 	CPPUNIT_ASSERT_THROW(stream2 << '1', IOException); // 16th symbol overflows buffer
 
 	stream2.SeekW(1, TSeekMode::smFromEnd);
@@ -458,9 +462,12 @@ void TStreamTest::testMemoryStream13()
 	stream2 << "456789ABCDEF"; // now trying to write 14 symbols, still no exception
 	CPPUNIT_ASSERT_THROW(stream2 << '0', IOException); // 16th symbol overflows buffer
 
-	stream2.SeekW(20, TSeekMode::smFromEnd); // actually puts current position to the beginning of buffer
+	stream2.SeekW(23, TSeekMode::smFromEnd); // actually puts current position to the beginning of buffer
 	stream2 << "123"; // no exception
-	stream2 << "456789ABCDEF"; // now trying to write 14 symbols, still no exception
+	//stream2 << "456789ABCDEF"; // now trying to write 14 symbols, still no exception
+    ss.assign(s.capacity() - 3, 'F');
+    stream2 << ss;
+
 	CPPUNIT_ASSERT_THROW(stream2 << 'F', IOException); // 16th symbol overflows buffer
 
 }
