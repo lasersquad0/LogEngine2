@@ -5,7 +5,10 @@
 //#include <sys/stat.h>
 //#include <unistd.h>
 //#include <stdarg.h>
-#endif 
+#endif
+
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "Shared.h"
 #include "LogEngine.h"
@@ -523,7 +526,7 @@ void LoggerTest::testLogStrategyNone()
 	
 	rsink->Flush();
 	struct stat st;
-	stat(fileName.c_str(), &st);
+	::stat(fileName.c_str(), &st);
 
 	CPPUNIT_ASSERT_EQUAL((ullong)st.st_size, rsink->GetBytesWritten());
 	
