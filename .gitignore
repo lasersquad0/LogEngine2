@@ -362,3 +362,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /external/cppunit.old
+
+# Delphi local files
+*.dsk
+*.~dsk
+*.local
+*.dsv
+
