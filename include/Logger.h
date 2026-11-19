@@ -453,12 +453,25 @@ public:
 		LogEvent* current_msg;
 		while (true)
 		{
-			current_msg = queue->WaitForElement();
-			if (current_msg == nullptr) break; // nullptr as msg means that we need to stop this thread
+			try
+			{
+				current_msg = queue->WaitForElement();
+				if (current_msg == nullptr) break; // nullptr as msg means that we need to stop this thread
 
-			LogEvent* event = current_msg;
-			logger->internalLog(*event);
-			delete event;
+				LogEvent* event = current_msg;
+				logger->internalLog(*event);
+				delete event;
+			}
+			catch (std::exception& e)
+			{
+				LogEvent ev(logger, std::format("Exception has caught by async logging thread: {}", e.what()), llError, GetThreadID(), GetCurrDateTime());
+				logger->internalLog(ev);
+			}
+			catch (...)
+			{
+				LogEvent ev(logger, "UNKNOWN exception has caught by async logging thread.", llError, GetThreadID(), GetCurrDateTime());
+				logger->internalLog(ev);
+			}
 		}
 
 		return 0;
