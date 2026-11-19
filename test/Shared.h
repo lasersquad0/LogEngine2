@@ -3,7 +3,7 @@
 //#include <string.h>
 #include <string>
 #include <format>
-//#include <iostream>
+#include <filesystem>
 //#include <sys/types.h>
 #ifndef WIN32
 #include <sys/stat.h> //for mkdir()
@@ -27,20 +27,20 @@ std::string CutLogLine(const std::string& str);
 
 
 CPPUNIT_NS_BEGIN
-/*template<>
-struct assertion_traits<std::string>   // specialization for the std::string type
+template<>
+struct assertion_traits<std::wstring>   // specialization for the std::string type
 {
-	static bool equal(const std::string& x, const std::string& y)
+	static bool equal(const std::wstring& x, const std::wstring& y)
 	{
-		return x.compare(y) == 0;
+		return x == y;
 	}
 
-	static std::string toString(const std::string& x)
+	static std::string toString(const std::wstring& x)
 	{
-		return x;
+		return std::filesystem::path(x).string();
 	}
 };
-*/
+
 
 // these two specializations needed for CPPUNIT_ASSERT_EQUAL to properly compare two char* parameters
 template<>
