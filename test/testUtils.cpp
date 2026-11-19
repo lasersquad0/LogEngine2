@@ -391,6 +391,7 @@ void UtilsTest::testTrimSPCRLF3()
 
 void UtilsTest::testDelCRLF1()
 {
+	using namespace LogEngine;
 	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF(""));
 	CPPUNIT_ASSERT_EQUAL(std::string(" "), DelCRLF(" "));
 	CPPUNIT_ASSERT_EQUAL(std::string(""), DelCRLF("\r"));
@@ -412,6 +413,7 @@ void UtilsTest::testDelCRLF1()
 
 void UtilsTest::testDelCRLF2()
 {
+	using namespace LogEngine;
 	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A"));
 	CPPUNIT_ASSERT_EQUAL(std::string("A "), DelCRLF("A "));
 	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A\r"));
@@ -452,6 +454,7 @@ void UtilsTest::testDelCRLF2()
 
 void UtilsTest::testDelCRLF3()
 {
+	using namespace LogEngine;
 	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("A"));
 	CPPUNIT_ASSERT_EQUAL(std::string(" A "), DelCRLF(" A "));
 	CPPUNIT_ASSERT_EQUAL(std::string("A"), DelCRLF("\nA\r"));
@@ -473,6 +476,7 @@ void UtilsTest::testDelCRLF3()
 
 void UtilsTest::testDelCRLF4()
 {
+	using namespace LogEngine;
 	CPPUNIT_ASSERT_EQUAL(std::string("A\rB"), DelCRLF("A\rB"));
 	CPPUNIT_ASSERT_EQUAL(std::string("A\nB"), DelCRLF("A\nB"));
 	CPPUNIT_ASSERT_EQUAL(std::string("A\r\nB"), DelCRLF("A\r\nB"));
