@@ -12,6 +12,10 @@
 
 #ifndef LOGENGINE_HEADER_ONLY
 #include "LogEngine.h"
+#include "Common-hdr.h"
+#include "FileStream-hdr.h"
+#include "Pattern-hdr.h"
+#include "Properties-hdr.h"
 #include "LogEngine-hdr.h"
 #endif
 
