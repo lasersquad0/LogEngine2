@@ -27,7 +27,7 @@ public:
 
     T WaitForElement() // T=LogEvent*
     {
-        std::unique_lock<std::mutex> lock(mtx);
+        std::unique_lock<std::mutex> lock(mtx); // we need unique_lock here because cv uses it. lock_guard does not work with cv.
         while (this->Count() == 0)
             cv.wait(lock);
 
