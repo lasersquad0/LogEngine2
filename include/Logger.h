@@ -451,17 +451,15 @@ public:
 	static int ThreadProc(Logger* logger, LoggerQueue* queue)
 	{
 		LogEvent* current_msg;
-		do
+		while (true)
 		{
 			current_msg = queue->WaitForElement();
-			if (current_msg)
-			{
-				LogEvent* event = current_msg;
-				logger->internalLog(*event);
-				delete event;
-			}
+			if (current_msg == nullptr) break; // nullptr as msg means that we need to stop this thread
 
-		} while (current_msg); // nullptr as msg means that we need to stop this thread
+			LogEvent* event = current_msg;
+			logger->internalLog(*event);
+			delete event;
+		}
 
 		return 0;
 	}
