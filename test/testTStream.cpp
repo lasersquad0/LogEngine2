@@ -405,9 +405,9 @@ void TStreamTest::testMemoryStream11W()
 	const wchar_t* str = L"abcdefghijklmnopqrstuvwxyz"; // 26 symbols
 	stream1.SetBuffer((uint8_t*)str, wcslen(str)*sizeof(wchar_t));
 
-	const int BUF_SZ = (26 + 1) * sizeof(wchar_t); // extra symbol for terminating zero
+	const int BUF_SZ = 26 + 1; // extra symbol for terminating zero
 	wchar_t buf[BUF_SZ]; 
-	memset(buf, 0, BUF_SZ);
+	memset(buf, 0, BUF_SZ * sizeof(wchar_t));
 	wchar_t c;
 
 	stream1 >> c;
@@ -651,7 +651,7 @@ void TStreamTest::testMemoryStream14()
 
 	stream1.SetBuffer((uint8_t*)str, strlen(str));
 
-	CPPUNIT_ASSERT_EQUAL(8ul, strlen(str));
+	CPPUNIT_ASSERT_EQUAL((size_t)8, strlen(str));
 	
 	std::string readStr = stream1.ReadString<std::string>();
 	CPPUNIT_ASSERT_EQUAL(std::string( "abcde" ), readStr);
@@ -670,7 +670,7 @@ void TStreamTest::testMemoryStream14()
 	stream3 << L"\nAA\nBB\n\n";
 
 	std::wstring readWStr = stream3.ReadString<std::wstring>();
-	CPPUNIT_ASSERT_EQUAL(0ull, readWStr.size()); // empty string
+	CPPUNIT_ASSERT_EQUAL((size_t)0, readWStr.size()); // empty string
 
 	readWStr = stream3.ReadString<std::wstring>();
 	CPPUNIT_ASSERT_EQUAL(std::wstring{ L"AA" }, readWStr); 
@@ -686,7 +686,7 @@ void TStreamTest::testMemoryStream14()
 	stream4 << "\r\nAA\nBB\r\nCC\rDD\n";
 
 	readStr = stream4.ReadString<std::string>();
-	CPPUNIT_ASSERT_EQUAL(0ul, readStr.size()); // empty string
+	CPPUNIT_ASSERT_EQUAL((size_t)0, readStr.size()); // empty string
 
 	readStr = stream4.ReadString<std::string>();
 	CPPUNIT_ASSERT_EQUAL(std::string{ "AA" }, readStr); 
