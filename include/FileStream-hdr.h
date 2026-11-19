@@ -191,6 +191,7 @@ LOGENGINE_INLINE TMemoryStream::pos_type TMemoryStream::SeekW(const off_t Offset
 	throw IOException("Invalid TMemoryStream::SeekW() mode.");
 }
 
+// Size has to be is in bytes! (not in chars)
 LOGENGINE_INLINE void TMemoryStream::SetBuffer(uint8_t* Buffer, size_t Size)
 {
 	ResetPos();
