@@ -129,6 +129,7 @@ bool isUInt(std::string& value);
 uint GetThreadID();
 uint GetThreadID(const std::thread::id& id);
 
+// parameter needs to be passed by value
 std::string StrToLower(std::string str);
 
 std::string DisplaySystemVersion();
