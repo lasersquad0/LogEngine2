@@ -585,7 +585,7 @@ struct assertion_traits<tci_wstring>   // specialization for the std::string typ
 
 	static std::string toString(const tci_wstring& x)
 	{
-		return std::filesystem::path(x).string();
+		return std::filesystem::path(x.c_str()).string();
 	}
 };
 template<>
@@ -686,7 +686,7 @@ void TStreamTest::testMemoryStream14()
 	stream4 << "\r\nAA\nBB\r\nCC\rDD\n";
 
 	readStr = stream4.ReadString<std::string>();
-	CPPUNIT_ASSERT_EQUAL(0ull, readStr.size()); // empty string
+	CPPUNIT_ASSERT_EQUAL(0ul, readStr.size()); // empty string
 
 	readStr = stream4.ReadString<std::string>();
 	CPPUNIT_ASSERT_EQUAL(std::string{ "AA" }, readStr); 
