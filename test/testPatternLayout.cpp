@@ -79,7 +79,7 @@ void PatternTest::testLog1()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("%CUSTOM%  Windows 10 Enterprise"), CutLogLine(str));
 #else
-	CPPUNIT_ASSERT_EQUAL(std::string("%CUSTOM%  Linux CMDB-182726 6.18.54.1-microsoft-standard-WSL2"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string("%CUSTOM%  Linux CMDB-182726 6.18.58.1-microsoft-standard-WSL2"), CutLogLine(str));
 #endif
 	
 	event.msgLevel = llDebug;
@@ -87,7 +87,7 @@ void PatternTest::testLog1()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("XXX 0.0.0.0 10.0.26100.9711 XXX"), CutLogLine(str));
 #else
-	CPPUNIT_ASSERT_EQUAL(std::string("XXX 0.0.0.0 6.18.54.1-microsoft-standard-WSL2 XXX"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string("XXX 0.0.0.0 6.18.58.1-microsoft-standard-WSL2 XXX"), CutLogLine(str));
 #endif
 
 	event.msgLevel = llTrace;
@@ -124,7 +124,7 @@ void PatternTest::testLog2()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Windows 10 Enterprise"), CutLogLine(str));
 #else
-	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Linux CMDB-182726 6.18.54.1-microsoft-standard-WSL2"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string("My custom param  Linux CMDB-182726 6.18.58.1-microsoft-standard-WSL2"), CutLogLine(str));
 #endif
 
 	event.msgLevel = llDebug;
@@ -132,7 +132,7 @@ void PatternTest::testLog2()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("XXX My 4.3.2.1 10.0.26100.9711 XXX"), CutLogLine(str));
 #else
-	CPPUNIT_ASSERT_EQUAL(std::string("XXX My 4.3.2.1 6.18.54.1-microsoft-standard-WSL2 XXX"), CutLogLine(str));
+	CPPUNIT_ASSERT_EQUAL(std::string("XXX My 4.3.2.1 6.18.58.1-microsoft-standard-WSL2 XXX"), CutLogLine(str));
 #endif
 
 	event.msgLevel = llTrace;

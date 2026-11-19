@@ -209,7 +209,7 @@ void LineTest::testLine15()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.26100.9711"), res);
 #else
-	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 6.18.54.1-microsoft-standard-WSL2"), res);
+	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 6.18.58.1-microsoft-standard-WSL2"), res);
 #endif
 }
 
@@ -248,7 +248,7 @@ void LineTest::testLine18()
 #ifdef WIN32
 	CPPUNIT_ASSERT_EQUAL(std::string("testLine18 Windows 10 Enterprise msgggg"), res);
 #else
-	CPPUNIT_ASSERT_EQUAL(std::string("testLine18 Linux CMDB-182726 6.18.54.1-microsoft-standard-WSL2 msgggg"), res);
+	CPPUNIT_ASSERT_EQUAL(std::string("testLine18 Linux CMDB-182726 6.18.58.1-microsoft-standard-WSL2 msgggg"), res);
 #endif
 }
 
