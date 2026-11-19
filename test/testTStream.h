@@ -25,6 +25,9 @@ class TStreamTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testMemoryStream11);
     CPPUNIT_TEST(testMemoryStream12);
     CPPUNIT_TEST(testMemoryStream13);
+    CPPUNIT_TEST(testMemoryStream14);
+    CPPUNIT_TEST(testFileStream1);
+    CPPUNIT_TEST(testMemoryStreamTCIString);
     CPPUNIT_TEST_SUITE_END();
 public:
     typedef LogEngine::TMemoryStream::pos_type pos_t;
@@ -45,6 +48,9 @@ public:
     void testMemoryStream11();
     void testMemoryStream12();
     void testMemoryStream13();
+    void testMemoryStream14();
+    void testMemoryStreamTCIString();
+    void testFileStream1();
 };
 
 
