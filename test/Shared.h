@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string.h>
+//#include <string.h>
 #include <string>
 #include <format>
 //#include <iostream>
@@ -10,6 +10,7 @@
 #include <unistd.h>
 #endif
 #include <cppunit/extensions/HelperMacros.h>
+
 
 #ifdef WIN32
 #define TEST_FILES_FOLDER "..\\..\\..\\..\\..\\test\\testFiles\\"
