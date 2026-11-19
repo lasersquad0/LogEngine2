@@ -23,6 +23,7 @@ class TStreamTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testMemoryStream9);
     CPPUNIT_TEST(testMemoryStream10);
     CPPUNIT_TEST(testMemoryStream11);
+    CPPUNIT_TEST(testMemoryStream11W);
     CPPUNIT_TEST(testMemoryStream12);
     CPPUNIT_TEST(testMemoryStream13);
     CPPUNIT_TEST(testMemoryStream14);
@@ -46,6 +47,7 @@ public:
     void testMemoryStream9();
     void testMemoryStream10();
     void testMemoryStream11();
+    void testMemoryStream11W();
     void testMemoryStream12();
     void testMemoryStream13();
     void testMemoryStream14();

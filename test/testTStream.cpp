@@ -399,6 +399,65 @@ void TStreamTest::testMemoryStream11()
 	CPPUNIT_ASSERT_THROW(stream2 >> ll, IOException);
 }
 
+void TStreamTest::testMemoryStream11W()
+{
+	TMemoryStream stream1;
+	const wchar_t* str = L"abcdefghijklmnopqrstuvwxyz"; // 26 symbols
+	stream1.SetBuffer((uint8_t*)str, wcslen(str)*sizeof(wchar_t));
+
+	const int BUF_SZ = 26 * sizeof(wchar_t);
+	wchar_t buf[BUF_SZ + 1]; // extra byte for terminating zero
+	memset(buf, 0, BUF_SZ + 1);
+	wchar_t c;
+
+	stream1 >> c;
+	CPPUNIT_ASSERT(L'a' == c);
+	stream1 >> c;
+	CPPUNIT_ASSERT(L'b' == c);
+
+	std::wstring s;
+	stream1 >> s;
+	CPPUNIT_ASSERT_EQUAL(std::wstring{ L"cdefghijklmnopqrstuvwxyz" }, s);
+
+	TMemoryStream stream2;
+	s = L"automotovelofoto";
+	stream2 << 5;
+	stream2 << L'5';
+	stream2 << 3.1415265859;
+	stream2 << s << L'\n'; // \n this is end-of-line marker, otherwise we will not be able to read this string properly
+	stream2 << 1000000000ll;
+
+	//stream2.SeekR(stream2.Length(), smFromEnd);
+	int i;
+	double d;
+	long long ll;
+
+	stream2 >> i;
+	CPPUNIT_ASSERT_EQUAL(5, i);
+
+	stream2 >> c;
+	CPPUNIT_ASSERT_EQUAL(L'5', c);
+
+	stream2 >> d;
+	CPPUNIT_ASSERT_EQUAL(3.1415265859, d);
+
+	s = L"";
+	stream2 >> s;
+	CPPUNIT_ASSERT(s == std::wstring{ L"automotovelofoto" });
+
+	stream2 >> ll;
+	CPPUNIT_ASSERT_EQUAL(1000000000ll, ll);
+
+	s = L"4444";
+	stream2 << s;
+
+	s = L"5555";
+	stream2 >> s;
+	CPPUNIT_ASSERT_EQUAL(std::wstring{ L"4444" }, s);
+
+	CPPUNIT_ASSERT_THROW(stream2 >> ll, IOException);
+}
+
 // check ownership of buffer. for external buffer it should not try to free it. 
 // in case of need of reallocate, exception is thrown and errono is set to EINVAL.
 void TStreamTest::testMemoryStream12()
@@ -515,6 +574,36 @@ typedef std::basic_string<char, tci_char_traits<char>> tci_astring; // ANSI stri
 typedef std::basic_string<wchar_t, tci_char_traits<wchar_t>> tci_wstring; // Wide Char string
 typedef std::basic_string<uint32_t, std::char_traits<uint32_t>> t32_string; // uint32_t string
 
+CPPUNIT_NS_BEGIN
+template<>
+struct assertion_traits<tci_wstring>   // specialization for the std::string type
+{
+	static bool equal(const tci_wstring& x, const tci_wstring& y)
+	{
+		return x == y;
+	}
+
+	static std::string toString(const tci_wstring& x)
+	{
+		return std::filesystem::path(x).string();
+	}
+};
+template<>
+struct assertion_traits<wchar_t>   // specialization for the std::string type
+{
+	static bool equal(const wchar_t& x, const wchar_t& y)
+	{
+		return x == y;
+	}
+
+	static std::string toString(const wchar_t& x)
+	{
+		std::wstring s(1, x);
+		return std::filesystem::path(s).string();
+	}
+};
+CPPUNIT_NS_END
+
 //tests for f.ReadString() method for special strings: tci_astring and tci_wstring
 void TStreamTest::testMemoryStreamTCIString()
 {
@@ -543,13 +632,13 @@ void TStreamTest::testMemoryStreamTCIString()
 	stream2 << L'\n'; // \n this is end-of-line marker, otherwise we will not be able to read this string properly
 
 	tci_wstring readCiWStr = stream2.ReadString<tci_wstring>();
-	CPPUNIT_ASSERT(tci_wstring(L"automotovelofoto") == readCiWStr);
+	CPPUNIT_ASSERT_EQUAL(tci_wstring(L"automotovelofoto"), readCiWStr);
 
 	readCiWStr = stream2.ReadString<tci_wstring>();
-	CPPUNIT_ASSERT(tci_wstring(L"54") == readCiWStr);
+	CPPUNIT_ASSERT_EQUAL(tci_wstring(L"54"), readCiWStr);
 
 	readCiWStr = stream2.ReadString<tci_wstring>();
-	CPPUNIT_ASSERT(tci_wstring(L"") == readCiWStr);
+	CPPUNIT_ASSERT_EQUAL(tci_wstring(L""), readCiWStr);
 	CPPUNIT_ASSERT(stream2.Eof());
 
 }
@@ -584,13 +673,13 @@ void TStreamTest::testMemoryStream14()
 	CPPUNIT_ASSERT_EQUAL(0ull, readWStr.size()); // empty string
 
 	readWStr = stream3.ReadString<std::wstring>();
-	CPPUNIT_ASSERT(std::wstring{ L"AA" } == readWStr); // for wstring CPPUNIT_ASSERT_EQUAL does not compile
+	CPPUNIT_ASSERT_EQUAL(std::wstring{ L"AA" }, readWStr); 
 
 	readWStr = stream3.ReadString<std::wstring>();
-	CPPUNIT_ASSERT(std::wstring{ L"BB" } == readWStr);
+	CPPUNIT_ASSERT_EQUAL(std::wstring{ L"BB" }, readWStr);
 
 	readWStr = stream3.ReadString<std::wstring>();
-	CPPUNIT_ASSERT(std::wstring{ L"" } == readWStr);
+	CPPUNIT_ASSERT_EQUAL(std::wstring{ L"" }, readWStr);
 	CPPUNIT_ASSERT(stream3.Eof());
 
 	TMemoryStream stream4;
