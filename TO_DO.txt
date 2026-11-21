@@ -1,7 +1,9 @@
 TODO
-----
 
 This file contains an imcomplete list of things to be done, not necessarily ordered by importance or urgence.
+-------------------------------------------------------------------------------------------------------------
+
+* Add an example and description how to specify user owned placeholers and macros.
 
 * THash2 - think whether we need to specify storage class type for I1 parameter (like it is done for THashBase)
 
@@ -12,16 +14,15 @@ This file contains an imcomplete list of things to be done, not necessarily orde
     spdlog::debug("Elapsed {}", sw);
     spdlog::debug("Elapsed {:.3}", sw);       
 
+* make benchmarks and publish them in users guide
 
 * [DONE] Add tests for threadsafety parameter in .lfg file
 
 * [FIXED] Rotating logger should preserve filename extension when creating timestamp files.
 
-* add possibility to define my own line macros placeholders
+* [DONE] Add possibility to define my own line macros placeholders
 
 * [DONE] get values for macro placeholders from Properties and subst in log line
-
-* make benchmarks and publish them in users guide
 
 * [DONE] Add possibility of having two types of loggers: "single threaded" (thread UNSAFE) and "multi threaded" (thread SAFE).
 Thread safe logger can be called from multiple threads simultaneously. It uses std:: mutex for synchronization.
