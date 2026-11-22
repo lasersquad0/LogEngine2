@@ -28,10 +28,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/dbin)
 
 
 #сораняем путь до директории include нашими хедарами 
-set(PROG_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+#set(PROG_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 #добавляет путь до нашей директории в область видимости всех проектов
-include_directories(${PROG_INCLUDE})
+#include_directories(${PROG_INCLUDE})
 
 #добавляем директории наших подпроектов в область видимости CMake 
 add_subdirectory("src")

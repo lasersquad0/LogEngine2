@@ -24,17 +24,36 @@ target_compile_features(${PRJ_NAME} PRIVATE cxx_std_20)
 
 # Add include path for cppunit.
 target_include_directories(${PRJ_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/external")
+target_include_directories(${PRJ_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include")
+
 #"${CMAKE_SOURCE_DIR}/external"
 #"${CMAKE_SOURCE_DIR}/external/libsais/include"
 #)
 
 #target_compile_definitions(${PRJ_NAME} PRIVATE WIN32)
 
-#${CMAKE_SOURCE_DIR}/external/cppunit/lib/libcppunit.a
+target_link_libraries(LogEngineTests PRIVATE LogEngine2)
 
+#${CMAKE_SOURCE_DIR}/lib/libLogEngine2.a
 target_link_libraries(${PRJ_NAME} PRIVATE 
-LogEngine2lib
-${CMAKE_SOURCE_DIR}/lib/libLogEngine2.a
+${CMAKE_SOURCE_DIR}/external/cppunit/lib/libcppunit.a
+)
+
+target_compile_options(${PRJ_NAME} PRIVATE
+    $<$<CONFIG:Debug>:
+        -g
+        -O0
+        -Wall
+        -Wextra
+        -Wpedantic
+    >
+
+    $<$<CONFIG:Release>:
+        -O2
+        -Wall
+        -Wextra
+        -Wpedantic
+    >
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

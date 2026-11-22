@@ -3,7 +3,7 @@
 
 cmake_minimum_required (VERSION 3.8)
 
-set(LOGENGINE_LIB "LogEngine2Lib")
+set(LOGENGINE_LIB "LogEngine2")
 project(${LOGENGINE_LIB} LANGUAGES CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -17,7 +17,26 @@ set(target ${LOGENGINE_LIB})
 
 add_library(${target} STATIC ${SRC_FILES} ${INCLUDE_FILES} )
 
+target_include_directories(${LOGENGINE_LIB} PUBLIC "${CMAKE_SOURCE_DIR}/include")
+
 target_compile_features(${LOGENGINE_LIB} PUBLIC cxx_std_20)
+
+target_compile_options(${LOGENGINE_LIB} PRIVATE
+    $<$<CONFIG:Debug>:
+        -g
+        -O0
+        -Wall
+        -Wextra
+        -Wpedantic
+    >
+
+    $<$<CONFIG:Release>:
+        -O2
+        -Wall
+        -Wextra
+        -Wpedantic
+    >
+)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Add "_DEBUG" definition to the source code.
