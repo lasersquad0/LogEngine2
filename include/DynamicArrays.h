@@ -12,6 +12,7 @@
 #include <string.h> //required for memset
 #include <exception> 
 #include <string>
+#include <cassert>
 #include <format>
 #include "Common.h"
 #include "Compare.h"
