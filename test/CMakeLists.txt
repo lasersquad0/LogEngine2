@@ -30,8 +30,10 @@ target_include_directories(${PRJ_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/external")
 
 #target_compile_definitions(${PRJ_NAME} PRIVATE WIN32)
 
+#${CMAKE_SOURCE_DIR}/external/cppunit/lib/libcppunit.a
+
 target_link_libraries(${PRJ_NAME} PRIVATE 
-${CMAKE_SOURCE_DIR}/external/cppunit/lib/libcppunit.a
+LogEngine2lib
 ${CMAKE_SOURCE_DIR}/lib/libLogEngine2.a
 )
 

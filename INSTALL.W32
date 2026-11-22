@@ -1,6 +1,5 @@
 
-Use MSVC projects from prj/msvcX/LogEngine/ to compile LogEngine.lib. 
-(for Builder 6 use prj/Builder6/LogEngine)
+Use MSVC projects from prj/msvc/LogEngine/ to compile LogEngine2*.lib libraries. 
+For Embarcadero C++Builder use prj/Builder6/LogEngine project.
 
-See prj/msvcX/testLogEngine (or prj/Builder6/testLogEngine) for examples 
-of use LogEngine.
+Example folder contains many examples of using LogEngine library.
