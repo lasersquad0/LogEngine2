@@ -1,14 +1,9 @@
-# CMake project for LogEngine2 library, include source and define project specific logic here.
+# CMake project for LogEngine2 library
 #
 
 cmake_minimum_required (VERSION 3.20)
 
 set(LOGENGINE_LIB "LogEngine2")
-#project(${LOGENGINE_LIB} VERSION ${LOGENGINE_VER} LANGUAGES CXX)
-
-#if(NOT CMAKE_BUILD_TYPE)
-#    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Default build type: Debug" FORCE)
-#endif()
 
 # CONFIGURE_DEPENDS tells cmake to re-build list of files each time you run 'cmake --build build' 
 file(GLOB INCLUDE_FILES CONFIGURE_DEPENDS "*.h")
@@ -41,13 +36,6 @@ target_compile_definitions(LogEngine2 PRIVATE
     $<$<CONFIG:Release>:NDEBUG>
 )
 
-#if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    # Add "_DEBUG" definition to the source code.
-#    target_compile_definitions(${LOGENGINE_LIB} PRIVATE _DEBUG)
-#else()
-    # Add "NDEBUG" definition to the source code.
-#    target_compile_definitions(${LOGENGINE_LIB} PRIVATE NDEBUG)
-#endif()
 
 
 

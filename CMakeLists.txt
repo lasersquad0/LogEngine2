@@ -1,4 +1,7 @@
-﻿cmake_minimum_required (VERSION 3.20)
+﻿# CMake umbrella project for LogEngine2, LogEngine2Tests and Example applications 
+#
+
+cmake_minimum_required (VERSION 3.20)
 
 # Enable Hot Reload for MSVC compilers if supported.
 #if (POLICY CMP0141)
@@ -34,14 +37,6 @@ message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/rbin)
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/dbin)
 
-
-#сораняем путь до директории include нашими хедарами 
-#set(PROG_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-#добавляет путь до нашей директории в область видимости всех проектов
-#include_directories(${PROG_INCLUDE})
-
-#добавляем директории наших подпроектов в область видимости CMake 
 add_subdirectory("src")
 add_subdirectory("test")
 add_subdirectory("example")
