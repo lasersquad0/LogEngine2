@@ -1,7 +1,7 @@
 /*
  * Example.cpp
  *
- * Copyright 2025, LogEngine Project. All rights reserved.
+ * Copyright 2026, LogEngine2 Project. All rights reserved.
  *
  * See the COPYING file for the terms of usage and distribution.
  */
@@ -23,9 +23,12 @@ void MultiSinkExample();
 
 int main(int, char *[]) 
 {
+
+#ifdef WIN32
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     _CrtMemState s1, s2, s3;
     _CrtMemCheckpoint(&s1); // Take a snapshot at the start of main()
+#endif
 
     try
     {
@@ -90,8 +93,10 @@ int main(int, char *[])
         return 1;
     }
 
+#ifdef WIN32
     _CrtMemCheckpoint(&s2); // Take a snapshot at the end of main()
     if (_CrtMemDifference(&s3, &s1, &s2)) _CrtMemDumpStatistics(&s3); // Dump memory statistics excluding global variables
+#endif
 }
 
 // .lfg file location directory relative to current app directory
