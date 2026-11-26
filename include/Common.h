@@ -38,7 +38,7 @@ typedef unsigned long long ullong;
 #define EndLine "\r\n"
 #define EndLineChar '\n'
 // this macro works with both string and wstring, looks like CRChar/LFChar is automatically extended to wchar_t for string
-#define BUILD_ENDL(_) (_) += CRChar; (_) += LFChar
+#define ADD_ENDL(_) (_) += CRChar; (_) += LFChar
 #else
 #define EndLine "\n"
 #define EndLineChar '\n'
