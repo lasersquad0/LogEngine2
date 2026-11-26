@@ -30,7 +30,7 @@ protected:
 	{
 		std::string str = this->FormatString(e); // FormatString adds '\n' to the end of string
 		//FStream->Seek(0, TSeekMode::smFromEnd); // TODO this is done for the case when two filesinks write into the same file. may be not good solution to position for every log line.
-		this->FBytesWritten += static_cast<ullong>(FStream->WriteLn(str));
+		this->FBytesWritten += /*static_cast<ullong>(*/ FStream->WriteLn(str);//);
 	}
 
 	// this constructor required by mostly for FileLockSink class to initialise FStream another way as it is done in public FileSink constructor
@@ -40,7 +40,7 @@ public:
 
 	FileSink(const std::string& name, const std::string& fileName) : BaseSink<Mutex>(name)
 	{
-		FStream = new TFileStream(fileName, TFileMode::fmWrite, TSharingMode::shDenyWrite); // by default only current process can write to log file 
+		FStream = new TFileStream(fileName, TFileMode::fmWrite, TSharingMode::shDenyWrite, true); // by default only current process can write to log file 
 		FStream->Seek(0, TSeekMode::smFromEnd); // move to the end of file 
 	}
 
@@ -75,13 +75,14 @@ protected:
 		//this->FStream->Unlock();
 	}
 public:
-	FileLockSink(const std::string& name, const std::string& fileName) : FileSink<Mutex>(name)
-	{
-		this->FStream = new TFileStream(fileName, TFileMode::fmWrite, TSharingMode::shDenyNo); // by default only current process can write to log file 
-		this->FStream->Seek(0, TSeekMode::smFromEnd); // move to the end of file 
-	}
+	using FileSink<Mutex>::FileSink; // class will use constructor(s) of parent class
 
-	//using FileSink<Mutex>::FileSink;
+	/*FileLockSink(const std::string& name, const std::string& fileName) : FileSink<Mutex>(name)
+	{
+		this->FStream = new TFileStream(fileName, TFileMode::fmWrite, TSharingMode::shDenyNo, true); // by default only current process can write to log file 
+		this->FStream->Seek(0, TSeekMode::smFromEnd); // move to the end of file 
+	}*/
+
 };
 
 template<class Mutex>
