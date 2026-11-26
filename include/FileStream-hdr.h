@@ -236,6 +236,11 @@ LOGENGINE_INLINE void TMemoryStream::UnsetBuffer()
 #endif
 
 
+// Linux does not have O_BINARY definition, define it if not defined
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode, const TSharingMode sMode, bool Append)
 {
 	FFileName = FileName;
@@ -277,13 +282,23 @@ LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFi
 	if (hf == -1)
 	{
 		std::string serr;
+		switch (res)
+		{
+		case EINVAL: serr = "Wrong file name '" + FileName + "'!"; break;
+		case EACCES: serr = "Can't get access to file '" + FileName + "'!"; break;
+		case EEXIST: serr = "File '" + FileName + "' already exists!"; break;
+		case ENOENT: serr = "File '" + FileName + "' not found!"; break;
+		default: serr = "Can't open file '" + FileName + "'!";
+
+		}
+		/*
 		if (res == EINVAL)
 			serr = "Wrong file name '" + FileName + "'!";
 		else if (res == EACCES)
 			serr = "Can't get access to file '" + FileName + "'!";
 		else
 			serr = "Can't open file '" + FileName + "'!";
-
+			*/
 		throw IOException(serr);
 	}
 }
