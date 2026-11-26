@@ -14,7 +14,7 @@
 #include <share.h>
 #endif
 
-#include "string.h"
+#include <string.h>
 #include <string>
 #include <exception>
 #include <locale>
@@ -22,8 +22,8 @@
 
 LOGENGINE_NS_BEGIN
 
-enum TFileMode:int { fmRead, fmWrite, fmReadWrite, fmWriteTrunc };
-enum TSharingMode:int { shDefault, shDenyNo, shDenyRead, shDenyWrite, shDenyReadWrite };
+enum TFileMode: int { fmRead, fmWrite, fmReadWrite, fmWriteTrunc };
+enum TSharingMode: int { shDefault, shDenyNo, shDenyRead, shDenyWrite, shDenyReadWrite };
 enum class TSeekMode { smFromBegin, smFromEnd, smFromCurrent };
 
 #ifdef WIN32
@@ -230,7 +230,8 @@ private:
 	TSharingMode FSharingMode;
 	int hf = 0;  // file handle
 public:
-	TFileStream(const std::string& FileName, const TFileMode fMode = TFileMode::fmWrite, const TSharingMode sMode = TSharingMode::shDefault);
+	// if Append=true then file will be opened with _O_APPEND flag (Moves the file pointer to the end of the file before every write operation)
+	TFileStream(const std::string& FileName, const TFileMode fMode = TFileMode::fmWrite, const TSharingMode sMode = TSharingMode::shDefault, bool Append = false);
 	~TFileStream() override;
 	int Read(void* Buffer, size_t Size) override;
 	size_t Write(const void* Buffer, const size_t Size) override;
