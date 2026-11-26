@@ -236,12 +236,15 @@ LOGENGINE_INLINE void TMemoryStream::UnsetBuffer()
 #endif
 
 
-LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode, const TSharingMode sMode)
+LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode, const TSharingMode sMode, bool Append)
 {
 	FFileName = FileName;
 	FFileMode = fMode;
 	FSharingMode = sMode;
 	hf = 0;
+	int flags = O_BINARY;
+
+	if (Append) flags |= O_APPEND;
 
 #if defined(WIN32)
 	errno_t res = 0;
@@ -254,18 +257,18 @@ LOGENGINE_INLINE TFileStream::TFileStream(const std::string& FileName, const TFi
 
 	switch (fMode)
 	{
-	case TFileMode::fmRead:      res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY,           activeShMode, _S_IREAD | _S_IWRITE); break;
-	case TFileMode::fmWrite:     res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, activeShMode, _S_IREAD | _S_IWRITE); break;
-	case TFileMode::fmReadWrite: res = _sopen_s(&hf, FFileName.c_str(), O_RDWR   | O_CREAT | O_BINARY, activeShMode, _S_IREAD | _S_IWRITE); break;
-	case TFileMode::fmWriteTrunc:res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, activeShMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmRead:      res = _sopen_s(&hf, FFileName.c_str(), flags | O_RDONLY /* | O_BINARY*/, activeShMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmWrite:     res = _sopen_s(&hf, FFileName.c_str(), flags | O_WRONLY | O_CREAT /* | O_BINARY */ , activeShMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmReadWrite: res = _sopen_s(&hf, FFileName.c_str(), flags | O_RDWR   | O_CREAT /* | O_BINARY */ , activeShMode, _S_IREAD | _S_IWRITE); break;
+	case TFileMode::fmWriteTrunc:res = _sopen_s(&hf, FFileName.c_str(), flags | O_WRONLY | O_CREAT | O_TRUNC /* | O_BINARY */ , activeShMode, _S_IREAD | _S_IWRITE); break;
 	}
 #else
 	switch (fMode)
 	{
-	case fmRead:       hf = open(FFileName.c_str(), O_RDONLY); break;
-	case fmWrite:      hf = open(FFileName.c_str(), O_WRONLY | O_CREAT, S_IREAD | S_IWRITE); break;
-	case fmReadWrite:  hf = open(FFileName.c_str(), O_RDWR   | O_CREAT, S_IREAD | S_IWRITE); break;
-	case fmWriteTrunc: hf = open(FFileName.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE); break;
+	case fmRead:       hf = open(FFileName.c_str(), flags | O_RDONLY); break;
+	case fmWrite:      hf = open(FFileName.c_str(), flags | O_WRONLY | O_CREAT, S_IREAD | S_IWRITE); break;
+	case fmReadWrite:  hf = open(FFileName.c_str(), flags | O_RDWR   | O_CREAT, S_IREAD | S_IWRITE); break;
+	case fmWriteTrunc: hf = open(FFileName.c_str(), flags | O_WRONLY | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE); break;
 	}
 
 	int res = errno;
@@ -347,8 +350,9 @@ LOGENGINE_INLINE size_t TFileStream::Write(const void* Buffer, const size_t Size
 
 LOGENGINE_INLINE size_t TFileStream::WriteLn(const std::string& str)
 {
-	auto c = Write(str);
-	return WriteCRLF() + c;
+	// important to use single write call to write entire string to file
+	return Write(str + EndLine);
+	//return WriteCRLF() + c;
 }
 
 LOGENGINE_INLINE size_t TFileStream::WriteLn(const void* Buffer, const size_t Size)
