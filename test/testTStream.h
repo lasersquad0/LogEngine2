@@ -12,10 +12,10 @@
 class TStreamTest : public CPPUNIT_NS::TestFixture
 {
     CPPUNIT_TEST_SUITE(TStreamTest);
-    CPPUNIT_TEST(testMemoryStream1);
-    CPPUNIT_TEST(testMemoryStream2);
-    CPPUNIT_TEST(testMemoryStream3);
-    CPPUNIT_TEST(testMemoryStream4);
+    CPPUNIT_TEST(testMemoryStreamSeekR1);
+    CPPUNIT_TEST(testMemoryStreamSeekR2);
+    CPPUNIT_TEST(testMemoryStreamSeekW1);
+    CPPUNIT_TEST(testMemoryStreamSeekW2);
     CPPUNIT_TEST(testMemoryStream5);
     CPPUNIT_TEST(testMemoryStream6);
     CPPUNIT_TEST(testMemoryStream7);
@@ -28,6 +28,7 @@ class TStreamTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testMemoryStream13);
     CPPUNIT_TEST(testMemoryStream14);
     CPPUNIT_TEST(testFileStream1);
+    CPPUNIT_TEST(testFileStream2);
     CPPUNIT_TEST(testMemoryStreamTCIString);
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -36,10 +37,10 @@ public:
     void setUp();
     void tearDown();
 
-    void testMemoryStream1();
-    void testMemoryStream2();
-    void testMemoryStream3();
-    void testMemoryStream4();
+    void testMemoryStreamSeekR1();
+    void testMemoryStreamSeekR2();
+    void testMemoryStreamSeekW1();
+    void testMemoryStreamSeekW2();
     void testMemoryStream5();
     void testMemoryStream6();
     void testMemoryStream7();
@@ -53,6 +54,7 @@ public:
     void testMemoryStream14();
     void testMemoryStreamTCIString();
     void testFileStream1();
+    void testFileStream2();
 };
 
 

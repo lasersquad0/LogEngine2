@@ -3,7 +3,6 @@
 #include "testTStream.h"
 
 
-
 using namespace LogEngine;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TStreamTest);
@@ -19,7 +18,7 @@ void TStreamTest::tearDown()
 	// free memory allocated in setUp, do other things
 }
 
-void TStreamTest::testMemoryStream1()
+void TStreamTest::testMemoryStreamSeekR1()
 {
 	//typedef TMemoryStream::pos_type pos_t;
 	TMemoryStream stream;
@@ -40,7 +39,7 @@ void TStreamTest::testMemoryStream1()
 	CPPUNIT_ASSERT_EQUAL((pos_t)0, stream.SeekR(-500, TSeekMode::smFromCurrent));
 }
 
-void TStreamTest::testMemoryStream2()
+void TStreamTest::testMemoryStreamSeekR2()
 {
 	TMemoryStream stream;
 	const char* str = "1234567890"; // 10 symbols
@@ -83,7 +82,7 @@ void TStreamTest::testMemoryStream2()
 }
 
 
-void TStreamTest::testMemoryStream3()
+void TStreamTest::testMemoryStreamSeekW1()
 {
 	using enum TSeekMode;
 	TMemoryStream stream;
@@ -104,7 +103,7 @@ void TStreamTest::testMemoryStream3()
 	CPPUNIT_ASSERT_EQUAL((pos_t)0, stream.SeekW(-500, smFromCurrent));
 }
 
-void TStreamTest::testMemoryStream4()
+void TStreamTest::testMemoryStreamSeekW2()
 {
 	using enum TSeekMode;
 	TMemoryStream stream;
@@ -746,4 +745,83 @@ void TStreamTest::testFileStream1()
 	readStr = stream1.ReadString<std::string>();
 	CPPUNIT_ASSERT_EQUAL(std::string{ "" }, readStr);
 	CPPUNIT_ASSERT(stream1.Eof());
+}
+
+void TStreamTest::testFileStream2()
+{
+	for (bool b : {false, true})
+	{
+		// because default sharing mode for fmWrite is _SH_DENYWR then second file stream will fail
+		TFileStream stream11(LOG_FILES_FOLDER "TestFile1.txt", TFileMode::fmWrite, TSharingMode::shDefault, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream12(LOG_FILES_FOLDER "TestFile1.txt", TFileMode::fmWrite, TSharingMode::shDefault, b), IOException);
+
+		// because default sharing mode for fmWrite is _SH_DENYWR then second file stream will fail
+		TFileStream stream21(LOG_FILES_FOLDER "TestFile2.txt", TFileMode::fmRead, TSharingMode::shDefault, b);
+		TFileStream stream22(LOG_FILES_FOLDER "TestFile2.txt", TFileMode::fmRead, TSharingMode::shDefault, b);
+
+		TFileStream stream31(LOG_FILES_FOLDER "TestFile3.txt", TFileMode::fmReadWrite, TSharingMode::shDefault, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream32(LOG_FILES_FOLDER "TestFile3.txt", TFileMode::fmReadWrite, TSharingMode::shDefault, b), IOException);
+
+		TFileStream stream41(LOG_FILES_FOLDER "TestFile4.txt", TFileMode::fmWriteTrunc, TSharingMode::shDefault, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream42(LOG_FILES_FOLDER "TestFile4.txt", TFileMode::fmWriteTrunc, TSharingMode::shDefault, b), IOException);
+
+
+		// for fmRead we can use one file for many calls. File TestFileX.txt must exist. 
+		TFileStream stream51(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyNo, b);
+		TFileStream stream52(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyNo, b);
+
+		// we deny access for themselves even for the first file here
+		CPPUNIT_ASSERT_THROW(TFileStream stream61(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyRead, b), IOException);
+		CPPUNIT_ASSERT_THROW(TFileStream stream62(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyRead, b), IOException);
+
+		TFileStream stream71(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyWrite, b);
+		TFileStream stream72(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyWrite, b);
+
+		// we deny access for themselves even for the first file here
+		CPPUNIT_ASSERT_THROW(TFileStream stream81(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyReadWrite, b), IOException);
+		CPPUNIT_ASSERT_THROW(TFileStream stream82(TEST_FILES_FOLDER "TestFileX.txt", TFileMode::fmRead, TSharingMode::shDenyReadWrite, b), IOException);
+
+
+		TFileStream stream91(LOG_FILES_FOLDER "TestFile9.txt", TFileMode::fmWrite, TSharingMode::shDenyNo, b);
+		TFileStream stream92(LOG_FILES_FOLDER "TestFile9.txt", TFileMode::fmWrite, TSharingMode::shDenyNo, b);
+
+		TFileStream stream101(LOG_FILES_FOLDER "TestFile10.txt", TFileMode::fmWrite, TSharingMode::shDenyRead, b);
+		TFileStream stream102(LOG_FILES_FOLDER "TestFile10.txt", TFileMode::fmWrite, TSharingMode::shDenyRead, b);
+
+		// this is weird but it allows open first file with modes fmWrite and shDenyWrite
+		TFileStream stream111(LOG_FILES_FOLDER "TestFile11.txt", TFileMode::fmWrite, TSharingMode::shDenyWrite, b);
+		// because of shDenyWrite we cannot open second file 
+		CPPUNIT_ASSERT_THROW(TFileStream stream112(LOG_FILES_FOLDER "TestFile11.txt", TFileMode::fmWrite, TSharingMode::shDenyWrite, b), IOException);
+
+		TFileStream stream121(LOG_FILES_FOLDER "TestFile12.txt", TFileMode::fmWrite, TSharingMode::shDenyReadWrite, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream122(LOG_FILES_FOLDER "TestFile12.txt", TFileMode::fmWrite, TSharingMode::shDenyReadWrite, b), IOException);
+
+
+		TFileStream stream131(LOG_FILES_FOLDER "TestFile13.txt", TFileMode::fmReadWrite, TSharingMode::shDenyNo, b);
+		TFileStream stream132(LOG_FILES_FOLDER "TestFile13.txt", TFileMode::fmReadWrite, TSharingMode::shDenyNo, b);
+
+		TFileStream stream141(LOG_FILES_FOLDER "TestFile14.txt", TFileMode::fmReadWrite, TSharingMode::shDenyRead, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream142(LOG_FILES_FOLDER "TestFile14.txt", TFileMode::fmReadWrite, TSharingMode::shDenyRead, b), IOException);
+
+		TFileStream stream151(LOG_FILES_FOLDER "TestFile15.txt", TFileMode::fmReadWrite, TSharingMode::shDenyWrite, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream152(LOG_FILES_FOLDER "TestFile15.txt", TFileMode::fmReadWrite, TSharingMode::shDenyWrite, b), IOException);
+
+		TFileStream stream161(LOG_FILES_FOLDER "TestFile16.txt", TFileMode::fmReadWrite, TSharingMode::shDenyReadWrite, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream162(LOG_FILES_FOLDER "TestFile16.txt", TFileMode::fmReadWrite, TSharingMode::shDenyReadWrite, b), IOException);
+
+		TFileStream stream171(LOG_FILES_FOLDER "TestFile17.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyNo, b);
+		TFileStream stream172(LOG_FILES_FOLDER "TestFile17.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyNo, b);
+
+		TFileStream stream181(LOG_FILES_FOLDER "TestFile18.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyRead, b);
+		TFileStream stream182(LOG_FILES_FOLDER "TestFile18.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyRead, b);
+
+		TFileStream stream191(LOG_FILES_FOLDER "TestFile19.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyWrite, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream192(LOG_FILES_FOLDER "TestFile19.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyWrite, b), IOException);
+
+		TFileStream stream201(LOG_FILES_FOLDER "TestFile20.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyReadWrite, b);
+		CPPUNIT_ASSERT_THROW(TFileStream stream202(LOG_FILES_FOLDER "TestFile20.txt", TFileMode::fmWriteTrunc, TSharingMode::shDenyReadWrite, b), IOException);
+	}
+
+	//auto written = stream1.WriteLn("test string");
+	//CPPUNIT_ASSERT_EQUAL((size_t)13, written);
 }
